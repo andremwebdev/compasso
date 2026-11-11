@@ -21,12 +21,12 @@ Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: sessione 0 (impalca
 
 ## In corso
 
-Niente. Il lavoro della sessione 0 è in locale e completo, ma **non è stato caricato su GitHub**: vedi «Problemi noti».
+Niente. Il lavoro della sessione 0 è completo e caricato su GitHub (ramo `main`). Resta da verificare a mano il controllo su GitHub e Pages: vedi «Prossimo passo».
 
 ## Prossimo passo
 
-1. Chi gestisce il repository deve sbloccare il caricamento (vedi «Problemi noti») e attivare Pages (Settings → Pages → Source: **GitHub Actions**).
-2. Dopo il primo push, controllare che il controllo su GitHub sia verde e che l'app vuota compaia su https://andremwebdev.github.io/compasso/. La sessione 0 non è davvero finita finché questo non è vero (REGOLE.md, «Quando un lavoro è finito»).
+1. Attivare Pages: Settings → Pages → Source: **GitHub Actions** (senza questo il lavoro `pubblica` fallisce).
+2. Controllare nella scheda Actions che il controllo sull'ultimo push sia verde e che l'app vuota compaia su https://andremwebdev.github.io/compasso/. La sessione 0 non è davvero finita finché questo non è vero (REGOLE.md, «Quando un lavoro è finito»).
 3. Poi **sessione 1**: motore matematico, architettura e schema dei generatori (fase 2 della specifica), con `docs/ARCHITETTURA.md` e la parte tecnica di `REGOLE.md`. Scelta della libreria Markdown (la specifica dice «sessione 0 o 1»: non è stata ancora fatta).
 
 ## Decisioni da rivedere
@@ -51,7 +51,6 @@ Decisioni prese seguendo la sezione 0 della specifica, dove il testo non decide.
 
 ## Problemi noti
 
-- **Push su GitHub rifiutato (HTTP 403)**: l'app Claude di GitHub non risulta installata per l'account `andremwebdev`, quindi il lavoro è solo in commit locali. Da fare: installare l'app su https://github.com/apps/claude/installations/select_target (con accesso in scrittura a `compasso`) oppure ricollegare GitHub dai connettori di claude.ai, poi rilanciare il push.
-- **Controllo su GitHub e Pages mai eseguiti**: il workflow è scritto e la sintassi controllata, ma finché non c'è un push non si sa se è verde. Se la pubblicazione fallisce con un errore su Pages, quasi sempre manca l'attivazione (Settings → Pages → Source: GitHub Actions).
+- **Esito del controllo su GitHub non verificato**: il push è andato a buon fine (al secondo tentativo; il primo era stato rifiutato con 403), ma dall'ambiente di lavoro l'API di GitHub per leggere Actions e Pages non è raggiungibile. Il workflow è scritto e la sintassi controllata; typecheck, build e test passano in locale. Se la pubblicazione fallisce con un errore su Pages, quasi sempre manca l'attivazione (Settings → Pages → Source: GitHub Actions).
 - Icone PNG generate con uno script (`npm run icone`): funzionali, ma provvisorie.
 - `README.md` contiene solo il titolo.
