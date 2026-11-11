@@ -500,7 +500,7 @@ Il motore si progetta **una volta sola per l'intero perimetro** dei tre volumi, 
 
 - Gira **offline** e **fluido su un iPhone XR**: generare un esercizio o controllare una risposta deve richiedere al massimo qualche decina di millisecondi.
 - **Deterministico**: niente dipende dall'ora o da stati casuali non seminati.
-- **Estendibile**: aggiungere in futuro la fisica (es. grandezze con unità di misura) non deve richiedere di riscrivere il nucleo.
+- **Estendibile**: aggiungere in futuro la fisica (es. grandezze con unità di misura) e analisi 2 non deve richiedere di riscrivere il nucleo.
 - Ogni parte del motore ha i suoi test automatici.
 
 ## 7. Risposte e valutazione
