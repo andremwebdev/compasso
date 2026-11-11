@@ -162,7 +162,9 @@ function renderProduct(factors: readonly Expr[]): string {
         shape === "number" ||
         (shape === "fraction" && (previous === "number" || previous === "fraction")) ||
         previous === "function";
-      out += dot ? " \\cdot " : shape === "function" ? " " : "";
+      // Dopo un comando LaTeX (\pi) una lettera va staccata, altrimenti si fonderebbe con il nome del comando.
+      const glued = /\\[a-zA-Z]+$/.test(out) && /^[a-zA-Z]/.test(body);
+      out += dot ? " \\cdot " : shape === "function" || glued ? " " : "";
     }
     out += body;
     previous = shape;
