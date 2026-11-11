@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { NormalContext } from "../../src/motore/algebra/poly";
 import { exactValue, normalize } from "../../src/motore/algebra/normalize";
 import { compare, equivalent } from "../../src/motore/equivalence/equivalence";
-import type { Expr } from "../../src/motore/expr";
+import { add, div, evaluate, frac, mul, neg, num, pow, sqrt, sub, sym, type Expr } from "../../src/motore/expr";
+import { Rng } from "../../src/motore/random/rng";
 import { Rational } from "../../src/motore/numbers/rational";
 import { Surd } from "../../src/motore/numbers/surd";
 import { parseExpression } from "../../src/motore/parser";
@@ -171,5 +172,66 @@ describe("equivalenza", () => {
       equivalent(p("sin(x)^2+cos(x)^2"), p("1"));
     }
     expect((performance.now() - start) / 400).toBeLessThan(5);
+  });
+});
+
+describe("equivalenza: controllo a tappeto su espressioni generate", () => {
+  const rng = new Rng("espressioni di prova");
+  const x = sym("x");
+  const y = sym("y");
+
+  /** Espressione casuale: polinomi, frazioni, radici quadrate di interi, potenze piccole. */
+  function random(depth: number): Expr {
+    if (depth === 0 || rng.bool(0.2)) {
+      return rng.pick<Expr>([x, y, num(rng.int(-5, 5)), frac(rng.intExcept(-4, 4), rng.int(2, 5)), sqrt(rng.pick([2, 3, 5, 8, 12]))]);
+    }
+    const a = random(depth - 1);
+    const b = random(depth - 1);
+    return rng.pick<() => Expr>([() => add(a, b), () => sub(a, b), () => mul(a, b), () => div(a, add(b, 7)), () => pow(a, rng.int(2, 3)), () => neg(a)])();
+  }
+
+  /** Confronto «di forza bruta»: valori in venti punti. */
+  function sameValues(a: Expr, b: Expr): boolean {
+    const points = new Rng("punti");
+    let valid = 0;
+    for (let k = 0; k < 40 && valid < 20; k++) {
+      const env = { x: points.real(-3, 3), y: points.real(-3, 3) };
+      const va = evaluate(a, env);
+      const vb = evaluate(b, env);
+      if (Number.isNaN(va) || Number.isNaN(vb)) continue;
+      valid += 1;
+      if (Math.abs(va - vb) > 1e-6 * Math.max(1, Math.abs(va), Math.abs(vb))) return false;
+    }
+    return valid > 0;
+  }
+
+  it("le identità algebriche valgono su sottoespressioni qualsiasi, in modo esatto", () => {
+    for (let n = 0; n < 150; n++) {
+      const [a, b, c] = [random(2), random(2), random(2)];
+      const identities: [Expr, Expr][] = [
+        [mul(add(a, b), c), add(mul(a, c), mul(b, c))],
+        [pow(add(a, b), 2), add(pow(a, 2), mul(2, a, b), pow(b, 2))],
+        [mul(add(a, b), sub(a, b)), sub(pow(a, 2), pow(b, 2))],
+        [sub(a, sub(b, c)), add(sub(a, b), c)],
+        [div(a, add(pow(b, 2), 1)), div(mul(a, 3), add(mul(3, pow(b, 2)), 3))],
+        [add(div(a, add(pow(c, 2), 2)), div(b, add(pow(c, 2), 2))), div(add(a, b), add(pow(c, 2), 2))],
+      ];
+      for (const [left, right] of identities) {
+        expect(compare(left, right)).toEqual({ equivalent: true, method: "exact" });
+      }
+    }
+  });
+
+  it("il confronto esatto concorda sempre con i valori numerici", () => {
+    let different = 0;
+    for (let n = 0; n < 300; n++) {
+      const a = random(3);
+      const b = rng.bool(0.3) ? add(a, sub(random(2), random(2))) : random(3);
+      const result = compare(a, b);
+      if (result.method === "undecided") continue;
+      expect(result.equivalent).toBe(sameValues(a, b));
+      if (!result.equivalent) different += 1;
+    }
+    expect(different).toBeGreaterThan(100);
   });
 });
