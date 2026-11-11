@@ -58,10 +58,16 @@ describe("forma normale", () => {
     ["x^0", "1"],
     ["2*pi/4", "pi/2"],
     ["root(3; x)^2", "x^(2/3)"],
-    ["1/sqrt(x)", "sqrt(x)/x"],
   ])("%s = %s", (a, b) => {
     expect(key(a)).toBe(key(b));
     expect(compare(p(a), p(b))).toEqual({ equivalent: true, method: "exact" });
+  });
+
+  it("le frazioni si confrontano con il prodotto in croce, anche se le chiavi sono diverse", () => {
+    expect(key("1/sqrt(x)")).not.toBe(key("sqrt(x)/x"));
+    expect(compare(p("1/sqrt(x)"), p("sqrt(x)/x"))).toEqual({ equivalent: true, method: "exact" });
+    expect(compare(p("(x^2-1)/(x-1)"), p("x+1"))).toEqual({ equivalent: true, method: "exact" });
+    expect(compare(p("1/(x-1)-1/(x+1)"), p("2/(x^2-1)"))).toEqual({ equivalent: true, method: "exact" });
   });
 
   it("i numeri complessi si riducono con i² = −1", () => {
