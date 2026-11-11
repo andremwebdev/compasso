@@ -1,0 +1,121 @@
+/* Stili provvisori dello scheletro. I valori definitivi (colori, caratteri, spaziature)
+   si fissano nella fase dell'involucro (specifica, sezioni 10 e 14). */
+
+:root {
+  color-scheme: light dark;
+  --carta: #f6f1e4;
+  --inchiostro: #14284b;
+  --inchiostro-secondario: #4a5a78;
+  --blu: #1f4f8f;
+  --arancio: #b34f0e;
+  --linea: #cfc9b6;
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --carta: #0f1c33;
+    --inchiostro: #e8eefc;
+    --inchiostro-secondario: #a9b8d6;
+    --blu: #8bb8ff;
+    --arancio: #ffa45c;
+    --linea: #2c3d5e;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--carta);
+  color: var(--inchiostro);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  line-height: 1.5;
+  /* Niente scorrimento orizzontale della pagina (specifica, sezione 10). */
+  overflow-x: hidden;
+}
+
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  /* Margini laterali di 16 px; in basso lo spazio per la barra delle sezioni. */
+  padding: 1.5rem 16px calc(5rem + env(safe-area-inset-bottom));
+}
+
+h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  line-height: 1.2;
+}
+
+.muted {
+  margin: 0 0 1rem;
+  color: var(--inchiostro-secondario);
+}
+
+.card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+}
+
+.card .muted {
+  margin-bottom: 0.25rem;
+}
+
+/* Formule grandi; quelle lunghe scorrono di lato invece di rimpicciolirsi. */
+.formula .katex {
+  font-size: 1.2em;
+}
+
+.formula-display {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+.tab-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: var(--carta);
+  border-top: 1px solid var(--linea);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tab {
+  min-height: 56px;
+  padding: 0.5rem 0.25rem;
+  border: 0;
+  border-top: 3px solid transparent;
+  background: transparent;
+  color: var(--inchiostro-secondario);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* La sezione attiva si distingue anche senza colore: barra sopra e grassetto. */
+.tab-active {
+  border-top-color: var(--blu);
+  color: var(--inchiostro);
+  font-weight: 700;
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--arancio);
+  outline-offset: -4px;
+}

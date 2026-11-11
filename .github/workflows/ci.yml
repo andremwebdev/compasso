@@ -1,0 +1,74 @@
+name: Controllo e pubblicazione
+
+# A ogni modifica caricata: compila, controlla i tipi, esegue i test.
+# Se tutto è verde sul ramo principale, la versione da telefono va su GitHub Pages.
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: controllo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  controllo:
+    name: Compilazione, tipi e test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      - name: Controllo dei tipi
+        run: npm run typecheck
+
+      - name: Compilazione (telefono e pc)
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+      # Dal ramo principale in poi: preparazione della pubblicazione e file PC scaricabile.
+      - name: Prepara la versione telefono per GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/telefono
+
+      - name: Salva la versione PC (file unico)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: compasso-pc
+          path: dist/pc/compasso.html
+          retention-days: 30
+
+  pubblica:
+    name: Pubblica su GitHub Pages
+    needs: controllo
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Pubblica
+        id: deploy
+        uses: actions/deploy-pages@v4
