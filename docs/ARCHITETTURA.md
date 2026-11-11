@@ -24,7 +24,7 @@ src/
 │  ├─ numbers/          ✅ interi (bigint), Rational, Surd      🔜 complex.ts
 │  ├─ random/           ✅ Rng con seme
 │  ├─ expr/             ✅ albero, costruttori, visita, valutazione numerica, LaTeX
-│  ├─ parser/           ✅ espressioni, equazioni e disequazioni  🔜 sets.ts (insiemi), valori di limite ✅
+│  ├─ parser/           ✅ espressioni, equazioni e disequazioni  🔜 sets.ts (insiemi)
 │  ├─ algebra/          ✅ forma normale (poly, normalize), polinomi in una variabile (upoly), specializzazione
 │  │                    🔜 simplify, expand, factor, ruffini, division (con passaggi)
 │  ├─ equivalence/      ✅ equivalenza esatta e numerica
@@ -257,25 +257,38 @@ In modalità **approssimazione** (solo tipo `number`, tolleranza dichiarata) si 
 
 🔜 `verify.ts`: la verifica automatica dei generatori (specifica, sezione 12) usa `generateExercise`, `evaluateResponse`, `equivalent`, `checkForm` e la verifica indipendente del generatore.
 
-## 15. Come si estende
+## 15. Lezioni: formato ✅
+
+`src/contenuti/formato/`. La sintassi (intestazione, blocchi `:::nome{attributi}`, sezioni `::nome`, rimandi `[[...]]`) è descritta in `REGOLE.md`, «Come scrivere una lezione»; qui c'è come è fatta la lettura.
+
+- `parse.ts`: `parseLesson(testo)` restituisce `{ lesson, problems }`. Non lancia mai: ogni problema ha riga e messaggio in italiano. La lezione letta è un elenco di blocchi tipizzati (`LessonBlock`: testo, definizione, teorema, dimostrazione a passaggi, esempio, attenzione, domanda, visualizzazione, flashcard, glossario, riepilogo). Controlla **una lezione alla volta**: intestazione, attributi, codici ben formati e del modulo giusto, errori esistenti nel catalogo, termini definiti una volta sola, dimostrazione dopo il suo teorema, riepilogo in fondo, formule chiuse.
+- `lessonReferences(lesson)`: tutto ciò a cui la lezione rimanda (termini, lezioni, teoremi, errori, generatori, visualizzazioni). È il punto di partenza della **verifica dei contenuti** tra file (specifica, sezione 12), da costruire nella fase 3.
+- `inline.ts`: `splitInline(testo)` separa testo, formule e rimandi.
+
+**Markdown.** Il parser di Compasso si occupa solo della struttura propria (blocchi, sezioni, rimandi, formule). Il Markdown ordinario dentro i testi (paragrafi, grassetto, elenchi, tabelle) lo trasforma una libreria: **`marked`**, da installare quando l'app mostra la prima lezione (fase 3). L'ordine è fisso: prima `splitInline` toglie formule e rimandi, poi `marked` lavora sulle sole parti di testo. Così il LaTeX non viene mai toccato dal Markdown (in LaTeX `_` e `*` hanno un altro significato), e le formule si possono disegnare man mano che si scorre.
+
+Dalle lezioni si ricavano senza riscrivere nulla: le **flashcard automatiche** (ogni blocco definizione o teorema: `nome` davanti, enunciato dietro), il **glossario** (blocchi definizione con `termine` e blocchi glossario), le **dimostrazioni interattive** (i passaggi con le versioni sbagliate).
+
+## 16. Come si estende
 
 | Cosa si aggiunge | Dove | Cosa tocca |
 | --- | --- | --- |
 | Una funzione elementare (es. `sinh`) | `expr/functions.ts` + `FunctionName` | nient'altro: parser, LaTeX, valutazione la leggono dalla tabella; `derive` avrà la sua riga |
 | Un tipo di nodo (es. `sum`) | `expr/types.ts` | il compilatore elenca i `switch` da completare |
 | Un vincolo di forma | `form/constraints.ts` + tipo `FormConstraint` | un caso nel `switch` di `checkForm` |
-| Un tipo di risposta | `esercizi/schema.ts` (`AnswerSpec`, `Response`) | un caso in `evaluateResponse` e in `choiceOptions` |
+| Un tipo di risposta | `esercizi/schema.ts` (`AnswerSpec`, `Response`) | un caso in `evaluateResponse`, `choiceOptions`, `errorCodesOf` |
+| Un blocco delle lezioni | `contenuti/formato/lesson.ts` (`LessonBlock`, `blockNames`) | un caso in `buildBlock` e `blockTexts`; una riga in `REGOLE.md` (un test controlla che ci sia) |
 | Un oggetto matematico nuovo | una cartella nuova in `motore/` | tipi, confronto, LaTeX, test; nessuna modifica al nucleo |
 
 **Analisi 2.** Le espressioni sono già in più variabili. La derivata parziale è `derive` rispetto a un simbolo; il gradiente è un vettore (`Matrix`) di derivate; l'hessiana una matrice; gli insiemi del piano e gli integrali multipli sono oggetti nuovi in cartelle nuove. Nulla del nucleo cambia.
 
 **Fisica.** Una grandezza è un valore esatto più un'unità: `Quantity { value: Expr, unit: Unit }`, con `Unit` = vettore di sette esponenti razionali (dimensioni SI) più un fattore di scala esatto. Va in `motore/units/`: prodotto e quoziente sommano e sottraggono gli esponenti, la somma richiede dimensioni uguali, il confronto converte all'unità di base e usa `equivalent`. Si aggiunge un tipo di risposta `quantity` (valore con tolleranza + unità) e il parser delle unità riusa `parseExpression` per la parte numerica. I codici (`V4…`), lo schema dei generatori e il catalogo degli errori (categoria nuova) non cambiano forma.
 
-## 16. Test
+## 17. Test
 
 Ogni modulo ha il suo file in `test/motore/`, `test/esercizi/`, `test/contenuti/`. Oltre ai casi singoli ci sono controlli «a tappeto»: il parser non lancia mai eccezioni su migliaia di testi casuali; ogni LaTeX prodotto si disegna con KaTeX in modalità rigorosa; le identità algebriche si provano su espressioni generate; la sequenza dell'`Rng` è congelata; il confronto resta sotto una soglia di tempo.
 
-## 17. Limiti noti del nucleo
+## 18. Limiti noti del nucleo
 
 - Irriducibilità completa solo fino al grado 5; fattori con coefficienti irrazionali non controllati oltre il primo grado.
 - La forma normale non conosce le identità goniometriche, esponenziali e logaritmiche: le copre il confronto numerico (che non è una dimostrazione, ma con 12 punti casuali concordi un falso positivo non è realistico).
