@@ -152,7 +152,7 @@ Decisioni prese seguendo la sezione 0 della specifica, dove il testo non decide.
 40. **Verifica sympy fuori da CI**: va eseguita a mano quando si cambiano gli esempi del catalogo.
 
 41. **«Determinanti e sistemi lineari» = due generatori** (`V3.M03.A01.g1` e `V3.M02.A01.g1`), perché sono due abilità in due moduli; così ci sono anche i riferimenti per le risposte «numero» e «matrice».
-42. **Sette voci nuove nel catalogo errori** (elenco in «Fatto», sessione 3): sono nella tabella di `docs/SPECIFICA.md` e, dal 12 novembre, anche nella copia della specifica dentro il Progetto di Claude. Resta una sola differenza tra le due copie, da decidere: nella sezione 6 il repository dice «la fisica (…) **e analisi 2**» (commit `e1641f8`), la copia del Progetto no.
+42. **Sette voci nuove nel catalogo errori** (elenco in «Fatto», sessione 3): sono nella tabella di `docs/SPECIFICA.md` e nella copia della specifica dentro il Progetto di Claude. Dal 12 novembre le due copie sono identiche (anche la riga della sezione 6 su «fisica e analisi 2»).
 43. **Risposte sbagliate con lo stesso codice**: uno stesso errore può manifestarsi in due modi (per esempio `CALC.SEGNO_TRASPORTO` in due punti diversi della sostituzione all'indietro); i generatori lo usano per arrivare a tre risposte sbagliate.
 44. **Lezione a tratti**: il tratto successivo si apre solo dopo aver risposto alla domanda lampo (qualunque risposta, anche «Non lo so»). Riaprendo la lezione le domande dei tratti già visti tornano senza risposta.
 45. **Prerequisiti di V1.M06.L04 vuoti** finché le lezioni precedenti non esistono (dettagli sotto la tabella dei codici).
