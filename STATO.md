@@ -1,6 +1,6 @@
 # STATO
 
-Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: sessione 2 (motore completo e sistema di verifica).
+Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: sessione 3 in corso (generatori di riferimento e lezione salvati; fetta verticale in costruzione).
 
 ## Fatto
 
@@ -43,7 +43,27 @@ Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: sessione 2 (motore 
 
 ## In corso
 
-Niente. Il lavoro della sessione 2 è completo e caricato su GitHub (ramo `main`). **La fase 2 (motore matematico) è chiusa**: esiste `docs/ARCHITETTURA.md`, ogni parte del motore ha test superati, il sistema di verifica gira su un generatore di prova.
+**Sessione 3 (fetta verticale) — in corso.** Già salvato su GitHub: i generatori di riferimento, la lezione, l'elenco dei generatori e delle lezioni. Da fare: la fetta verticale nell'app (lezione mostrata dal Markdown, schermata di esercizio, tastiera, dati in IndexedDB), «come si replica un generatore» in `REGOLE.md`, aggiornamento finale di questo file.
+
+### Codici assegnati nella sessione 3 (la scaletta futura deve rispettarli)
+
+| Codice | Che cos'è |
+|---|---|
+| `V1.M06.L04` | Lezione «Disequazioni fratte» (`src/contenuti/v1/m06/l04.md`) |
+| `V1.M06.A04` | Abilità: risolvere una disequazione fratta — generatore `V1.M06.A04.g1` |
+| `V1.M06.D02` | Definizione «Disequazione fratta» — termine di glossario `disequazione-fratta` |
+| `V1.M06.D03` | Definizione «Regola dei segni per una frazione» — termine `segno-di-una-frazione` |
+| `V1.M06.F01`, `V1.M06.F02` | Flashcard della lezione V1.M06.L04 |
+| `V1.M04.L07` | Lezione (da scrivere) sulla scomposizione di polinomi: è il rimando del generatore |
+| `V1.M04.A07` | Abilità: scomporre completamente un polinomio — generatore `V1.M04.A07.g1` |
+| `V2.M06.L03` | Lezione (da scrivere) sulle regole di derivazione: prodotto, quoziente, composta |
+| `V2.M06.A03` | Abilità: derivare con le regole di calcolo — generatore `V2.M06.A03.g1` |
+| `V3.M02.L01` | Lezione (da scrivere) sul metodo di Gauss |
+| `V3.M02.A01` | Abilità: risolvere un sistema lineare con Gauss — generatore `V3.M02.A01.g1` |
+| `V3.M03.L01` | Lezione (da scrivere) sul calcolo del determinante |
+| `V3.M03.A01` | Abilità: calcolare un determinante — generatore `V3.M03.A01.g1` |
+
+Restano liberi per la scaletta: `V1.M06.L01`–`L03` (le lezioni che precedono le fratte: primo grado, secondo grado, studio del segno di un prodotto), `V1.M06.D01`, `V1.M06.A01`–`A03`. La lezione V1.M06.L04 ha per ora `prerequisiti: []` perché le lezioni precedenti non esistono (la verifica dei contenuti rifiuta un prerequisito che non c'è): quando esistono, vanno messi `V1.M06.L03` e `V1.M04.L07`, e i termini che la lezione oggi spiega a parole (zero di un polinomio, condizione di esistenza, tabella dei segni) diventano rimandi `[[…]]` al glossario.
 
 ## Prossimo passo
 
