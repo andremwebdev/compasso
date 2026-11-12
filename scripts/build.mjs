@@ -46,6 +46,8 @@ async function bundleApp(target) {
     write: false,
     legalComments: "none",
     logLevel: "warning",
+    // Le lezioni sono file Markdown: entrano nel codice come testo.
+    loader: { ".md": "text" },
     define: {
       __TARGET__: JSON.stringify(target),
       "process.env.NODE_ENV": '"production"',
