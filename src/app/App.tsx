@@ -1,36 +1,33 @@
-import { Formula } from "./componenti/Formula";
 import { TabBar } from "./componenti/TabBar";
-import { sections } from "./sections";
-import { currentSection } from "./state";
+import { LessonView } from "./schermate/LessonView";
+import { Practice } from "./schermate/Practice";
+import { Esercizi, Oggi, Teoria, Test, Tu } from "./schermate/Sections";
+import { currentSection, screen } from "./state";
 
-/** Formula di prova: serve a controllare che KaTeX e i suoi caratteri funzionino in entrambe le versioni. */
-const TEST_FORMULA = String.raw`x = \dfrac{-b \pm \sqrt{b^2 - 4ac}}{2a}`;
-
-/** Segnaposto di una sezione: le schermate vere arrivano nelle fasi successive. */
-function SectionPlaceholder({ title, children }: { title: string; children?: preact.ComponentChildren }) {
-  return (
-    <section class="section" aria-labelledby="section-title">
-      <h1 id="section-title">{title}</h1>
-      <p class="muted">In costruzione.</p>
-      {children}
-    </section>
-  );
+/** La pagina iniziale della sezione aperta. */
+function SectionHome() {
+  switch (currentSection.value) {
+    case "oggi":
+      return <Oggi />;
+    case "teoria":
+      return <Teoria />;
+    case "esercizi":
+      return <Esercizi />;
+    case "test":
+      return <Test />;
+    case "tu":
+      return <Tu />;
+  }
 }
 
 export function App() {
-  const id = currentSection.value;
-  const section = sections.find((s) => s.id === id) ?? sections[0];
+  const current = screen.value;
   return (
     <>
       <main class="page">
-        <SectionPlaceholder title={section.label}>
-          {id === "oggi" && (
-            <div class="card">
-              <p class="muted">Formula di prova:</p>
-              <Formula tex={TEST_FORMULA} display />
-            </div>
-          )}
-        </SectionPlaceholder>
+        {current.kind === "home" && <SectionHome />}
+        {current.kind === "lesson" && <LessonView key={current.code} code={current.code} />}
+        {current.kind === "practice" && <Practice key={`${current.generator}-${current.levels.join("")}-${current.context}`} plan={current} />}
       </main>
       <TabBar />
     </>

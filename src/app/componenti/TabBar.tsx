@@ -1,5 +1,5 @@
 import { sections } from "../sections";
-import { currentSection } from "../state";
+import { currentSection, open } from "../state";
 
 /** Barra in basso con le cinque sezioni. */
 export function TabBar() {
@@ -13,9 +13,8 @@ export function TabBar() {
             type="button"
             class={active ? "tab tab-active" : "tab"}
             aria-current={active ? "page" : undefined}
-            onClick={() => {
-              currentSection.value = section.id;
-            }}
+            // Toccare una sezione porta sempre alla sua pagina iniziale.
+            onClick={() => open({ kind: "home" }, section.id)}
           >
             {section.label}
           </button>

@@ -1,25 +1,60 @@
-/* Stili provvisori dello scheletro. I valori definitivi (colori, caratteri, spaziature)
-   si fissano nella fase dell'involucro (specifica, sezioni 10 e 14). */
+/* Stile Compasso, primo abbozzo (specifica, sezione 10): carta color avorio, linee di costruzione
+   sottili, blu progetto e inchiostro scuro, accenti arancioni. Le rifiniture (caratteri definitivi,
+   icone, animazioni, modalità lettura) sono della fase dell'involucro. */
 
 :root {
   color-scheme: light dark;
   --carta: #f6f1e4;
+  --carta-alta: #fbf8ef;
   --inchiostro: #14284b;
   --inchiostro-secondario: #4a5a78;
   --blu: #1f4f8f;
   --arancio: #b34f0e;
   --linea: #cfc9b6;
+  --griglia: rgba(31, 79, 143, 0.07);
+  /* Colori dei riquadri: definizione, teorema, dimostrazione, esempio, attenzione. */
+  --def: #1f4f8f;
+  --def-fondo: #e6edf7;
+  --teo: #b34f0e;
+  --teo-fondo: #f8e9dc;
+  --dim: #4a5f7d;
+  --dim-fondo: #e9edf2;
+  --ese: #2f6b3a;
+  --ese-fondo: #e6f1e4;
+  --att: #a52a23;
+  --att-fondo: #f8e4e1;
+  --giusto: #2f6b3a;
+  --giusto-fondo: #e6f1e4;
+  --sbagliato: #a52a23;
+  --sbagliato-fondo: #f8e4e1;
   --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-titoli: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --carta: #0f1c33;
+    --carta-alta: #16264a;
     --inchiostro: #e8eefc;
     --inchiostro-secondario: #a9b8d6;
     --blu: #8bb8ff;
     --arancio: #ffa45c;
     --linea: #2c3d5e;
+    --griglia: rgba(139, 184, 255, 0.06);
+    --def: #8bb8ff;
+    --def-fondo: #16294d;
+    --teo: #ffa45c;
+    --teo-fondo: #33261c;
+    --dim: #a9b8d6;
+    --dim-fondo: #1a2740;
+    --ese: #86d394;
+    --ese-fondo: #16301f;
+    --att: #ff9a92;
+    --att-fondo: #3a1d1c;
+    --giusto: #86d394;
+    --giusto-fondo: #16301f;
+    --sbagliato: #ff9a92;
+    --sbagliato-fondo: #3a1d1c;
   }
 }
 
@@ -34,11 +69,15 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  background: var(--carta);
+  /* Le linee di costruzione: una quadrettatura appena visibile sulla carta. */
+  background:
+    linear-gradient(var(--griglia) 1px, transparent 1px) 0 0 / 100% 28px,
+    linear-gradient(90deg, var(--griglia) 1px, transparent 1px) 0 0 / 28px 100%,
+    var(--carta);
   color: var(--inchiostro);
   font-family: var(--font-ui);
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 1.0625rem;
+  line-height: 1.55;
   /* Niente scorrimento orizzontale della pagina (specifica, sezione 10). */
   overflow-x: hidden;
 }
@@ -47,51 +86,662 @@ body {
   max-width: 44rem;
   margin: 0 auto;
   /* Margini laterali di 16 px; in basso lo spazio per la barra delle sezioni. */
-  padding: 1.5rem 16px calc(5rem + env(safe-area-inset-bottom));
+  padding: 1.25rem 16px calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+h1,
+h2,
+.card-title {
+  font-family: var(--font-titoli);
+  letter-spacing: 0.005em;
 }
 
 h1 {
   margin: 0 0 0.5rem;
-  font-size: 1.75rem;
+  font-size: 1.8rem;
   line-height: 1.2;
 }
 
+h2 {
+  margin: 1.75rem 0 0.5rem;
+  font-size: 1.3rem;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0 0 0.85rem;
+}
+
 .muted {
-  margin: 0 0 1rem;
   color: var(--inchiostro-secondario);
 }
 
+.muted-inline {
+  color: var(--inchiostro-secondario);
+  font-size: 0.9em;
+}
+
+.eyebrow {
+  display: block;
+  margin: 0 0 0.25rem;
+  color: var(--inchiostro-secondario);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+:focus-visible {
+  outline: 2px solid var(--arancio);
+  outline-offset: 2px;
+}
+
+/* ───────────── schede e pulsanti ───────────── */
+
 .card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  width: 100%;
   margin-top: 1rem;
   padding: 1rem;
   border: 1px solid var(--linea);
-  border-radius: 8px;
+  border-radius: 6px;
+  background: var(--carta-alta);
+  color: inherit;
+  font: inherit;
+  text-align: left;
 }
 
-.card .muted {
-  margin-bottom: 0.25rem;
+.card-link {
+  cursor: pointer;
+  /* Il segno del compasso: un arco sottile nell'angolo. */
+  background:
+    radial-gradient(circle at 100% 0, transparent 2.6rem, var(--linea) 2.6rem, var(--linea) calc(2.6rem + 1px), transparent calc(2.6rem + 1px)),
+    var(--carta-alta);
 }
 
-/* Formule grandi; quelle lunghe scorrono di lato invece di rimpicciolirsi. */
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.card-text {
+  margin: 0;
+  color: var(--inchiostro-secondario);
+}
+
+.card-done {
+  border-color: var(--giusto);
+}
+
+.status {
+  margin-top: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.plain-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.button {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--blu);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--blu);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button-primary {
+  background: var(--blu);
+  color: var(--carta);
+}
+
+.button:disabled {
+  border-color: var(--linea);
+  background: transparent;
+  color: var(--inchiostro-secondario);
+  cursor: default;
+}
+
+.back {
+  min-height: 44px;
+  margin: -0.5rem 0 0.25rem -0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--blu);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.level-buttons,
+.exercise-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* ───────────── formule ───────────── */
+
 .formula .katex {
-  font-size: 1.2em;
+  font-size: 1.15em;
 }
 
+/* Le formule lunghe scorrono di lato invece di rimpicciolirsi. */
 .formula-display {
   display: block;
+  margin: 0.6rem 0;
+  padding: 0.35rem 0;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.25rem 0;
 }
+
+.rich > :last-child {
+  margin-bottom: 0;
+}
+
+.rich ul,
+.rich ol {
+  margin: 0 0 0.85rem;
+  padding-left: 1.3rem;
+}
+
+.rich li {
+  margin-bottom: 0.35rem;
+}
+
+.ref {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px dashed var(--blu);
+  background: transparent;
+  color: var(--blu);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ───────────── lezione ───────────── */
+
+.lesson-header {
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--linea);
+}
+
+.lesson-goal {
+  margin: 0;
+  color: var(--inchiostro-secondario);
+}
+
+.lesson-goal-label {
+  font-weight: 700;
+  color: var(--arancio);
+}
+
+.lesson-chunk {
+  scroll-margin-top: 1rem;
+}
+
+.box {
+  margin: 1.1rem 0;
+  padding: 0.85rem 0.9rem 0.9rem;
+  border: 1px solid var(--linea);
+  border-left: 4px solid var(--colore, var(--linea));
+  border-radius: 4px;
+  background: var(--fondo, var(--carta-alta));
+}
+
+.box-label {
+  margin: 0 0 0.45rem;
+  color: var(--colore, var(--inchiostro));
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.box-title {
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.95rem;
+}
+
+.box-definition {
+  --colore: var(--def);
+  --fondo: var(--def-fondo);
+}
+
+.box-theorem {
+  --colore: var(--teo);
+  --fondo: var(--teo-fondo);
+}
+
+.box-proof {
+  --colore: var(--dim);
+  --fondo: var(--dim-fondo);
+}
+
+.box-example {
+  --colore: var(--ese);
+  --fondo: var(--ese-fondo);
+}
+
+.box-warning {
+  --colore: var(--att);
+  --fondo: var(--att-fondo);
+}
+
+.box-summary {
+  --colore: var(--inchiostro);
+}
+
+.box-question {
+  --colore: var(--arancio);
+  border-style: dashed;
+  border-left-style: solid;
+}
+
+.proof-reason {
+  color: var(--inchiostro-secondario);
+  font-size: 0.95em;
+}
+
+.lesson-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--linea);
+}
+
+.lesson-position {
+  color: var(--inchiostro-secondario);
+  font-size: 0.9rem;
+}
+
+/* ───────────── esercizio ───────────── */
+
+.exercise-prompt {
+  margin-bottom: 0.9rem;
+  font-size: 1.08rem;
+}
+
+/* Nel testo di un esercizio le formule sono grandi: le frazioni in riga altrimenti si leggono male. */
+.exercise-prompt .formula:not(.formula-display) .katex {
+  font-size: 1.4em;
+}
+
+.options {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.options-two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 48px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  background: var(--carta-alta);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow-x: auto;
+}
+
+.option-mark {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 1.3rem;
+  height: 1.3rem;
+  border: 2px solid var(--inchiostro-secondario);
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.option-chosen {
+  border-color: var(--blu);
+  box-shadow: inset 0 0 0 1px var(--blu);
+}
+
+.option-chosen .option-mark {
+  border-color: var(--blu);
+  background: radial-gradient(circle, var(--blu) 45%, transparent 50%);
+}
+
+.option-right {
+  border-color: var(--giusto);
+  background: var(--giusto-fondo);
+}
+
+.option-right .option-mark {
+  border-color: var(--giusto);
+  color: var(--giusto);
+}
+
+.option-wrong {
+  border-color: var(--sbagliato);
+  background: var(--sbagliato-fondo);
+}
+
+.option-wrong .option-mark {
+  border-color: var(--sbagliato);
+  color: var(--sbagliato);
+}
+
+.option:disabled {
+  color: inherit;
+  cursor: default;
+}
+
+.answer-fields {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.answer-grid {
+  align-items: center;
+  justify-content: start;
+}
+
+.answer-row-label {
+  justify-self: end;
+}
+
+.answer-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--inchiostro-secondario);
+  border-radius: 6px;
+  background: var(--carta-alta);
+  color: var(--inchiostro);
+  /* Almeno 16 px: sotto, il telefono ingrandisce la pagina quando si tocca il campo. */
+  font: 1.15rem ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.answer-input:focus {
+  border-color: var(--blu);
+  outline: 2px solid var(--blu);
+  outline-offset: 0;
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 3.2rem;
+  margin: 0.5rem 0;
+  padding: 0.4rem 0.7rem;
+  border: 1px dashed var(--linea);
+  border-radius: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.preview-label {
+  flex: none;
+  color: var(--inchiostro-secondario);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.preview-formula {
+  flex: none;
+}
+
+.preview-empty {
+  color: var(--inchiostro-secondario);
+  font-size: 0.95rem;
+}
+
+.preview-partial {
+  border-color: var(--arancio);
+}
+
+.preview-error,
+.answer-problem {
+  color: var(--sbagliato);
+  font-weight: 600;
+}
+
+.answer-problem {
+  margin: 0.5rem 0;
+}
+
+.keyboard {
+  margin-top: 0.9rem;
+  padding: 0.5rem;
+  border: 1px solid var(--linea);
+  border-radius: 8px;
+  background: var(--carta-alta);
+}
+
+.keyboard-levels {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.keyboard-level {
+  flex: 1;
+  min-height: 44px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--inchiostro-secondario);
+  font: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.keyboard-level-active {
+  border-bottom-color: var(--arancio);
+  color: var(--inchiostro);
+  font-weight: 700;
+}
+
+.keyboard-keys {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 5px;
+}
+
+.key {
+  min-width: 0;
+  min-height: 46px;
+  padding: 0;
+  border: 1px solid var(--linea);
+  border-radius: 6px;
+  background: var(--carta);
+  color: var(--inchiostro);
+  font: 1.15rem var(--font-ui);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.key:active {
+  background: var(--def-fondo);
+  border-color: var(--blu);
+}
+
+.key-service {
+  background: var(--dim-fondo);
+  color: var(--blu);
+  font-weight: 700;
+}
+
+.hints,
+.steps {
+  margin: 1rem 0 0;
+  padding-left: 1.4rem;
+}
+
+.hints li,
+.steps li {
+  margin-bottom: 0.7rem;
+  padding-left: 0.2rem;
+}
+
+.hints li::marker {
+  color: var(--arancio);
+  font-weight: 700;
+}
+
+.steps li::marker {
+  color: var(--blu);
+  font-weight: 700;
+}
+
+.verdict {
+  margin: 0.25rem 0 0.9rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--linea);
+  border-left-width: 4px;
+  border-radius: 4px;
+}
+
+.verdict-title {
+  margin: 0 0 0.3rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.verdict-correct {
+  border-color: var(--giusto);
+  background: var(--giusto-fondo);
+}
+
+.verdict-correct .verdict-title,
+.card-done .verdict-title {
+  color: var(--giusto);
+}
+
+.verdict-wrong {
+  border-color: var(--sbagliato);
+  background: var(--sbagliato-fondo);
+}
+
+.verdict-wrong .verdict-title {
+  color: var(--sbagliato);
+}
+
+.verdict-skipped {
+  border-color: var(--dim);
+  background: var(--dim-fondo);
+}
+
+.verdict-error {
+  font-weight: 700;
+}
+
+.verdict-example {
+  color: var(--inchiostro-secondario);
+  font-size: 0.95em;
+}
+
+.answer-line {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.2rem;
+}
+
+.answer-line-label {
+  margin-right: 0.4rem;
+  color: var(--inchiostro-secondario);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.distraction {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.distraction input {
+  width: 1.3rem;
+  height: 1.3rem;
+  accent-color: var(--blu);
+}
+
+.exercise-code {
+  margin: 1.25rem 0 0;
+  color: var(--inchiostro-secondario);
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+/* ───────────── foglio del glossario ───────────── */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(10, 18, 35, 0.45);
+}
+
+.sheet {
+  width: 100%;
+  max-width: 44rem;
+  max-height: 70dvh;
+  overflow-y: auto;
+  padding: 1rem 16px calc(1.25rem + env(safe-area-inset-bottom));
+  border-top: 3px solid var(--blu);
+  border-radius: 12px 12px 0 0;
+  background: var(--carta-alta);
+}
+
+.sheet h2 {
+  margin-top: 0;
+}
+
+/* ───────────── barra delle sezioni ───────────── */
 
 .tab-bar {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 10;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  background: var(--carta);
+  background: var(--carta-alta);
   border-top: 1px solid var(--linea);
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -116,6 +766,13 @@ h1 {
 }
 
 .tab:focus-visible {
-  outline: 2px solid var(--arancio);
   outline-offset: -4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
 }
