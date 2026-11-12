@@ -86,6 +86,14 @@ export const errorCatalog = [
     example: tex`$\dfrac{1}{\sqrt3+1}$: moltiplicando per $\sqrt3-1$ si ottiene $\dfrac{\sqrt3-1}{3-1} = \dfrac{\sqrt3-1}{2}$. Moltiplicando per $\sqrt3+1$ si ottiene $\dfrac{\sqrt3+1}{4+2\sqrt3}$, che ha ancora una radice al denominatore.`,
     reference: "V1.M03",
   },
+  {
+    code: "CALC.SEGNO_TRASPORTO",
+    name: "Segno non cambiato nel trasporto",
+    category: "CALC",
+    explanation: tex`Un termine che passa dall'altra parte dell'uguale cambia segno, perché in realtà lo si sottrae (o lo si somma) a entrambi i membri.`,
+    example: tex`$x+5 = 2$: sottraendo $5$ da entrambi i membri si ottiene $x = 2-5 = -3$, non $x = 2+5 = 7$. Prova: $-3+5 = 2$, mentre $7+5 = 12$.`,
+    reference: "V1.M05",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {
@@ -167,6 +175,22 @@ export const errorCatalog = [
     explanation: tex`Una somma all'esponente diventa un prodotto di potenze: $a^{x+y} = a^x\cdot a^y$, non $a^x+a^y$.`,
     example: tex`$2^{3+2} = 2^5 = 32 = 2^3\cdot2^2 = 8\cdot4$, mentre $2^3+2^2 = 8+4 = 12$.`,
     reference: "V1.M09",
+  },
+  {
+    code: "ALG.RACCOGLIMENTO",
+    name: "Raccoglimento con un termine non diviso",
+    category: "ALG",
+    explanation: tex`Raccogliere un fattore significa dividere per quel fattore ogni termine del polinomio: tra parentesi resta il quoziente di ciascun termine. Un termine uguale al fattore raccolto lascia $1$, non sparisce. Per controllare basta rimoltiplicare.`,
+    example: tex`$6x^2+9x = 3x(2x+3)$, non $3x(2x+9)$: rimoltiplicando, $3x(2x+9) = 6x^2+27x$. Allo stesso modo $x^2+x = x(x+1)$, non $x\cdot x$.`,
+    reference: "V1.M04",
+  },
+  {
+    code: "ALG.SEGNI_FATTORI",
+    name: "Segni sbagliati nei fattori",
+    category: "ALG",
+    explanation: tex`Se un polinomio si annulla per $x=r$, il fattore corrispondente è $x-r$, con il segno opposto a quello della radice. Nel trinomio $x^2+sx+p = (x+m)(x+n)$ i numeri $m$ e $n$ hanno somma $s$ e prodotto $p$: il segno di $p$ dice se sono concordi, quello di $s$ quale dei due prevale. Rimoltiplicare i fattori scopre subito l'errore.`,
+    example: tex`$x^2-5x+6 = (x-2)(x-3)$, non $(x+2)(x+3)$, che vale $x^2+5x+6$. Allo stesso modo $x^2-6x+9 = (x-3)^2$, non $(x+3)^2$.`,
+    reference: "V1.M04",
   },
 
   // ───────────────────── COND: condizioni e domini ─────────────────────
@@ -457,6 +481,14 @@ export const errorCatalog = [
     reference: "V2.M06",
   },
   {
+    code: "AN.DERIVATA_QUOZIENTE",
+    name: "Derivata del quoziente sbagliata",
+    category: "AN",
+    explanation: tex`La derivata di un quoziente non è il quoziente delle derivate: $\left(\dfrac{f}{g}\right)' = \dfrac{f'g-fg'}{g^2}$. Al numeratore l'ordine conta (prima $f'g$, poi si sottrae $fg'$) e il denominatore va elevato al quadrato.`,
+    example: tex`$\left(\dfrac{x}{x+1}\right)' = \dfrac{1\cdot(x+1)-x\cdot1}{(x+1)^2} = \dfrac{1}{(x+1)^2}$, non $\dfrac{1}{1} = 1$.`,
+    reference: "V2.M06",
+  },
+  {
     code: "AN.PUNTO_CRITICO",
     name: "Derivata nulla presa come estremo",
     category: "AN",
@@ -507,6 +539,14 @@ export const errorCatalog = [
     reference: "V3.M02",
   },
   {
+    code: "ALIN.GAUSS_TERMINE_NOTO",
+    name: "Operazione sulle righe non applicata ai termini noti",
+    category: "ALIN",
+    explanation: tex`Nel metodo di Gauss ogni operazione elementare va fatta su tutta la riga della matrice completa, termine noto compreso: altrimenti il sistema ottenuto non è più equivalente a quello di partenza.`,
+    example: tex`Nel sistema $\begin{cases}x+y=3\\2x+3y=8\end{cases}$ l'operazione $R_2\to R_2-2R_1$ dà $y = 8-2\cdot3 = 2$, quindi $x=1$. Lasciando il termine noto $8$ si troverebbe $y=8$ e $x=-5$, che non risolve la seconda equazione: $2\cdot(-5)+3\cdot8 = 14$, non $8$.`,
+    reference: "V3.M02",
+  },
+  {
     code: "ALIN.DET_SOMMA",
     name: "det(A+B) = det A + det B",
     category: "ALIN",
@@ -528,6 +568,22 @@ export const errorCatalog = [
     category: "ALIN",
     explanation: tex`L'inversa di un prodotto inverte l'ordine dei fattori: $(AB)^{-1} = B^{-1}A^{-1}$. In generale $A^{-1}B^{-1}$ è un'altra matrice.`,
     example: tex`Con $A=\begin{pmatrix}1&1\\0&1\end{pmatrix}$ e $B=\begin{pmatrix}1&0\\1&1\end{pmatrix}$ si ha $(AB)^{-1}=\begin{pmatrix}1&-1\\-1&2\end{pmatrix}=B^{-1}A^{-1}$, mentre $A^{-1}B^{-1}=\begin{pmatrix}2&-1\\-1&1\end{pmatrix}$.`,
+    reference: "V3.M03",
+  },
+  {
+    code: "ALIN.DET_SEGNI",
+    name: "Segni sbagliati nel determinante",
+    category: "ALIN",
+    explanation: tex`Nel determinante di ordine 2 i due prodotti si sottraggono: $\det\begin{pmatrix}a&b\\c&d\end{pmatrix} = ad-bc$. Nello sviluppo di Laplace l'elemento di posto $(i,j)$ porta il segno $(-1)^{i+j}$: lungo la prima riga i segni sono $+$, $-$, $+$.`,
+    example: tex`$\det\begin{pmatrix}2&3\\1&4\end{pmatrix} = 2\cdot4-3\cdot1 = 5$, non $2\cdot4+3\cdot1 = 11$.`,
+    reference: "V3.M03",
+  },
+  {
+    code: "ALIN.DET_DIAGONALE",
+    name: "Determinante come prodotto della diagonale",
+    category: "ALIN",
+    explanation: tex`Il determinante è il prodotto degli elementi della diagonale principale solo per le matrici triangolari (o diagonali). Per una matrice qualsiasi servono tutti i termini: $ad-bc$ per l'ordine 2, lo sviluppo di Laplace o la riduzione di Gauss per gli ordini superiori.`,
+    example: tex`$\det\begin{pmatrix}2&3\\1&4\end{pmatrix} = 5$, non $2\cdot4 = 8$. Invece per la matrice triangolare $\begin{pmatrix}2&3\\0&4\end{pmatrix}$ il determinante è proprio $2\cdot4 = 8$.`,
     reference: "V3.M03",
   },
   {

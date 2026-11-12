@@ -648,6 +648,75 @@ def _():
 # ───────────────────────────── esecuzione ─────────────────────────────
 
 
+# ───────────── voci aggiunte nella sessione 3 (generatori di riferimento) ─────────────
+
+
+@check("CALC.SEGNO_TRASPORTO")
+def _():
+    assert solve(Eq(x + 5, 2), x) == [-3]
+    assert -3 + 5 == 2 and 7 + 5 == 12 and 2 + 5 == 7
+
+
+@check("ALG.RACCOGLIMENTO")
+def _():
+    assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)
+    assert eq(3 * x * (2 * x + 9), 6 * x**2 + 27 * x) and ne(3 * x * (2 * x + 9), 6 * x**2 + 9 * x)
+    assert eq(x * (x + 1), x**2 + x) and ne(x * x, x**2 + x)
+
+
+@check("ALG.SEGNI_FATTORI")
+def _():
+    assert factor(x**2 - 5 * x + 6) == (x - 2) * (x - 3)
+    assert eq((x + 2) * (x + 3), x**2 + 5 * x + 6) and ne((x + 2) * (x + 3), x**2 - 5 * x + 6)
+    assert factor(x**2 - 6 * x + 9) == (x - 3) ** 2 and ne((x + 3) ** 2, x**2 - 6 * x + 9)
+    # Somma s e prodotto p di m e n: (x+m)(x+n) = x² + (m+n)x + mn.
+    m, k = symbols("m k")
+    assert expand((x + m) * (x + k) - (x**2 + (m + k) * x + m * k)) == 0
+
+
+@check("AN.DERIVATA_QUOZIENTE")
+def _():
+    f, g = x, x + 1
+    assert eq(diff(f / g, x), 1 / (x + 1) ** 2)
+    assert eq((diff(f, x) * g - f * diff(g, x)) / g**2, 1 / (x + 1) ** 2)
+    assert diff(f, x) / diff(g, x) == 1 and ne(diff(f / g, x), 1)
+    # La formula in generale, con due funzioni qualsiasi.
+    from sympy import Function
+
+    F, G = Function("F")(x), Function("G")(x)
+    assert simplify(diff(F / G, x) - (diff(F, x) * G - F * diff(G, x)) / G**2) == 0
+
+
+@check("ALIN.GAUSS_TERMINE_NOTO")
+def _():
+    M = Matrix([[1, 1], [2, 3]])
+    assert M.solve(Matrix([3, 8])) == Matrix([1, 2])
+    # R2 → R2 − 2R1 sulla sola matrice dei coefficienti: [[1, 1], [0, 1]], con i termini noti lasciati (3, 8).
+    reduced = Matrix([[1, 1], [0, 1]])
+    assert reduced.solve(Matrix([3, 8])) == Matrix([-5, 8])
+    assert 2 * (-5) + 3 * 8 == 14 != 8 and 8 - 2 * 3 == 2
+
+
+@check("ALIN.DET_SEGNI")
+def _():
+    p, q, u, v = symbols("p q u v")
+    assert Matrix([[p, q], [u, v]]).det() == p * v - q * u
+    M = Matrix([[2, 3], [1, 4]])
+    assert M.det() == 5 == 2 * 4 - 3 * 1 and 2 * 4 + 3 * 1 == 11
+    # Sviluppo di Laplace lungo la prima riga di una matrice generica 3×3: segni +, −, +.
+    generic = Matrix(3, 3, symbols("m0:9"))
+    laplace = sum((-1) ** j * generic[0, j] * generic.minor_submatrix(0, j).det() for j in range(3))
+    assert expand(laplace - generic.det()) == 0
+
+
+@check("ALIN.DET_DIAGONALE")
+def _():
+    assert Matrix([[2, 3], [1, 4]]).det() == 5 != 2 * 4
+    assert Matrix([[2, 3], [0, 4]]).det() == 8 == 2 * 4
+    p, q, u = symbols("p q u")
+    assert Matrix([[p, q], [0, u]]).det() == p * u
+
+
 def catalog_codes():
     source = (Path(__file__).resolve().parent.parent / "src" / "errori" / "catalog.ts").read_text(encoding="utf-8")
     return re.findall(r'^\s+code: "([A-Z]+\.[A-Z0-9_]+)"', source, flags=re.MULTILINE)

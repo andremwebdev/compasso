@@ -388,6 +388,7 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | CALC.PERCENTUALI\_SUCCESSIVE | Percentuali successive sommate | +20% e poi −20% danno 1,2 × 0,8 = 0,96, non il valore iniziale | V1.M03 |
 | CALC.PERIODICO | Frazione generatrice sbagliata | 0,1(6) = (16−1)/90 = 1/6 | V1.M02 |
 | CALC.RAZIONALIZZAZIONE | Fattore razionalizzante sbagliato | 1/(√a+√b) si moltiplica per (√a−√b)/(√a−√b) | V1.M03 |
+| CALC.SEGNO\_TRASPORTO | Segno non cambiato nel trasporto | Un termine che cambia membro cambia segno: x+5 = 2 dà x = −3 | V1.M05 |
 | ALG.QUADRATO\_BINOMIO | (a+b)² = a²+b² | Manca il doppio prodotto 2ab | V1.M04 |
 | ALG.RADICE\_SOMMA | √(a+b) = √a+√b | La radice non si distribuisce sulla somma | V1.M03 |
 | ALG.SEMPLIFICAZIONE\_ADDENDI | Semplificati degli addendi | Si semplificano solo fattori: (x+2)/2 ≠ x+1 | V1.M04 |
@@ -398,6 +399,8 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | ALG.FORMULA\_RISOLUTIVA | Formula risolutiva con segni sbagliati | x = (−b ± √(b²−4ac))/(2a): errori tipici su −b e su 2a | V1.M05 |
 | ALG.LOG\_SOMMA | log(a+b) = log a + log b | È log(ab) a valere log a + log b; log(a+b) non si spezza | V1.M09 |
 | ALG.ESPONENZIALE\_SOMMA | aˣ⁺ʸ = aˣ + aʸ | aˣ⁺ʸ = aˣ · aʸ | V1.M09 |
+| ALG.RACCOGLIMENTO | Raccoglimento con un termine non diviso | Ogni termine va diviso per il fattore raccolto: 6x²+9x = 3x(2x+3) | V1.M04 |
+| ALG.SEGNI\_FATTORI | Segni sbagliati nei fattori | Radice r, fattore (x−r): x²−5x+6 = (x−2)(x−3) | V1.M04 |
 | COND.DENOMINATORE | Denominatore nullo non escluso | Le soluzioni che annullano un denominatore vanno scartate | V1.M05 |
 | COND.RADICE\_PARI | Condizione sul radicando dimenticata | Radice di indice pari: radicando ≥ 0 | V1.M05 |
 | COND.SOLUZIONI\_ESTRANEE | Soluzioni estranee non controllate | Elevare al quadrato può aggiungere soluzioni: vanno verificate | V1.M05 |
@@ -432,15 +435,19 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | AN.HOPITAL\_IPOTESI | de l'Hôpital senza ipotesi | Serve una forma 0/0 o ∞/∞, più le altre ipotesi del teorema | V2.M06 |
 | AN.DERIVATA\_COMPOSTA | Derivata della composta senza catena | (f(g(x)))′ = f′(g(x)) · g′(x) | V2.M06 |
 | AN.DERIVATA\_PRODOTTO | Derivata del prodotto sbagliata | (fg)′ = f′g + fg′ | V2.M06 |
+| AN.DERIVATA\_QUOZIENTE | Derivata del quoziente sbagliata | (f/g)′ = (f′g − fg′)/g² | V2.M06 |
 | AN.PUNTO\_CRITICO | Derivata nulla presa come estremo | f′(x₀) = 0 non garantisce un massimo o un minimo (x³ in 0) | V2.M07 |
 | AN.TAYLOR\_ORDINE | Sviluppo troncato troppo presto | L'ordine va scelto per non perdere il termine dominante | V2.M08 |
 | AN.COSTANTE\_INTEGRAZIONE | Costante di integrazione dimenticata | Un integrale indefinito è una famiglia di funzioni: + c | V2.M09 |
 | AN.TERMINE\_GENERALE | Termine generale → 0 preso come prova di convergenza | È necessario, non sufficiente: la serie armonica diverge | V2.M11 |
 | ALIN.PRODOTTO\_COMMUTATIVO | Prodotto di matrici trattato come commutativo | In generale AB ≠ BA | V3.M02 |
 | ALIN.RANGO\_DIMENSIONE | Rango confuso con dimensione o numero di colonne | Il rango è la dimensione dello spazio generato dalle colonne | V3.M02 |
+| ALIN.GAUSS\_TERMINE\_NOTO | Operazione sulle righe non applicata ai termini noti | Ogni operazione di Gauss vale per tutta la riga, termine noto compreso | V3.M02 |
 | ALIN.DET\_SOMMA | det(A+B) = det A + det B | Il determinante non è additivo | V3.M03 |
 | ALIN.DET\_MULTIPLO | det(kA) = k · det A | Per A di ordine n: det(kA) = kⁿ · det A | V3.M03 |
 | ALIN.INVERSA\_PRODOTTO | (AB)⁻¹ = A⁻¹B⁻¹ | (AB)⁻¹ = B⁻¹A⁻¹ | V3.M03 |
+| ALIN.DET\_SEGNI | Segni sbagliati nel determinante | Ordine 2: ad − bc; Laplace: segno (−1)^(i+j) | V3.M03 |
+| ALIN.DET\_DIAGONALE | Determinante come prodotto della diagonale | Vale solo per le matrici triangolari | V3.M03 |
 | ALIN.AUTOVETTORE\_NULLO | Vettore nullo preso come autovettore | Un autovettore è non nullo per definizione | V3.M06 |
 | FORMA.DECIMALE | Decimale al posto della forma esatta | Se è richiesta la forma esatta: √2, non 1,414 | tutte |
 | FORMA.NON\_RICHIESTA | Equivalente ma non nella forma richiesta | "Scomponi x²−1": serve (x−1)(x+1) | tutte |
