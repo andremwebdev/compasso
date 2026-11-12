@@ -4,8 +4,9 @@ import {
   type AnswerSpec, type Evaluation, type Exercise, type ExerciseDraft, type GeneratorDefinition,
 } from "../../src/esercizi";
 import { finiteLimit, minusInfinity, noLimit, plusInfinity } from "../../src/motore/calculus/limit";
-import { add, div, frac, mul, num, pow, sqrt, sub, sym, toLatex } from "../../src/motore/expr";
+import { add, div, frac, mul, num, pi, pow, sqrt, sub, sym, toLatex } from "../../src/motore/expr";
 import { matrix } from "../../src/motore/linalg/matrix";
+import { atLeast, atMost, closed, closedOpen, greaterThan, lessThan, periodic, points, realSet } from "../../src/motore/sets";
 
 const x = sym("x");
 
@@ -344,8 +345,75 @@ describe("valutazione: limite, matrice, vero o falso, riordino, scelta multipla"
     expect(choiceOptions(exercise)).toBeNull();
   });
 
-  it("gli insiemi di soluzioni arrivano con la sessione 2", () => {
-    const exercise = exerciseWith({ kind: "set", variable: "x", correct: { kind: "realset", pieces: [] }, wrong: [] });
-    expect(() => evaluateResponse(exercise, text("∅"))).toThrow(/Non ancora implementato/);
+  describe("insiemi di soluzioni", () => {
+    const sixth = div(pi, 6);
+    const fiveSixths = div(mul(5, pi), 6);
+    const fractional = exerciseWith({
+      kind: "set",
+      variable: "x",
+      correct: realSet(lessThan(-2), atLeast(1)),
+      wrong: [
+        { error: "DISEQ.SEGNO_DENOMINATORE", value: realSet(atMost(-2), atLeast(1)) },
+        { error: "DISEQ.VERSO_NON_INVERTITO", value: closedOpen(-2, 1) },
+        { error: "COND.DENOMINATORE", value: atLeast(1) },
+      ],
+    });
+
+    it("confronto per struttura: intervalli, disuguaglianze e ordine dei pezzi non contano", () => {
+      for (const answer of ["(-∞; -2) ∪ [1; +∞)", "x < -2 ∨ x ≥ 1", "[1; +∞) ∪ (-∞; -2)", "x >= 1 o x < -2", "]-∞; -2[ U [1; +∞["]) {
+        expect(evaluateResponse(fractional, text(answer)), answer).toEqual({ outcome: "correct" });
+      }
+    });
+
+    it("riconosce gli errori tipici dalle risposte sbagliate previste", () => {
+      expect(evaluateResponse(fractional, text("x ≤ -2 ∨ x ≥ 1"))).toMatchObject({ outcome: "wrong", error: "DISEQ.SEGNO_DENOMINATORE", cause: "expected" });
+      expect(evaluateResponse(fractional, text("-2 ≤ x < 1"))).toMatchObject({ outcome: "wrong", error: "DISEQ.VERSO_NON_INVERTITO" });
+      expect(evaluateResponse(fractional, text("x ≥ 1"))).toMatchObject({ outcome: "wrong", error: "COND.DENOMINATORE" });
+      expect(evaluateResponse(fractional, text("x > 7"))).toMatchObject({ outcome: "wrong", error: "NON_CLASSIFICATO" });
+      expect(evaluateResponse(fractional, text("∅"))).toMatchObject({ outcome: "wrong", error: "NON_CLASSIFICATO" });
+    });
+
+    it("testo non valido o incompleto: non è un tentativo", () => {
+      expect(evaluateResponse(fractional, text("(-∞; -2) ∪"))).toMatchObject({ outcome: "invalid" });
+      expect(evaluateResponse(fractional, text("[1; +∞) ∪ (-∞; -2+)"))).toMatchObject({ outcome: "invalid", message: "La risposta non è completa." });
+      expect(evaluateResponse(fractional, text("x < y"))).toMatchObject({ outcome: "invalid" });
+      expect(evaluateResponse(fractional, { kind: "skip" })).toEqual({ outcome: "skipped" });
+      expect(() => evaluateResponse(fractional, { kind: "truefalse", value: true })).toThrow();
+    });
+
+    it("decimali al posto della forma esatta e forma canonica richiesta", () => {
+      const half = exerciseWith({ kind: "set", variable: "x", correct: greaterThan(frac(1, 2)), wrong: [] });
+      expect(evaluateResponse(half, text("x > 1/2"))).toEqual({ outcome: "correct" });
+      expect(evaluateResponse(half, text("x > 0,5"))).toMatchObject({ outcome: "wrong", error: "FORMA.DECIMALE" });
+      const canonical = exerciseWith({ kind: "set", variable: "x", correct: closed(1, 3), wrong: [], canonicalForm: true });
+      expect(evaluateResponse(canonical, text("[1; 3]"))).toEqual({ outcome: "correct" });
+      expect(evaluateResponse(canonical, text("[1; 2] ∪ [2; 3]"))).toMatchObject({ outcome: "wrong", error: "FORMA.NON_RICHIESTA", cause: "form" });
+      const free = exerciseWith({ kind: "set", variable: "x", correct: closed(1, 3), wrong: [] });
+      expect(evaluateResponse(free, text("[1; 2] ∪ [2; 3]"))).toEqual({ outcome: "correct" });
+    });
+
+    it("soluzioni periodiche: stesse soluzioni scritte in un altro modo", () => {
+      const sine = exerciseWith({
+        kind: "set",
+        variable: "x",
+        correct: periodic(points(sixth, fiveSixths), mul(2, pi)),
+        wrong: [{ error: "TRIG.SOLUZIONI_PERSE", value: periodic(points(sixth), mul(2, pi)) }],
+      });
+      for (const answer of ["x = π/6 + 2kπ ∨ x = 5π/6 + 2kπ", "x = 5π/6 + 2kπ o x = π/6 + 2kπ, k ∈ ℤ", "x = 13π/6 + 2kπ ∨ x = -7π/6 + 2kπ"]) {
+        expect(evaluateResponse(sine, text(answer)), answer).toEqual({ outcome: "correct" });
+      }
+      expect(evaluateResponse(sine, text("x = π/6 + 2kπ"))).toMatchObject({ outcome: "wrong", error: "TRIG.SOLUZIONI_PERSE" });
+      expect(evaluateResponse(sine, text("x = π/6 + kπ"))).toMatchObject({ outcome: "wrong", error: "NON_CLASSIFICATO" });
+      expect(evaluateResponse(sine, text("x = π/6"))).toMatchObject({ outcome: "wrong", error: "NON_CLASSIFICATO" });
+      expect(evaluateResponse(sine, text("x = π/6 + k"))).toMatchObject({ outcome: "wrong", error: "NON_CLASSIFICATO" });
+    });
+
+    it("con tre risposte sbagliate previste diventa una scelta multipla", () => {
+      const options = choiceOptions(fractional)!;
+      expect(options).toHaveLength(4);
+      expect(options.find((option) => option.index === 0)?.content).toBe("$\\left(-\\infty; -2\\right) \\cup \\left[1; +\\infty\\right)$");
+      expect(evaluateResponse(fractional, { kind: "choice", index: 0 })).toEqual({ outcome: "correct" });
+      expect(evaluateResponse(fractional, { kind: "choice", index: 2 })).toMatchObject({ outcome: "wrong", error: "DISEQ.VERSO_NON_INVERTITO" });
+    });
   });
 });

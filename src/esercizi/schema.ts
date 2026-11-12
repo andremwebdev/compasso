@@ -80,6 +80,11 @@ export interface SetAnswer {
   readonly wrong: readonly ExpectedWrong<SolutionSet>[];
   /** La variabile di cui si cercano i valori (di solito x). */
   readonly variable: string;
+  /**
+   * Vero se il testo chiede l'insieme in forma canonica (intervalli in ordine, separati, già uniti
+   * dove si toccano): [1; 2] ∪ [2; 3] al posto di [1; 3] è allora un errore di forma.
+   */
+  readonly canonicalForm?: boolean;
 }
 
 /** Il valore di un limite: un numero, +∞, −∞ oppure «non esiste». */

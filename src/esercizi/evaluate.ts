@@ -8,20 +8,23 @@
 // 3. è equivalente a una risposta sbagliata prevista? → quell'errore;
 // 4. è un decimale che approssima la risposta giusta? → FORMA.DECIMALE;
 // 5. altrimenti → NON_CLASSIFICATO.
+// Gli insiemi di soluzioni seguono lo stesso ordine, con il confronto per struttura al posto dell'equivalenza.
 
 import { UNCLASSIFIED, type ErrorCode } from "../errori";
 import { limitsEqual, parseLimitValue, type LimitValue } from "../motore/calculus/limit";
 import { equivalent } from "../motore/equivalence/equivalence";
-import { EngineError, notImplemented } from "../motore/errors";
+import { EngineError } from "../motore/errors";
 import { evaluate } from "../motore/expr/evaluate";
 import type { Expr } from "../motore/expr/types";
 import { containsDecimal, isConstant, some } from "../motore/expr/walk";
 import { checkForms, type FormConstraint } from "../motore/form/constraints";
 import { matrix, matricesEquivalent, matrixSize, type Matrix } from "../motore/linalg/matrix";
 import { parseExpression } from "../motore/parser/parse";
+import { parseSolutionSet } from "../motore/parser/sets";
+import { isCanonicalSet, setHasDecimal, setsEqual, type SolutionSet } from "../motore/sets";
 import { choiceOptions } from "./choices";
 import { errorCodesOf } from "./generate";
-import type { Evaluation, ExpectedWrong, Exercise, NumberAnswer, Response } from "./schema";
+import type { Evaluation, ExpectedWrong, Exercise, NumberAnswer, Response, SetAnswer } from "./schema";
 
 const CORRECT: Evaluation = { outcome: "correct" };
 const UNCLASSIFIED_WRONG: Evaluation = { outcome: "wrong", error: UNCLASSIFIED, cause: "unclassified" };
@@ -82,8 +85,13 @@ export function evaluateResponse(exercise: Exercise, response: Response): Evalua
       return judgeMatrix(response.cells, answer.correct, answer.wrong);
     }
 
-    case "set":
-      return notImplemented("valutazione degli insiemi di soluzioni", "sessione 2");
+    case "set": {
+      if (response.kind !== "text") return mismatch();
+      const parsed = parseSolutionSet(response.text, { variable: answer.variable });
+      if (!parsed.ok) return { outcome: "invalid", message: parsed.error.message, position: parsed.error.position };
+      if (!parsed.complete) return INCOMPLETE;
+      return judgeSet(parsed.value, answer);
+    }
 
     case "truefalse":
       if (response.kind !== "truefalse") return mismatch();
@@ -203,6 +211,41 @@ function judgeMatrix(cells: readonly (readonly string[])[], correct: Matrix, wro
     const pairs = given.rows.flatMap((row, r) => row.map((entry, c) => [entry, correct.rows[r]?.[c] as Expr] as const));
     const allClose = pairs.every(([entry, target]) => equivalent(entry, target) || (containsDecimal(entry) && approximates(entry, target)));
     if (allClose) return DECIMAL_WRONG;
+  }
+  return UNCLASSIFIED_WRONG;
+}
+
+/** Valutazione di un insieme di soluzioni: confronto per struttura (estremi, estremi inclusi, periodo). */
+function judgeSet(given: SolutionSet, answer: SetAnswer): Evaluation {
+  let equal: (other: SolutionSet) => boolean;
+  try {
+    // Un confronto che non si riesce a fare (periodi senza multiplo comune…) vale come «diversi».
+    equal = (other) => {
+      try {
+        return setsEqual(given, other);
+      } catch (error) {
+        if (error instanceof EngineError) return false;
+        throw error;
+      }
+    };
+    if (equal(answer.correct)) {
+      if (setHasDecimal(given) && !setHasDecimal(answer.correct)) return DECIMAL_WRONG;
+      if (answer.canonicalForm && !isCanonicalSet(given)) {
+        return {
+          outcome: "wrong",
+          error: "FORMA.NON_RICHIESTA",
+          cause: "form",
+          message: "L'insieme è giusto, ma va scritto in forma canonica: intervalli in ordine, separati, e uniti dove si toccano.",
+        };
+      }
+      return CORRECT;
+    }
+  } catch (error) {
+    if (error instanceof EngineError) return { outcome: "invalid", message: "Non riesco a leggere questo insieme: controlla gli estremi." };
+    throw error;
+  }
+  for (const candidate of answer.wrong) {
+    if (equal(candidate.value)) return expected(candidate.error);
   }
   return UNCLASSIFIED_WRONG;
 }

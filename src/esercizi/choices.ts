@@ -3,10 +3,10 @@
 // multipla (serve alla simulazione TOL): le sbagliate previste diventano le opzioni sbagliate.
 
 import { limitToLatex } from "../motore/calculus/limit";
-import { notImplemented } from "../motore/errors";
 import { toLatex } from "../motore/expr/latex";
 import { matrixToLatex } from "../motore/linalg/matrix";
 import { Rng } from "../motore/random/rng";
+import { setToLatex } from "../motore/sets";
 import type { Exercise, RichText } from "./schema";
 
 export interface ChoiceOption {
@@ -33,7 +33,7 @@ function optionContents(exercise: Exercise): RichText[] | null {
     case "matrix":
       return [answer.correct, ...answer.wrong.map((wrong) => wrong.value)].map((value) => math(matrixToLatex(value)));
     case "set":
-      return notImplemented("opzioni per gli insiemi di soluzioni", "sessione 2");
+      return [answer.correct, ...answer.wrong.map((wrong) => wrong.value)].map((value) => math(setToLatex(value, { variable: answer.variable })));
     case "truefalse":
     case "ordering":
       return null;

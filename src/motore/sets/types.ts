@@ -1,5 +1,5 @@
-// Insiemi di soluzioni: i tipi (specifica, sezione 6). Operazioni, confronto, lettura e LaTeX
-// arrivano nella sessione 2 (vedi docs/ARCHITETTURA.md, sezione 10).
+// Insiemi di soluzioni: i tipi (specifica, sezione 6). Costruttori in build.ts, forma canonica,
+// operazioni e confronto in operations.ts, LaTeX in latex.ts, lettura in parser/sets.ts.
 
 import type { Expr } from "../expr/types";
 
