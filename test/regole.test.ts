@@ -2,8 +2,18 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { blockNames, parseLesson } from "../src/contenuti/formato";
 import { equivalent } from "../src/motore/equivalence/equivalence";
-import { add, mul, pow, sub, sym, toLatex } from "../src/motore/expr";
+import { simplify } from "../src/motore/algebra/simplify";
+import { derive } from "../src/motore/calculus/derive";
+import * as complex from "../src/motore/complex";
+import * as display from "../src/motore/display";
+import { signTable, solutionFromSigns } from "../src/motore/display";
+import { add, div, mul, pi, pow, sin, sub, sym, toLatex } from "../src/motore/expr";
 import { checkForm, formConstraints } from "../src/motore/form";
+import * as linalg from "../src/motore/linalg";
+import * as sets from "../src/motore/sets";
+import { periodic, points, setsEqual, setToLatex } from "../src/motore/sets";
+import * as steps from "../src/motore/steps";
+import { factorPolynomial, stepText } from "../src/motore/steps";
 
 // Gli esempi di REGOLE.md sono il modello che gli altri modelli copiano: devono funzionare davvero.
 
@@ -38,6 +48,28 @@ describe("gli esempi di REGOLE.md", () => {
     expect(equivalent(p, mul(sub(mul(2, x), 1), sub(x, 1)))).toBe(true);
     expect(checkForm(p, "factored").ok).toBe(false);
     expect(checkForm(mul(sub(mul(2, x), 1), sub(x, 1)), "factored").ok).toBe(true);
+  });
+
+  it("gli esempi del resto del motore danno i risultati scritti", () => {
+    const x = sym("x");
+    expect(toLatex(simplify(add(mul(1, x), 0)))).toBe("x");
+    expect(toLatex(derive(mul(x, sin(x))))).toBe("\\sin x + x \\cos x");
+    const table = signTable([{ expr: sub(x, 1) }, { expr: add(x, 2), role: "denominator" }]);
+    expect(setToLatex(solutionFromSigns(table, ">="))).toBe("\\left(-\\infty; -2\\right) \\cup \\left[1; +\\infty\\right)");
+    const factored = factorPolynomial(sub(pow(x, 2), 9));
+    expect(toLatex(factored.result)).toBe("\\left(x + 3\\right)\\left(x - 3\\right)");
+    expect(factored.steps.map((step) => ({ text: stepText(step) })).length).toBeGreaterThan(0);
+    expect(setsEqual(periodic(points(div(pi, 6)), mul(2, pi)), periodic(points(div(mul(13, pi), 6)), mul(2, pi)))).toBe(true);
+    // Le funzioni nominate nella tabella esistono davvero nelle cartelle indicate.
+    const section = rules.slice(rules.indexOf("## Il motore in breve"), rules.indexOf("## Come aggiungere un generatore"));
+    const modules: Record<string, Record<string, unknown>> = { sets, linalg, complex, steps, display };
+    for (const [folder, module] of Object.entries(modules)) {
+      const row = section.split("\n").find((line) => line.includes(`\`motore/${folder}\``));
+      expect(row, folder).toBeDefined();
+      const names = [...(row as string).split("|")[3]!.matchAll(/`([A-Za-z]+)[`(.]/g)].map((match) => match[1] as string);
+      expect(names.length).toBeGreaterThan(4);
+      for (const name of names) expect(module[name], `${folder}: ${name}`).toBeDefined();
+    }
   });
 
   it("nomina tutti i blocchi e tutti i vincoli di forma che esistono", () => {

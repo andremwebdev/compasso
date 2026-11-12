@@ -65,12 +65,14 @@ Il motore non importa mai da `app`, `dati`, `contenuti`, `esercizi`, `errori`.
 - Oltre ai casi singoli, dove ha senso un controllo a tappeto con dati generati da un `Rng` con chiave fissa.
 - Ogni LaTeX prodotto dal codice si prova con KaTeX in modalità rigorosa (`throwOnError: true, strict: true`).
 - Un difetto trovato diventa prima un test che fallisce, poi la correzione.
+- Gli aiuti comuni dei test del motore sono in `test/motore/helpers.ts` (`parse`, `draws`, `drawsText`, `randomExpr`).
+- Prima di salvare: `npm run typecheck && npm run build && npm test`, e si guarda che **ogni** comando sia finito bene (in una catena con `| tail` l'errore del primo comando si perde).
 
 **Matematica nel testo**
 
 - Formule tra `$...$` (in riga) e `$$...$$` (a centro pagina). Un dollaro vero si scrive `\$`.
 - Nei file TypeScript il LaTeX si scrive con `String.raw` (o `tex` nel catalogo errori) per non raddoppiare le barre.
-- Il LaTeX di un oggetto del motore **non si scrive a mano**: si ottiene con `toLatex(expr)`, `matrixToLatex`, `limitToLatex`. Così le convenzioni italiane (virgola decimale `1{,}5`, punto di moltiplicazione solo dove serve) sono sempre le stesse.
+- Il LaTeX di un oggetto del motore **non si scrive a mano**: si ottiene con `toLatex(expr)`, `matrixToLatex`, `limitToLatex`, `setToLatex`, `signTableToLatex`, `variationTableToLatex`, `systemToLatex`. Così le convenzioni italiane (virgola decimale `1{,}5`, punto e virgola negli intervalli, punto di moltiplicazione solo dove serve) sono sempre le stesse.
 
 ## Il motore in breve
 
@@ -91,17 +93,49 @@ equivalent(p, mul(sub(mul(2, x), 1), sub(x, 1)));   // true
 checkForm(p, "factored");                           // { ok: false, reason: "…" }
 ```
 
-- I costruttori **non semplificano**: `mul(1, x)` si mostra `1x`, `add(x, 0)` si mostra `x + 0`. Un generatore costruisce l'espressione già nella forma in cui vuole mostrarla (o, dalla sessione 2, la ripulisce con `simplify`).
+- I costruttori **non semplificano**: `mul(1, x)` si mostra `1x`, `add(x, 0)` si mostra `x + 0`. Un generatore costruisce l'espressione già nella forma in cui vuole mostrarla, oppure la ripulisce con `simplify` (coefficienti, segni, frazioni, radicali, termini simili: non sviluppa e non scompone).
 - `frac(6, 8)` è il numero 3/4 (ridotto); `div(6, 8)` è la frazione scritta 6/8. `decimal("1,50")` è 3/2 mostrato come 1,50.
 - `a − b` si costruisce con `sub(a, b)`; l'opposto con `neg(a)`.
 - `equivalent(a, b)`: uguali ovunque sono entrambe definite. `checkForm(expr, vincolo)`: guarda solo com'è scritta.
 - Vincoli di forma disponibili: `expanded`, `factored`, `reducedFraction`, `rationalized`, `simplifiedRadicals`, `algebraicForm`, `trigonometricForm`, `exponentialForm`.
 
+Il resto del motore, per cartella (ogni cartella ha un `index.ts` da cui importare, salvo `algebra` e `calculus` che si importano per file):
+
+| Serve | Da dove | Cosa usare |
+| --- | --- | --- |
+| Pulire, sviluppare | `motore/algebra/simplify`, `motore/algebra/expand` | `simplify(e)`, `expand(e)`, `upolyToExpr`, `exprToUPoly`, `surdToExpr` |
+| Derivare, verificare una primitiva | `motore/calculus/derive` | `derive(e, "x")`, `deriveWithSteps`, `isAntiderivative(F, f)` |
+| Insiemi di soluzioni | `motore/sets` | `closed(1, 3)`, `lessThan(2)`, `points(1, 2)`, `realSet(...)`, `periodic(base, periodo)`, `setUnion`, `setIntersection`, `setComplement`, `setsEqual`, `setToLatex`, `setToInequalityLatex` |
+| Matrici | `motore/linalg` | `matrix([[1, 2], [3, 4]])`, `matAdd`, `matMul`, `transpose`, `determinant`, `inverse`, `rank`, `gaussElimination` (con i passaggi), `solveLinearSystem`, `eigenvalues`, `eigenvectors`, `matrixFromEigen` |
+| Numeri complessi | `motore/complex` | `Complex.of(1, 2)`, `fromPolar`, `polarForm`, `complexExpr`, `trigonometricForm`, `exponentialForm`, `complexRoots`, `exactComplex` |
+| Passaggi delle procedure | `motore/steps` | `solveQuadratic`, `ruffini`, `dividePolynomials`, `factorPolynomial`; ogni passaggio diventa testo con `stepText` |
+| Tabelle e sistemi | `motore/display` | `signTable`, `solutionFromSigns`, `signStudySteps`, `signTableToLatex`, `variationTable`, `variationTableToLatex`, `systemToLatex` |
+
+```ts
+import { simplify } from "../../../motore/algebra/simplify";
+import { derive } from "../../../motore/calculus/derive";
+import { signTable, solutionFromSigns } from "../../../motore/display";
+import { setToLatex } from "../../../motore/sets";
+import { factorPolynomial, stepText } from "../../../motore/steps";
+
+toLatex(simplify(add(mul(1, x), 0)));                       // "x"
+toLatex(derive(mul(x, sin(x))));                            // "\\sin x + x \\cos x"
+const table = signTable([{ expr: sub(x, 1) }, { expr: add(x, 2), role: "denominator" }]);
+setToLatex(solutionFromSigns(table, ">="));                 // (−∞; −2) ∪ [1; +∞)
+const scomposto = factorPolynomial(sub(pow(x, 2), 9));
+toLatex(scomposto.result);                                  // "\\left(x + 3\\right)\\left(x - 3\\right)"
+const steps = scomposto.steps.map((step) => ({ text: stepText(step) }));   // passaggi pronti per la soluzione
+```
+
+- Le **matrici** e i **numeri complessi** costruiti all'indietro (autovalori scelti, modulo e argomento scelti) restano esatti: non si usa mai la virgola mobile.
+- Gli **insiemi** restano come sono scritti (`realSet(closed(3, 4), closed(1, 2))` non viene riordinato): `setsEqual` confronta le forme canoniche, `setToLatex` mostra la forma canonica.
+- Le **soluzioni periodiche** sono `periodic(base, periodo)`: `x = π/6 + 2kπ` è `periodic(points(div(pi, 6)), mul(2, pi))`.
+
 **Se al motore manca qualcosa** (una funzione, un vincolo, un tipo di risposta): non lo si aggira dentro un generatore e non si modifica il motore mentre si lavora sul generatore. Si annota in `STATO.md` («Problemi noti») e si passa a un altro generatore.
 
 ## Come aggiungere un generatore
 
-*La sessione 2 aggiunge la verifica automatica; la sessione 3 aggiunge i quattro generatori di riferimento da copiare e completa questa sezione.* Lo schema è già fisso: `src/esercizi/schema.ts`.
+*La sessione 3 aggiunge i quattro generatori di riferimento da copiare e completa questa sezione.* Lo schema è fisso (`src/esercizi/schema.ts`) e la verifica automatica esiste (`src/esercizi/verify.ts`). Un generatore minimo già scritto come uno vero, con il suo test, è in `test/esercizi/fixtures/sample-generator.ts` e `test/esercizi/verify.test.ts`.
 
 **Dove**: `src/generatori/<volume>/<modulo>/<abilità>-<variante>.ts`, in minuscolo: il generatore `V1.M06.A04.g1` sta in `src/generatori/v1/m06/a04-g1.ts`. Il suo test in `test/generatori/v1/m06/a04-g1.test.ts`.
 
@@ -135,7 +169,7 @@ export default defineGenerator({
 1. **All'indietro**: prima la soluzione, poi l'esercizio. Mai generare numeri a caso e poi risolvere.
 2. **Deterministico**: solo `rng`. Stesso seme e stesso livello → stesso esercizio, per sempre. Cambiare l'ordine delle estrazioni di un generatore già pubblicato cambia gli esercizi salvati: se serve una parte nuova, usare `rng.fork("nome")`.
 3. **Livelli** (uguali per tutti): 1 = applicazione diretta, numeri semplici, uno o due passaggi; 2 = livello tipico di verifica e di TOL; 3 = casi particolari, parametri, più tecniche insieme.
-4. **Tipo di risposta** (`answer.kind`): `choice`, `number`, `expression`, `set`, `limit`, `matrix`, `truefalse`, `ordering`. Si sceglie quello naturale per l'esercizio: se ha almeno tre risposte sbagliate previste, l'app può comunque mostrarlo come scelta multipla.
+4. **Tipo di risposta** (`answer.kind`): `choice`, `number`, `expression`, `set`, `limit`, `matrix`, `truefalse`, `ordering`. Si sceglie quello naturale per l'esercizio: se ha almeno tre risposte sbagliate previste, l'app può comunque mostrarlo come scelta multipla. Una risposta `set` dichiara la `variable` e si confronta per struttura; con `canonicalForm: true` deve anche essere scritta in forma canonica (solo se il testo lo chiede).
 5. **Modalità** (solo `number`): `mode: exact` oppure `mode: approx(0.005)`. Il testo deve dirlo («arrotonda a due decimali»).
 6. **Vincoli di forma**: `form: ["factored"]` solo se il testo chiede quella forma («scomponi»). La risposta giusta deve rispettarli.
 7. **Risposte sbagliate previste** (`answer.wrong`): ognuna è il risultato di **un** errore tipico preciso, fatto davvero sui numeri dell'esercizio, con il suo codice. Non devono essere equivalenti alla giusta né tra loro. Almeno tre quando l'esercizio può finire in una simulazione. Se per certi numeri un errore dà per caso il risultato giusto, quella risposta si scarta (o si cambiano i numeri).
@@ -143,13 +177,42 @@ export default defineGenerator({
 9. **Passaggi** (`steps`): la soluzione completa, un'idea per passaggio, con le formule ottenute da `toLatex`. **Indizi** (`hints`): esattamente due; il primo orienta («che tipo di disequazione è?»), il secondo dice come cominciare. Nessuno dei due dà la risposta.
 10. **Testo** (`prompt`): in italiano, dando del tu, con la richiesta chiara e la forma voluta.
 
+**Verifica automatica** (specifica, sezione 12). Ogni generatore ha un test che la chiama e pretende zero problemi:
+
+```ts
+import { expect, it } from "vitest";
+import { formatReport, verifyGenerator } from "../../../../src/esercizi/verify";
+import generator from "../../../../src/generatori/v1/m06/a04-g1";
+
+it("V1.M06.A04.g1 supera la verifica automatica", () => {
+  const report = verifyGenerator(generator);            // 2.000 semi per ogni livello
+  expect(report.problems, formatReport(report)).toEqual([]);
+  expect(report.warnings).toEqual([]);
+});
+```
+
+`verifyGenerator` fa i nove controlli della specifica su ogni esercizio; se qualcosa non va, il rapporto dice **quale controllo, quale livello e quale seme** (per rivedere l'esercizio: `generateExercise(generator, livello, seme)`):
+
+1. il generatore non si interrompe, rispetta lo schema, impiega pochi millisecondi;
+2. stesso seme, stesso esercizio;
+3. la risposta giusta è ben definita e supera `verify` (la verifica indipendente del generatore);
+4. la risposta giusta rispetta i vincoli di forma dichiarati (`form`, `canonicalForm`);
+5. nessuna risposta sbagliata prevista vale quanto la giusta, e le sbagliate hanno valori diversi tra loro;
+6. i codici di errore esistono nel catalogo e sono dichiarati in `errors`;
+7. i numeri delle risposte (giusta e sbagliate) stanno entro `limits`;
+8. testo, risposte, passaggi e indizi si disegnano con KaTeX;
+9. ci sono i passaggi e due indizi diversi.
+
+Gli **avvisi** (`report.warnings`) non bocciano da soli, ma un generatore finito non ne ha: `verify` mancante, codici dichiarati in `errors` ma mai prodotti, pochissimi esercizi diversi. Se il rapporto segnala un problema si corregge **il generatore**: non si allargano i limiti e non si tolgono risposte sbagliate solo per far passare il controllo.
+
+**Come scrivere `verify`**: una strada diversa da quella usata per costruire la risposta. Sostituire la soluzione nell'equazione, provare la disequazione in punti dentro e fuori dall'insieme, derivare la primitiva (`isAntiderivative`), moltiplicare i fattori (`equivalent(expand(risposta), polinomio)`), controllare `A·x = b` (`matMul`) o `A·v = λ·v` (`isEigenpair`). I conti si fanno esatti (`Rational`, `equivalent`), non in virgola mobile: sul bordo di un intervallo un numero approssimato sbaglia.
+
 **Lista di controllo prima di salvare**
 
 - [ ] `npm run typecheck` passa (schema rispettato, codici di errore esistenti);
-- [ ] il test del generatore prova molti semi per ogni livello (dalla sessione 2: la verifica automatica, 2.000 semi);
-- [ ] la risposta giusta supera `verify` e `checkForm` per ogni vincolo dichiarato;
-- [ ] nessuna risposta sbagliata è equivalente alla giusta o a un'altra sbagliata;
-- [ ] testo, risposte, passaggi e indizi si disegnano con KaTeX;
+- [ ] il test del generatore chiama `verifyGenerator` e non trova problemi né avvisi;
+- [ ] il generatore ha la sua `verify`, indipendente dalla costruzione;
+- [ ] il testo dice che forma è richiesta e, se serve un'approssimazione, con quale arrotondamento;
 - [ ] il generatore non ha toccato `src/motore/` né `src/esercizi/`.
 
 ## Come scrivere una lezione
@@ -270,7 +333,7 @@ Solo se il segno del denominatore è noto: se è negativo il verso si inverte.
 
 **Glossario**: prima di definire un termine, cercarlo nelle lezioni esistenti (`termini:` delle intestazioni). Se esiste già, si rimanda; se no, lo definisce la lezione in cui compare per la prima volta lungo i prerequisiti.
 
-**Controllo**: `parseLesson(testo)` restituisce l'elenco dei problemi; una lezione entra nell'app solo se l'elenco è vuoto. I controlli tra file (codici unici, prerequisiti, rimandi, generatori e visualizzazioni che esistono) li fa la verifica dei contenuti (specifica, sezione 12), che parte da `lessonReferences`.
+**Controllo**: `parseLesson(testo)` restituisce l'elenco dei problemi di una lezione. I controlli tra file li fa `verifyContents(file, catalogo)` (in `src/contenuti/formato/`): posto del file (`v1/m06/l04.md` per `V1.M06.L04`), codici unici, prerequisiti che esistono e non fanno giri, rimandi a glossario, lezioni, definizioni, teoremi, errori, generatori (con il livello chiesto) e visualizzazioni, ogni termine definito in una sola lezione. Una lezione entra nell'app solo se `verifyContents` non trova problemi; un termine usato fuori dalla catena dei prerequisiti è un avviso da guardare. Il test che la esegue su tutte le lezioni vere nasce con la prima lezione (sessione 3).
 
 ## Catalogo degli errori
 
