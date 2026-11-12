@@ -1,6 +1,5 @@
 // Matrici e vettori con elementi esatti: tipo, costruzione, confronto, LaTeX.
-// Le operazioni (somma, prodotto, Gauss con i passaggi, determinante, inversa, rango, autovalori)
-// arrivano nella sessione 2 (vedi docs/ARCHITETTURA.md, sezione 11).
+// Le operazioni sono in operations.ts, la riduzione di Gauss in gauss.ts, gli autovalori in eigen.ts.
 
 import { equivalent } from "../equivalence/equivalence";
 import { EngineError } from "../errors";

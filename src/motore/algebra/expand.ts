@@ -32,6 +32,14 @@ export function surdToExpr(value: Surd): Expr {
   return simplify(rawSurd(value));
 }
 
+/** Il numero complesso re + im·i come espressione in forma algebrica pulita: 1 + 2i, −i, (√3/2)i. */
+export function complexToExpr(re: Surd, im: Surd): Expr {
+  if (im.isZero()) return surdToExpr(re);
+  const unit: Expr = { kind: "const", name: "i" };
+  const imaginary = simplify({ kind: "mul", factors: [rawSurd(im), unit] });
+  return re.isZero() ? imaginary : simplify({ kind: "add", terms: [rawSurd(re), imaginary] });
+}
+
 /**
  * Ordine di scrittura dei termini: grado decrescente, poi ordine alfabetico delle lettere (x², xy, y²).
  * L'unità immaginaria non conta nel grado e va per ultima: così un numero complesso si scrive a + bi.
