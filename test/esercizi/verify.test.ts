@@ -117,7 +117,7 @@ describe("verifica automatica: ogni controllo scopre il suo difetto", () => {
   it("5 · una risposta sbagliata prevista vale quanto la giusta, o due sbagliate coincidono", () => {
     const equalToCorrect = broken((draft) => {
       const { answer } = draft;
-      if (answer.kind !== "set") return draft;
+      if (answer.kind !== "set" || answer.correct.kind !== "realset") return draft;
       // Stesso insieme scritto in un altro modo: come testo è diverso, come valore no.
       return { ...draft, answer: { ...answer, wrong: [...answer.wrong.slice(0, 2), { error: "CALC.MENO_PARENTESI" as ErrorCode, value: realSet(answer.correct, lessThan(-100)) }] } };
     });
