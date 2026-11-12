@@ -111,3 +111,36 @@ export function sameStructure(a: Expr, b: Expr): boolean {
   const cb = children(b);
   return ca.length === cb.length && ca.every((child, index) => sameStructure(child, cb[index] as Expr));
 }
+
+/**
+ * Chiave di struttura: due espressioni hanno la stessa chiave se e solo se sono scritte allo stesso
+ * modo (stessi nodi nello stesso ordine). Serve a raggruppare fattori e termini uguali.
+ */
+export function exprKey(expr: Expr): string {
+  switch (expr.kind) {
+    case "num":
+      return expr.decimals === undefined ? `#${expr.value.toString()}` : `#${expr.value.toString()}d${expr.decimals}`;
+    case "sym":
+      return expr.name;
+    case "const":
+      return `@${expr.name}`;
+    case "add":
+      return `add(${expr.terms.map(exprKey).join(",")})`;
+    case "mul":
+      return `mul(${expr.factors.map(exprKey).join(",")})`;
+    case "neg":
+      return `neg(${exprKey(expr.arg)})`;
+    case "abs":
+      return `abs(${exprKey(expr.arg)})`;
+    case "root":
+      return `root${expr.index}(${exprKey(expr.arg)})`;
+    case "fn":
+      return `${expr.name}(${exprKey(expr.arg)})`;
+    case "div":
+      return `div(${exprKey(expr.num)},${exprKey(expr.den)})`;
+    case "pow":
+      return `pow(${exprKey(expr.base)},${exprKey(expr.exp)})`;
+    case "log":
+      return `log(${exprKey(expr.base)},${exprKey(expr.arg)})`;
+  }
+}
