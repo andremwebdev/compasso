@@ -4,7 +4,7 @@ import { isGeneratorCode, isLessonCode, skillOf } from "../codici";
 import { isErrorCode } from "../errori";
 import { EngineError } from "../motore/errors";
 import { Rng } from "../motore/random/rng";
-import type { AnswerSpec, Exercise, GeneratorDefinition, Level } from "./schema";
+import type { AnswerSpec, Exercise, ExerciseDraft, GeneratorDefinition, Level } from "./schema";
 
 /**
  * Dichiara un generatore. Controlla subito quello che i tipi non possono garantire del tutto
@@ -47,6 +47,41 @@ export function errorCodesOf(answer: AnswerSpec): string[] {
   }
 }
 
+/** Una regola di base dello schema non rispettata da un esercizio. */
+export interface DraftProblem {
+  /** Quale parte dell'esercizio riguarda: serve alla verifica automatica per sapere di quale controllo si tratta. */
+  readonly rule: "prompt" | "steps" | "hints" | "errors" | "choice" | "tolerance" | "ordering";
+  readonly message: string;
+}
+
+/** Controlla le regole di base dello schema su quello che un generatore ha restituito. */
+export function draftProblems(definition: GeneratorDefinition, draft: ExerciseDraft): DraftProblem[] {
+  const problems: DraftProblem[] = [];
+  if (typeof draft.prompt !== "string" || draft.prompt.trim() === "") problems.push({ rule: "prompt", message: "il testo dell'esercizio è vuoto." });
+  if (!Array.isArray(draft.steps) || draft.steps.length === 0 || draft.steps.some((step) => step.text.trim() === "")) {
+    problems.push({ rule: "steps", message: "mancano i passaggi della soluzione." });
+  }
+  if (!Array.isArray(draft.hints) || draft.hints.length !== 2 || draft.hints.some((hint) => hint.trim() === "")) {
+    problems.push({ rule: "hints", message: "servono due indizi." });
+  }
+  for (const error of errorCodesOf(draft.answer)) {
+    if (!definition.errors.includes(error as never)) {
+      problems.push({ rule: "errors", message: `il codice di errore ${error} non è tra quelli dichiarati dal generatore.` });
+    }
+  }
+  const { answer } = draft;
+  if (answer.kind === "choice" && (answer.wrong.length < 3 || answer.wrong.length > 4)) {
+    problems.push({ rule: "choice", message: "una scelta multipla ha 3 o 4 opzioni sbagliate." });
+  }
+  if (answer.kind === "number" && answer.mode.kind === "approx" && !(answer.mode.tolerance > 0)) {
+    problems.push({ rule: "tolerance", message: "la tolleranza dell'approssimazione deve essere positiva." });
+  }
+  if (answer.kind === "ordering" && answer.items.filter((item) => !item.fixed).length < 2) {
+    problems.push({ rule: "ordering", message: "in un riordino servono almeno due elementi da spostare." });
+  }
+  return problems;
+}
+
 /**
  * Crea un esercizio: stesso generatore, stesso livello e stesso seme danno sempre lo stesso esercizio.
  * Controlla le regole di base dello schema; un generatore che le viola lancia un errore che dice
@@ -61,22 +96,7 @@ export function generateExercise(definition: GeneratorDefinition, level: Level, 
   if (!Number.isSafeInteger(seed) || seed < 0) problem("il seme deve essere un intero non negativo.");
 
   const draft = definition.generate({ level, seed, rng: Rng.forExercise(definition.code, level, seed) });
-
-  if (draft.prompt.trim() === "") problem("il testo dell'esercizio è vuoto.");
-  if (draft.steps.length === 0 || draft.steps.some((step) => step.text.trim() === "")) problem("mancano i passaggi della soluzione.");
-  if (draft.hints.length !== 2 || draft.hints.some((hint) => hint.trim() === "")) problem("servono due indizi.");
-  for (const error of errorCodesOf(draft.answer)) {
-    if (!definition.errors.includes(error as never)) problem(`il codice di errore ${error} non è tra quelli dichiarati dal generatore.`);
-  }
-  const { answer } = draft;
-  if (answer.kind === "choice" && (answer.wrong.length < 3 || answer.wrong.length > 4)) {
-    problem("una scelta multipla ha 3 o 4 opzioni sbagliate.");
-  }
-  if (answer.kind === "number" && answer.mode.kind === "approx" && !(answer.mode.tolerance > 0)) {
-    problem("la tolleranza dell'approssimazione deve essere positiva.");
-  }
-  if (answer.kind === "ordering" && answer.items.filter((item) => !item.fixed).length < 2) {
-    problem("in un riordino servono almeno due elementi da spostare.");
-  }
+  const [first] = draftProblems(definition, draft);
+  if (first) problem(first.message);
   return { ...draft, generator: definition.code, level, seed };
 }
