@@ -83,6 +83,7 @@ describe("simplify: pulizia per mostrare", () => {
 
   it.each([
     ["sin(0)", "0"], ["cos(0)", "1"], ["ln(1)", "0"], ["ln(e)", "1"], ["log_2(2)", "1"], ["log_3(1)", "0"],
+    ["ln(e^2)", "2"], ["ln(1/e)", "-1"], ["ln(2e)", "\\ln 2e"],
     ["sin(-x)", "-\\sin x"], ["cos(-x)", "\\cos x"], ["|-x|", "\\left|x\\right|"], ["|-3|", "3"],
     ["e^x*e^x", "e^{2x}"], ["sin x * x * 3", "3x \\sin x"], ["2pi*x*3", "6\\pi x"],
   ])("funzioni e ordine dei fattori: %s → %s", (text, latex) => {

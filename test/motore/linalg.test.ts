@@ -288,7 +288,7 @@ describe("autovalori e autovettori", () => {
     const values = (m: Matrix) => eigenvalues(m).map((item) => [toLatex(item.value), item.multiplicity]);
     expect(values(matrix([[2, 1], [1, 2]]))).toEqual([["1", 1], ["3", 1]]);
     expect(values(matrix([[2, 0, 0], [0, 2, 0], [0, 0, 5]]))).toEqual([["2", 2], ["5", 1]]);
-    expect(values(matrix([[1, 1], [1, 0]]))).toEqual([["\\frac{1}{2} - \\frac{\\sqrt{5}}{2}", 1], ["\\frac{1}{2} + \\frac{\\sqrt{5}}{2}", 1]]);
+    expect(values(matrix([[1, 1], [1, 0]]))).toEqual([["\\frac{1 - \\sqrt{5}}{2}", 1], ["\\frac{1 + \\sqrt{5}}{2}", 1]]);
     expect(values(matrix([[0, -1], [1, 0]]))).toEqual([["-i", 1], ["i", 1]]);
     expect(values(matrix([[1, -2], [1, 3]]))).toEqual([["2 - i", 1], ["2 + i", 1]]);
     expect(eigenvalues(matrix([[0, -1], [1, 0]])).every((item) => !item.real)).toBe(true);

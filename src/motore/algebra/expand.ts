@@ -17,14 +17,19 @@ const KEY_I = "ⅈ";
 const numberExpr = (value: Rational): Expr => ({ kind: "num", value });
 const sumExpr = (terms: Expr[]): Expr => (terms.length === 0 ? numberExpr(Rational.ZERO) : terms.length === 1 ? (terms[0] as Expr) : { kind: "add", terms });
 
+/**
+ * Un numero con radici quadrate come espressione non ancora pulita. Con più termini e denominatori
+ * si usa una sola frazione: (1 + √5)/2, non 1/2 + √5/2.
+ */
 function rawSurd(value: Surd): Expr {
-  return sumExpr(
-    value.terms.map(([radicand, coefficient]): Expr =>
-      radicand === 1n
-        ? numberExpr(coefficient)
-        : { kind: "mul", factors: [numberExpr(coefficient), { kind: "root", index: 2, arg: numberExpr(Rational.of(radicand)) }] },
-    ),
-  );
+  const term = (radicand: bigint, coefficient: Rational): Expr =>
+    radicand === 1n
+      ? numberExpr(coefficient)
+      : { kind: "mul", factors: [numberExpr(coefficient), { kind: "root", index: 2, arg: numberExpr(Rational.of(radicand)) }] };
+  const common = value.terms.reduce((acc, [, coefficient]) => lcm(acc, coefficient.d), 1n);
+  if (value.terms.length < 2 || common === 1n) return sumExpr(value.terms.map(([radicand, coefficient]) => term(radicand, coefficient)));
+  const numerator = sumExpr(value.terms.map(([radicand, coefficient]) => term(radicand, coefficient.mul(common))));
+  return { kind: "div", num: numerator, den: numberExpr(Rational.of(common)) };
 }
 
 /** Un numero con radici quadrate come espressione pulita: 3 + 2√5, √2/2. */

@@ -84,6 +84,13 @@ export function upGcd(a: UPoly, b: UPoly): UPoly {
   return x.length === 0 ? x : upScale(x, (x[x.length - 1] as Rational).inv());
 }
 
+/** Minimo comune multiplo, con coefficiente direttivo 1 (il polinomio nullo se uno dei due è nullo). */
+export function upLcm(a: UPoly, b: UPoly): UPoly {
+  if (a.length === 0 || b.length === 0) return [];
+  const product = upDivMod(upMul(a, b), upGcd(a, b)).quotient;
+  return upScale(product, (product[product.length - 1] as Rational).inv());
+}
+
 /** Valore del polinomio in un punto (regola di Horner, che è anche la regola di Ruffini). */
 export function upEval(p: UPoly, x: RationalLike): Rational {
   const point = Rational.from(x);

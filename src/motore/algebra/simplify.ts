@@ -333,6 +333,12 @@ function simplifyFunction(name: FunctionName, arg: Expr): Expr {
   if (isNumber(0) && name === "cos") return numberExpr(Rational.ONE);
   if (isNumber(1) && (name === "ln" || name === "arccos")) return ZERO;
   if (name === "ln" && arg.kind === "const" && arg.name === "e") return numberExpr(Rational.ONE);
+  if (name === "ln") {
+    // ln(e^k) = k: ln(1/e) = −1, ln(e²) = 2.
+    const product = decompose(arg);
+    const [only] = [...product.factors.values()];
+    if (product.coeff.eq(1) && product.factors.size === 1 && only && only.base.kind === "const" && only.base.name === "e") return numberExpr(only.exp);
+  }
   // Parità: sin(−x) = −sin x, cos(−x) = cos x.
   if (ODD_FUNCTIONS.has(name) || name === "cos") {
     const product = decompose(arg);
