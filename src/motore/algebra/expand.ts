@@ -88,19 +88,28 @@ function cleanFraction(num: Poly, den: Poly): [Poly, Poly] {
   return [num.scale(factor), den.scale(factor)];
 }
 
+/**
+ * Un quoziente con denominatore complesso a + bi (a, b numeri) si moltiplica per il coniugato, così
+ * il denominatore sparisce. Gli altri quozienti tornano come sono.
+ */
+export function rationalizeComplex(ratio: Ratio, ctx: NormalContext): Ratio {
+  if (ratio.isPoly()) return ratio;
+  const keys = ratio.den.atomKeys();
+  if (keys.size !== 1 || !keys.has(KEY_I)) return ratio;
+  const real = ratio.den.terms.get("")?.coeff ?? Surd.ZERO;
+  const imaginary = ratio.den.terms.get(KEY_I)?.coeff ?? Surd.ZERO;
+  const conjugate = Poly.constant(real).sub(Poly.term([[KEY_I, 1]], imaginary));
+  const norm = real.mul(real).add(imaginary.mul(imaginary));
+  return Ratio.fromPoly(ratio.num.mul(conjugate, ctx).scale(norm.inv()));
+}
+
 /** Un quoziente della forma normale come espressione: sviluppata, con i numeri complessi in forma a + bi. */
 export function ratioToExpr(ratio: Ratio, ctx: NormalContext): Expr {
   if (ratio.isPoly()) return polyToExpr(ratio.num.scale((ratio.den.constant() as Surd).inv()), ctx);
+  const rationalized = rationalizeComplex(ratio, ctx);
+  if (rationalized.isPoly()) return polyToExpr(rationalized.num, ctx);
   let { num, den } = ratio;
   const denKeys = den.atomKeys();
-  if (denKeys.size === 1 && denKeys.has(KEY_I)) {
-    // Denominatore a + bi: si moltiplica per il coniugato.
-    const real = den.terms.get("")?.coeff ?? Surd.ZERO;
-    const imaginary = den.terms.get(KEY_I)?.coeff ?? Surd.ZERO;
-    const conjugate = Poly.constant(real).sub(Poly.term([[KEY_I, 1]], imaginary));
-    const norm = real.mul(real).add(imaginary.mul(imaginary));
-    return polyToExpr(num.mul(conjugate, ctx).scale(norm.inv()), ctx);
-  }
   // Una sola lettera e coefficienti razionali: si semplificano i fattori comuni.
   const keys = new Set([...num.atomKeys(), ...denKeys]);
   const un = keys.size === 1 ? toUnivariate(num, ctx) : null;

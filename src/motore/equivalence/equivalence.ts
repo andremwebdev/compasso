@@ -12,9 +12,10 @@ import { NormalContext } from "../algebra/poly";
 import { normalize } from "../algebra/normalize";
 import { EngineError } from "../errors";
 import { evaluate, type Environment } from "../expr/evaluate";
+import { evaluateComplex } from "../expr/evaluate-complex";
 import { toLatex } from "../expr/latex";
 import type { Expr } from "../expr/types";
-import { variables } from "../expr/walk";
+import { some, variables } from "../expr/walk";
 import { Rng } from "../random/rng";
 
 export interface EquivalenceResult {
@@ -53,13 +54,31 @@ function compareExactly(a: Expr, b: Expr): boolean | null {
   }
 }
 
+const hasImaginaryUnit = (expr: Expr): boolean => some(expr, (node) => node.kind === "const" && node.name === "i");
+
+/**
+ * Il confronto dei valori in un punto: true/false se entrambe sono definite, null altrimenti.
+ * Se compare l'unità immaginaria si confrontano i valori complessi (parte reale e parte immaginaria).
+ */
+function agreeAt(a: Expr, b: Expr, env: Environment, complex: boolean): boolean | null {
+  if (!complex) {
+    const va = evaluate(a, env);
+    const vb = evaluate(b, env);
+    return Number.isNaN(va) || Number.isNaN(vb) ? null : close(va, vb);
+  }
+  const va = evaluateComplex(a, env);
+  const vb = evaluateComplex(b, env);
+  if (Number.isNaN(va.re) || Number.isNaN(vb.re)) return null;
+  const scale = Math.max(1, Math.hypot(va.re, va.im), Math.hypot(vb.re, vb.im));
+  return Math.hypot(va.re - vb.re, va.im - vb.im) <= TOLERANCE * scale;
+}
+
 function compareNumerically(a: Expr, b: Expr): EquivalenceResult {
+  const complex = hasImaginaryUnit(a) || hasImaginaryUnit(b);
   const names = [...new Set([...variables(a), ...variables(b)])].sort();
   if (names.length === 0) {
-    const va = evaluate(a);
-    const vb = evaluate(b);
-    if (Number.isNaN(va) || Number.isNaN(vb)) return { equivalent: false, method: "undecided" };
-    return { equivalent: close(va, vb), method: "numeric" };
+    const agree = agreeAt(a, b, {}, complex);
+    return agree === null ? { equivalent: false, method: "undecided" } : { equivalent: agree, method: "numeric" };
   }
 
   // I punti dipendono solo dalle due espressioni: stesso confronto, stesso risultato, sempre.
@@ -70,11 +89,10 @@ function compareNumerically(a: Expr, b: Expr): EquivalenceResult {
       const scale = scales[attempt % scales.length] as number;
       const env: Record<string, number> = {};
       for (const name of names) env[name] = rng.real(-scale, scale);
-      const va = evaluate(a, env as Environment);
-      const vb = evaluate(b, env as Environment);
-      if (Number.isNaN(va) || Number.isNaN(vb)) continue;
+      const agree = agreeAt(a, b, env as Environment, complex);
+      if (agree === null) continue;
       valid += 1;
-      if (!close(va, vb)) return false;
+      if (!agree) return false;
     }
     return true;
   };

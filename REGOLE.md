@@ -95,7 +95,7 @@ checkForm(p, "factored");                           // { ok: false, reason: "…
 - `frac(6, 8)` è il numero 3/4 (ridotto); `div(6, 8)` è la frazione scritta 6/8. `decimal("1,50")` è 3/2 mostrato come 1,50.
 - `a − b` si costruisce con `sub(a, b)`; l'opposto con `neg(a)`.
 - `equivalent(a, b)`: uguali ovunque sono entrambe definite. `checkForm(expr, vincolo)`: guarda solo com'è scritta.
-- Vincoli di forma disponibili: `expanded`, `factored`, `reducedFraction`, `rationalized`, `simplifiedRadicals`, `algebraicForm`, `trigonometricForm`.
+- Vincoli di forma disponibili: `expanded`, `factored`, `reducedFraction`, `rationalized`, `simplifiedRadicals`, `algebraicForm`, `trigonometricForm`, `exponentialForm`.
 
 **Se al motore manca qualcosa** (una funzione, un vincolo, un tipo di risposta): non lo si aggira dentro un generatore e non si modifica il motore mentre si lavora sul generatore. Si annota in `STATO.md` («Problemi noti») e si passa a un altro generatore.
 

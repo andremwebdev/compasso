@@ -59,11 +59,21 @@ describe("vincoli di forma", () => {
   }
 
   describe("algebraicForm", () => {
-    it.each(["3+2i", "3-2i", "-i", "5", "2i", "1/2+√3/2i", "i√2", "-1+i", "3i+2", "(3i)/2"])("accetta %s", (text) => {
+    // Una parte reale con più termini va bene se i termini non si possono sommare: 1 + √2 + i.
+    it.each(["3+2i", "3-2i", "-i", "5", "2i", "1/2+√3/2i", "i√2", "-1+i", "3i+2", "(3i)/2", "1+√2+i", "3/2+√3/2-i"])("accetta %s", (text) => {
       expect(checkForm(p(text, true), "algebraicForm")).toEqual({ ok: true });
     });
-    it.each(["(1+i)^2", "1/i", "(1+i)/(1-i)", "i^3", "1+2+i", "i+2i", "(1+i)(1-i)", "2(1+i)"])("rifiuta %s", (text) => {
+    it.each(["(1+i)^2", "1/i", "(1+i)/(1-i)", "i^3", "1+2+i", "i+2i", "(1+i)(1-i)", "2(1+i)", "√2+√8+i", "1+i-1"])("rifiuta %s", (text) => {
       expect(checkForm(p(text, true), "algebraicForm").ok).toBe(false);
+    });
+  });
+
+  describe("exponentialForm", () => {
+    it.each(["2e^(i pi/3)", "e^(i pi)", "√2 e^(-i pi/4)", "e^(i x)"])("accetta %s", (text) => {
+      expect(checkForm(p(text, true), "exponentialForm")).toEqual({ ok: true });
+    });
+    it.each(["1+i√3", "2(cos(pi/3)+i sin(pi/3))", "-2e^(i pi/3)", "e^(pi/3)", "2e^(i pi/3)e^(i pi)"])("rifiuta %s", (text) => {
+      expect(checkForm(p(text, true), "exponentialForm").ok).toBe(false);
     });
   });
 
@@ -116,7 +126,8 @@ describe("vincoli di forma", () => {
   });
 
   it("l'elenco dei vincoli è completo", () => {
-    expect(formConstraints).toHaveLength(7);
+    // Otto dalla sessione 2: si è aggiunto «exponentialForm».
+    expect(formConstraints).toHaveLength(8);
     for (const constraint of formConstraints) {
       for (const text of ["1", "x", "x^2-1", "1/√2", "(x+1)/(x-1)"]) {
         expect(typeof checkForm(p(text), constraint).ok).toBe("boolean");

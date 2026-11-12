@@ -57,7 +57,7 @@ function evaluateNode(expr: Expr, env: Environment): number {
 }
 
 /** Potenza reale. Con base negativa è definita solo se l'esponente è un razionale con denominatore dispari. */
-function realPower(base: number, exp: number, exactExp: Rational | null): number {
+export function realPower(base: number, exp: number, exactExp: Rational | null): number {
   if (Number.isNaN(base) || Number.isNaN(exp)) return NaN;
   if (base === 0) return exp > 0 ? 0 : NaN;
   if (base > 0) return Math.pow(base, exp);

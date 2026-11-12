@@ -5,6 +5,7 @@
 // Ogni controllo fallito spiega il motivo in italiano, con le formule tra $...$.
 
 import { tryNormalize } from "../algebra/normalize";
+import { simplify } from "../algebra/simplify";
 import { NormalContext } from "../algebra/poly";
 import { areCoprime, integerContent, isIrreducible } from "../algebra/specialize";
 import { equivalent } from "../equivalence/equivalence";
@@ -23,6 +24,7 @@ export const formConstraints = [
   "simplifiedRadicals",
   "algebraicForm",
   "trigonometricForm",
+  "exponentialForm",
 ] as const;
 
 /**
@@ -32,7 +34,8 @@ export const formConstraints = [
  * - rationalized: nessuna radice al denominatore;
  * - simplifiedRadicals: radicali in forma normale (niente da portare fuori, niente frazioni sotto radice);
  * - algebraicForm: numero complesso scritto come a + bi;
- * - trigonometricForm: numero complesso scritto come ρ(cos θ + i sin θ).
+ * - trigonometricForm: numero complesso scritto come ρ(cos θ + i sin θ);
+ * - exponentialForm: numero complesso scritto come ρ·e^(iθ).
  */
 export type FormConstraint = (typeof formConstraints)[number];
 
@@ -60,6 +63,8 @@ export function checkForm(expr: Expr, constraint: FormConstraint): FormCheck {
         return checkAlgebraicForm(expr);
       case "trigonometricForm":
         return checkTrigonometricForm(expr);
+      case "exponentialForm":
+        return checkExponentialForm(expr);
     }
   } catch (error) {
     // Numeri fuori dai limiti del motore o espressione troppo complessa: non si riesce a dimostrare
@@ -275,11 +280,15 @@ function isImaginaryTerm(term: Expr): boolean {
   return false;
 }
 
+const countTerms = (expr: Expr): number => (expr.kind === "add" ? expr.terms.length : 1);
+
 function checkAlgebraicForm(expr: Expr): FormCheck {
   const terms = expr.kind === "add" ? expr.terms : [expr];
   const imaginary = terms.filter(containsImaginaryUnit);
   const real = terms.filter((term) => !containsImaginaryUnit(term));
-  if (real.length > 1 || imaginary.length > 1) {
+  // La parte reale può avere più termini solo se non si possono sommare tra loro (1 + √2 + i va bene, 1 + 2 + i no).
+  const realCombines = real.length > 1 && countTerms(simplify({ kind: "add", terms: real })) < real.length;
+  if (realCombines || imaginary.length > 1) {
     return fail("Serve la forma $a + bi$: una sola parte reale e una sola parte immaginaria.");
   }
   if (imaginary[0] !== undefined && !isImaginaryTerm(imaginary[0])) {
@@ -302,4 +311,18 @@ function checkTrigonometricForm(expr: Expr): FormCheck {
   const sine = second.factors.find((factor) => factor.kind === "fn" && factor.name === "sin");
   if (!second.factors.some(isImaginaryUnit) || sine?.kind !== "fn") return wrong;
   return equivalent(first.arg, sine.arg) ? OK : wrong;
+}
+
+function checkExponentialForm(expr: Expr): FormCheck {
+  const wrong = fail("Serve la forma esponenziale $\\rho\\,e^{i\\theta}$, con $\\rho > 0$ e $\\theta$ reale.");
+  const factors = expr.kind === "mul" ? expr.factors : [expr];
+  const power = factors[factors.length - 1];
+  const modulus = factors.slice(0, -1);
+  if (power?.kind !== "pow" || power.base.kind !== "const" || power.base.name !== "e") return wrong;
+  if (modulus.some((factor) => !isConstant(factor) || containsImaginaryUnit(factor))) return wrong;
+  if (modulus.length > 0 && !(modulus.reduce((product, factor) => product * evaluate(factor), 1) > 0)) return wrong;
+  // L'esponente è iθ con θ reale: l'unità immaginaria compare una volta sola, come fattore. Anche lo zero va bene (θ = 0).
+  const exponent = power.exp;
+  const isZero = literalRational(exponent)?.isZero() ?? false;
+  return isZero || isImaginaryTerm(exponent) ? OK : wrong;
 }
