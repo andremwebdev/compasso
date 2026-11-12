@@ -34,12 +34,19 @@ src/
 │  ├─ complex/          ✅ le tre forme dei numeri complessi, potenze, radici n-esime
 │  ├─ calculus/         ✅ valori di limite, derivata simbolica            🔜 successioni e somme (V2.M03, V2.M11)
 │  ├─ steps/            ✅ passaggi: formula risolutiva, Ruffini, divisione, scomposizione
-│  └─ display/          ✅ tabelle dei segni e di variazione, sistemi con la graffa   🔜 grafici statici (fase 3-4)
+│  └─ display/          ✅ tabelle dei segni e di variazione, sistemi con la graffa   🔜 grafici statici (fase 4, con le visualizzazioni)
 ├─ esercizi/            ✅ schema dei generatori, creazione dell'esercizio, valutazione delle risposte, opzioni,
 │                          verifica automatica dei generatori (verify.ts)
-├─ generatori/          (dalla sessione 3) un file per generatore: v1/m06/a04-g1.ts
+├─ generatori/          ✅ index.ts (elenco: codice → generatore), comuni/ (strumenti condivisi) e i cinque
+│                          generatori di riferimento: v1/m04/a07-g1, v1/m06/a04-g1, v2/m06/a03-g1, v3/m02/a01-g1, v3/m03/a01-g1
 ├─ contenuti/
+│  ├─ index.ts          ✅ elenco delle lezioni (i .md entrano come testo), loadLesson
+│  ├─ v1/m06/l04.md     ✅ la lezione di riferimento (disequazioni fratte)
 │  └─ formato/          ✅ sintassi delle lezioni: tipi, lettura, controllo di una lezione, verifica tra le lezioni
+├─ dati/                ✅ registro dei tentativi e progressi delle lezioni: IndexedDB con versione (DATA_VERSION),
+│                          ripiego su localStorage e memoria, migrazioni, riassunto per abilità
+├─ app/                 ✅ fetta verticale: stato (state.ts), testo ricco (testo/), anteprima e tastiera (risposta/),
+│                          schermata di esercizio e tastiera (componenti/), lezione a tratti e serie di esercizi (schermate/)
 └─ errori/              ✅ catalogo unico (sessione 0)
 ```
 
@@ -338,6 +345,14 @@ Gli **avvisi** non bocciano: `verify` mancante, codici dichiarati ma mai prodott
 **Markdown.** Il parser di Compasso si occupa solo della struttura propria (blocchi, sezioni, rimandi, formule). Il Markdown ordinario dentro i testi (paragrafi, grassetto, elenchi, tabelle) lo trasforma una libreria: **`marked`**, da installare quando l'app mostra la prima lezione (fase 3). L'ordine è fisso: prima `splitInline` toglie formule e rimandi, poi `marked` lavora sulle sole parti di testo. Così il LaTeX non viene mai toccato dal Markdown (in LaTeX `_` e `*` hanno un altro significato), e le formule si possono disegnare man mano che si scorre.
 
 Dalle lezioni si ricavano senza riscrivere nulla: le **flashcard automatiche** (ogni blocco definizione o teorema: `nome` davanti, enunciato dietro), il **glossario** (blocchi definizione con `termine` e blocchi glossario), le **dimostrazioni interattive** (i passaggi con le versioni sbagliate).
+
+## 15 bis. Generatori, dati e app (sessione 3) ✅
+
+**Generatori** (`src/generatori/`). Ogni generatore è un modulo con `export default defineGenerator(...)`; `index.ts` li elenca (`generators`, `findGenerator`, `generatorLevels` per la verifica dei contenuti). Tutti hanno la stessa struttura: un **modello** con i pochi dati che definiscono l'esercizio, `buildModel(level, rng)` che è l'unico punto con la casualità, `draftOf(model)` che ricava risposta, errori, passaggi e indizi, e `verify` che ricostruisce il modello dal seme e controlla la risposta per un'altra strada. `comuni/wrong.ts` tiene le risposte sbagliate che hanno senso (diverse dalla giusta e tra loro); `comuni/exact.ts` valuta un'espressione razionale in un punto con conti esatti. Come si replica un generatore: `REGOLE.md`.
+
+**Dati** (`src/dati/`). `AttemptRecord` è una riga del registro (specifica, sezione 7); `LessonProgress` dice fino a quale tratto è arrivata una lezione. `DataStore` è l'interfaccia; `openStore()` prova IndexedDB (base `compasso`, magazzini `attempts` e `lessons`, versione della base = `DATA_VERSION`), poi localStorage (un solo valore JSON `{ version, attempts, lessons }`), poi la sola memoria. Dati di una versione più nuova di quella che l'app conosce non si aprono (`DataVersionError`): mai scrivere sopra dati che non si capiscono. `skillSummaries` ricava i conteggi per abilità dal registro; la formula della padronanza (fase 8) partirà da lì. In Chromium IndexedDB funziona anche nel file aperto con doppio clic.
+
+**App** (`src/app/`). Preact con segnali. Una sola schermata di esercizio (`ExerciseView`) per tutti i contesti: sceglie il modo di rispondere dal tipo di risposta (campo con anteprima, caselle per matrici e vettori, scelta multipla quando è chiesta e l'esercizio ha tre risposte sbagliate previste, vero o falso), valuta con `evaluateResponse`, mostra l'errore riconosciuto con la spiegazione del catalogo e registra il tentativo. L'anteprima usa gli stessi parser della valutazione. La lezione (`LessonView`) si mostra a tratti che finiscono con una domanda lampo (`lessonChunks`): le formule di un tratto si disegnano solo quando il tratto si apre. Il testo ricco passa da `renderRichText`: formule e rimandi vengono tolti prima di dare il testo a marked e rimessi dopo.
 
 ## 16. Come si estende
 

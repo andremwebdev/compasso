@@ -1,6 +1,6 @@
 # STATO
 
-Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: sessione 3 in corso (generatori di riferimento e lezione salvati; fetta verticale in costruzione).
+Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione 3 (generatori di riferimento e fetta verticale).
 
 ## Fatto
 
@@ -41,11 +41,33 @@ Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: sessione 3 in corso
 - **Documenti**: `docs/ARCHITETTURA.md` aggiornato a quello che esiste; `REGOLE.md` con il motore completo e la procedura di verifica di un generatore (gli esempi sono provati da un test).
 - **Test**: 872 test in 24 file, verdi in locale e su GitHub. Tempi: la verifica del generatore di prova (4.000 esercizi) richiede meno di un secondo; generare un esercizio di prova circa 0,02 ms.
 
+**Sessione 3 — generatori di riferimento e fetta verticale (fase 3)**
+
+- **Cinque generatori di riferimento** in `src/generatori/` (il quarto punto della specifica, «determinanti e sistemi lineari», è diventato due generatori, uno per modulo), ognuno con tre livelli, verifica indipendente e test che chiama `verifyGenerator` (2.000 semi per livello, zero problemi e zero avvisi):
+  - `V1.M06.A04.g1` disequazioni fratte (risposta: insieme). Tabella dei segni nei passaggi; risposte sbagliate per `DISEQ.SEGNO_DENOMINATORE`, `DISEQ.UNIONE_INTERSEZIONE`, `DISEQ.ESTREMI`, `COND.DENOMINATORE`, più `CALC.MENO_PARENTESI` e `DISEQ.SECONDO_GRADO`. Verifica: la disequazione provata con conti esatti in un centinaio di punti.
+  - `V1.M04.A07.g1` scomposizione di polinomi (espressione con vincolo di forma `factored`). Passaggi di `factorPolynomial`.
+  - `V2.M06.A03.g1` derivate: prodotto, quoziente, funzione composta (espressione libera); al livello 3 due regole insieme.
+  - `V3.M03.A01.g1` calcolo del determinante, ordine 2, 3 e 4 (numero esatto).
+  - `V3.M02.A01.g1` sistemi lineari con Gauss, 2×2 e 3×3, al livello 3 con scambio di righe (vettore colonna).
+- **Elenco dei generatori** (`src/generatori/index.ts`) e **strumenti comuni** (`src/generatori/comuni/`); un test controlla che ogni file sia in elenco e abbia il suo test.
+- **Catalogo errori: 7 voci nuove** (72 in tutto), anche nella tabella di `docs/SPECIFICA.md` e nei controlli sympy: `CALC.SEGNO_TRASPORTO`, `ALG.RACCOGLIMENTO`, `ALG.SEGNI_FATTORI`, `AN.DERIVATA_QUOZIENTE`, `ALIN.GAUSS_TERMINE_NOTO`, `ALIN.DET_SEGNI`, `ALIN.DET_DIAGONALE`.
+- **Lezione `V1.M06.L04` «Disequazioni fratte»** (`src/contenuti/v1/m06/l04.md`): due definizioni, tre esempi svolti con la tabella dei segni, quattro riquadri attenzione, quattro domande lampo (due scritte a mano, due dal generatore), due flashcard, riepilogo. `src/contenuti/index.ts` elenca le lezioni; un test esegue `verifyContents` su tutte le lezioni vere contro l'elenco dei generatori veri.
+- **Strato dei dati** (`src/dati/`): registro dei tentativi e progressi delle lezioni in **IndexedDB con numero di versione dei dati** (`DATA_VERSION = 1`), ripiego su localStorage e poi memoria, migrazioni, dati di versione futura rifiutati. Provato con `fake-indexeddb`.
+- **Fetta verticale nell'app**:
+  - Teoria: la lezione letta dal Markdown, mostrata a tratti che finiscono con una domanda lampo; si riprende dal tratto raggiunto; alla fine, cinque esercizi a livelli crescenti (1, 1, 2, 2, 3).
+  - Schermata di esercizio completa: risposta scritta con anteprima in tempo reale, scelta multipla, caselle per i vettori, «Non lo so», due indizi, esito con icona e parola, errore riconosciuto con nome, spiegazione ed esempio dal catalogo, risposta giusta, soluzione passo passo, «Esercizio simile», «Torna alla lezione», «Segna come distrazione»; codice del generatore, livello e seme nell'angolo.
+  - Tastiera matematica con i livelli Base, Insiemi e Funzioni; sul telefono la tastiera di sistema non si apre, sul computer si scrive con quella fisica e Invio conferma.
+  - Esercizi: i cinque generatori, per livello. Tu: conteggi e stato dei dati. Oggi: scorciatoia alla lezione. Test: segnaposto.
+  - Primo abbozzo dello stile Compasso: carta avorio con quadrettatura, blu progetto, accenti arancioni, riquadri per tipo con etichetta a parole, tema chiaro e scuro secondo il sistema.
+- **`REGOLE.md`**: «Come replicare un generatore» (tabella dei riferimenti, struttura in cinque parti, procedura, abitudini), la lezione di riferimento, «L'app in breve». **`docs/ARCHITETTURA.md`**: sezione 15 bis.
+- **Prove fatte**: percorso completo in un telefono simulato (Chromium con le misure di un iPhone 11, tema chiaro e scuro): lezione dall'inizio alla fine, esercizi, dati che restano dopo il ricaricamento, nessun errore in console, nessuno scorrimento orizzontale. Versione PC aperta come file in Chromium: funziona, IndexedDB compresa. **Non è stata fatta una prova su un iPhone vero**: è la prima cosa da fare.
+- **Test**: 941 test in 33 file. La prova end-to-end percorre lezione ed esercizio nelle due versioni compilate.
+
 ## In corso
 
-**Sessione 3 (fetta verticale) — in corso.** Già salvato su GitHub: i generatori di riferimento, la lezione, l'elenco dei generatori e delle lezioni. Da fare: la fetta verticale nell'app (lezione mostrata dal Markdown, schermata di esercizio, tastiera, dati in IndexedDB), «come si replica un generatore» in `REGOLE.md`, aggiornamento finale di questo file.
+Niente. Il lavoro della sessione 3 è completo e caricato su GitHub (ramo `main`). **La fase 3 (fetta verticale) è chiusa**, salvo la prova sul telefono vero.
 
-### Codici assegnati nella sessione 3 (la scaletta futura deve rispettarli)
+## Codici assegnati (la scaletta futura deve rispettarli)
 
 | Codice | Che cos'è |
 |---|---|
@@ -67,14 +89,14 @@ Restano liberi per la scaletta: `V1.M06.L01`–`L03` (le lezioni che precedono l
 
 ## Prossimo passo
 
-**Sessione 3 — fetta verticale (fase 3).** Dalla specifica, sezione 13:
+**Fase 4 — involucro dell'app** (specifica, sezione 13), e in parallelo le prime lezioni del Volume 1 seguendo `REGOLE.md`:
 
-1. Quattro **generatori di riferimento** in `src/generatori/`, ognuno con il test che chiama `verifyGenerator`: disequazioni fratte (V1.M06), scomposizione di polinomi (V1.M04), derivate (V2.M06), determinanti e sistemi lineari (V3.M02-M03). Il motore ha già quello che serve: `signTable` e `solutionFromSigns`, `factorPolynomial`, `derive` e `deriveWithSteps`, `determinant`, `gaussElimination`, `solveLinearSystem`. Il generatore di prova in `test/esercizi/fixtures/` mostra la forma.
-2. La **lezione sulle disequazioni fratte** in Markdown (`src/contenuti/v1/m06/…`), con un test che esegue `verifyContents` su tutte le lezioni vere e sul catalogo dei generatori veri (va costruito un elenco dei generatori: codice → livelli).
-3. L'app che mostra la lezione e la schermata di esercizio completa (anteprima in tempo reale con `parseExpression` e `parseSolutionSet`, riconoscimento degli errori con `evaluateResponse`), progressi in IndexedDB. Qui si installa `marked`.
-4. Completare `REGOLE.md`: i quattro generatori e la lezione come modelli da copiare.
-
-Restano da fare quando servono (non bloccano la sessione 3): grafici statici di funzioni (`display/plot.ts`), nodi per successioni e somme (V2.M03, V2.M11).
+1. **Prova su iPhone** della versione su Pages: lezione ed esercizi dall'inizio alla fine. In particolare: che la tastiera di sistema non si apra toccando il campo di risposta, che i tasti siano comodi, che le tabelle dei segni scorrano di lato.
+2. Le cinque sezioni complete, navigazione (oggi non c'è la cronologia del browser: si torna indietro solo con il pulsante in alto), impostazioni, backup (`exportData` esiste già).
+3. Tastiera matematica completa: livelli Analisi, Lineare, Complessi; frazioni e potenze «a modello» invece che come testo.
+4. Aspetto Compasso definitivo con i due temi e la modalità lettura.
+5. Flashcard (le due della lezione sono lette ma non ancora mostrate), glossario come pagina, diario degli errori.
+6. Prima di scrivere i contenuti: la scaletta delle lezioni e delle abilità di ogni modulo, rispettando i codici assegnati qui sopra.
 
 ## Decisioni da rivedere
 
@@ -129,12 +151,24 @@ Decisioni prese seguendo la sezione 0 della specifica, dove il testo non decide.
 39. **`NON_CLASSIFICATO`** è una costante, non una voce del catalogo.
 40. **Verifica sympy fuori da CI**: va eseguita a mano quando si cambiano gli esempi del catalogo.
 
+41. **«Determinanti e sistemi lineari» = due generatori** (`V3.M03.A01.g1` e `V3.M02.A01.g1`), perché sono due abilità in due moduli; così ci sono anche i riferimenti per le risposte «numero» e «matrice».
+42. **Sette voci nuove nel catalogo errori** (elenco in «Fatto», sessione 3). Sono nella tabella di `docs/SPECIFICA.md` del repository, **non ancora nella copia della specifica dentro il Progetto di Claude**: va allineata a mano (sono sette righe della tabella della sezione 5).
+43. **Risposte sbagliate con lo stesso codice**: uno stesso errore può manifestarsi in due modi (per esempio `CALC.SEGNO_TRASPORTO` in due punti diversi della sostituzione all'indietro); i generatori lo usano per arrivare a tre risposte sbagliate.
+44. **Lezione a tratti**: il tratto successivo si apre solo dopo aver risposto alla domanda lampo (qualunque risposta, anche «Non lo so»). Riaprendo la lezione le domande dei tratti già visti tornano senza risposta.
+45. **Prerequisiti di V1.M06.L04 vuoti** finché le lezioni precedenti non esistono (dettagli sotto la tabella dei codici).
+46. **Tastiera come testo**: i tasti inseriscono testo che il parser legge (`/` per la frazione, `^` per la potenza, `√(`); l'anteprima mostra la formula. La tastiera «a modello» è della fase 4.
+47. **Livello Funzioni della tastiera** aggiunto già ora (serve alle derivate), oltre a Base e Insiemi chiesti.
+48. **Esercizi dopo la lezione**: cinque, ai livelli 1, 1, 2, 2, 3. La difficoltà automatica arriva con la padronanza (fase 8).
+49. **Glossario**: confermato che si ricava dalle lezioni (`src/app/lezione/glossary.ts`); la cartella `src/glossario/` resta vuota e si può togliere.
+50. **Padronanza**: non c'è ancora una formula; `skillSummaries` dà solo conteggi per abilità (le domande lampo non contano, le distrazioni non pesano).
+51. **Formule dei testi degli esercizi ingrandite** dal foglio di stile, perché le frazioni in riga erano piccole; in alternativa i generatori potrebbero scrivere la disequazione a centro pagina.
+
 ## Domande aperte
 
-- **IndexedDB nella versione PC** (specifica, sezione 12): non verificato; da provare a mano su `compasso.html` aperto con doppio clic quando esiste lo strato dei dati (fase 3). Ripiego previsto: localStorage.
-- **Glossario**: la specifica chiede per ogni termine codice, nome, definizione breve e lezione. `verifyContents` lo ricava già dalle lezioni (blocchi `definizione` con `termine` e blocchi `glossario`); la cartella `src/glossario/` resterebbe per il codice che lo mostra. Da confermare nella sessione 3.
+- **IndexedDB nella versione PC**: in Chromium funziona anche nel file aperto con doppio clic (provato). Da provare in Safari e Firefox; il ripiego su localStorage e poi sulla memoria esiste ed è testato.
 - **Parentesi degli intervalli**: `(1; 3)` oppure `]1; 3[` nella scrittura dell'app? Oggi `(1; 3)`; in lettura valgono entrambe (decisione 1 della sessione 2).
-- **Grafici statici**: vanno fatti nella fase 3 (se la lezione sulle disequazioni fratte ne mostra uno) o nella fase 4 con le visualizzazioni?
+- **Grafici statici**: la lezione sulle disequazioni fratte non ne usa; si fanno nella fase 4 con le visualizzazioni.
+- **Riordino** (`ordering`): la schermata di esercizio non lo mostra ancora; serve con le dimostrazioni interattive.
 
 ## Problemi noti
 
@@ -146,6 +180,13 @@ Limiti del motore (dettagli in `docs/ARCHITETTURA.md`, sezione 18):
 - Insiemi: l'unione tra soluzioni periodiche e un intervallo non è rappresentabile.
 - `FORMA.DECIMALE` per valori approssimati si riconosce solo nelle risposte costanti, non in espressioni con coefficienti decimali (`0,33x`) né negli estremi approssimati di un insieme.
 - Il parser non legge fattoriale, gradi (`30°`), numeri periodici, notazione scientifica con `E`: si aggiungono al parser quando un modulo li richiede.
+
+Della sessione 3:
+
+- Il parser degli insiemi non completa i testi scritti a metà (dà un errore invece dei quadratini): l'anteprima dell'app lo aggira provando alcune chiusure plausibili (`src/app/risposta/preview.ts`). La soluzione vera è nel parser.
+- Nei passaggi delle disequazioni fratte la riga finale (disuguaglianze e intervalli sulla stessa riga) su telefono va fatta scorrere di lato.
+- Le opzioni di scelta multipla di un insieme mostrano solo gli intervalli, non le disuguaglianze.
+- `app.js` pesa circa 560 KB (KaTeX, motore, marked): va bene per ora, da misurare sul telefono nella fase 9.
 
 Altro:
 

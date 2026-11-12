@@ -38,8 +38,8 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | `src/errori/` | catalogo unico degli errori | niente |
 | `src/motore/` | matematica pura: numeri, espressioni, parser, equivalenza, forma, insiemi, matrici | solo se stesso |
 | `src/esercizi/` | schema dei generatori, creazione dell'esercizio, valutazione delle risposte | `motore`, `errori`, `codici` |
-| `src/generatori/` | un file per generatore | `esercizi`, `motore`, `errori`, `codici` |
-| `src/contenuti/` | lezioni in Markdown; in `formato/` il codice che le legge e le controlla | `codici`, `errori` |
+| `src/generatori/` | un file per generatore, `index.ts` con l'elenco, `comuni/` con gli strumenti condivisi | `esercizi`, `motore`, `errori`, `codici` |
+| `src/contenuti/` | lezioni in Markdown (`v1/m06/l04.md`), `index.ts` con l'elenco; in `formato/` il codice che le legge e le controlla | `codici`, `errori` |
 | `src/dati/` | progressi, ripasso, registro, backup | `codici`, `errori`, `esercizi` (solo tipi) |
 | `src/app/` | interfaccia | tutto |
 
@@ -135,7 +135,7 @@ const steps = scomposto.steps.map((step) => ({ text: stepText(step) }));   // pa
 
 ## Come aggiungere un generatore
 
-*La sessione 3 aggiunge i quattro generatori di riferimento da copiare e completa questa sezione.* Lo schema è fisso (`src/esercizi/schema.ts`) e la verifica automatica esiste (`src/esercizi/verify.ts`). Un generatore minimo già scritto come uno vero, con il suo test, è in `test/esercizi/fixtures/sample-generator.ts` e `test/esercizi/verify.test.ts`.
+Lo schema è fisso (`src/esercizi/schema.ts`) e la verifica automatica esiste (`src/esercizi/verify.ts`). **Un generatore nuovo non si scrive da zero: si copia quello di riferimento più vicino** e lo si adatta, seguendo «Come replicare un generatore» qui sotto.
 
 **Dove**: `src/generatori/<volume>/<modulo>/<abilità>-<variante>.ts`, in minuscolo: il generatore `V1.M06.A04.g1` sta in `src/generatori/v1/m06/a04-g1.ts`. Il suo test in `test/generatori/v1/m06/a04-g1.test.ts`.
 
@@ -213,11 +213,72 @@ Gli **avvisi** (`report.warnings`) non bocciano da soli, ma un generatore finito
 - [ ] il test del generatore chiama `verifyGenerator` e non trova problemi né avvisi;
 - [ ] il generatore ha la sua `verify`, indipendente dalla costruzione;
 - [ ] il testo dice che forma è richiesta e, se serve un'approssimazione, con quale arrotondamento;
+- [ ] il generatore è in `src/generatori/index.ts` e il suo test sta nel percorso corrispondente (lo controlla `test/generatori/elenco.test.ts`);
+- [ ] il test controlla anche il numero di risposte sbagliate e il riconoscimento degli errori scritti a mano;
+- [ ] una ventina di esercizi per livello sono stati letti a occhio;
 - [ ] il generatore non ha toccato `src/motore/` né `src/esercizi/`.
+
+## Come replicare un generatore
+
+I generatori di riferimento sono cinque, scritti nella sessione 3. Coprono i tipi di risposta più usati: ogni generatore nuovo parte da uno di loro.
+
+| Se la risposta è… | Copia | Che cosa mostra |
+| --- | --- | --- |
+| un insieme di soluzioni (disequazioni, domini, equazioni con più soluzioni) | `src/generatori/v1/m06/a04-g1.ts` — disequazioni fratte | zeri scelti prima, tabella dei segni nei passaggi, errori fatti con `solutionFromSigns`, verifica per punti con conti esatti |
+| un'espressione in una forma precisa («scomponi», «sviluppa», «semplifica») | `src/generatori/v1/m04/a07-g1.ts` — scomposizione | fattori scelti prima e moltiplicati, vincolo `form`, passaggi scritti dal motore, errori scritti fattore per fattore |
+| un'espressione in qualunque forma equivalente (derivate, primitive, semplificazioni) | `src/generatori/v2/m06/a03-g1.ts` — derivate | modello a pezzi (`Part`), regola applicata per esteso, errori = la regola applicata male, doppia verifica (simbolica e numerica) |
+| un numero esatto (determinanti, valori, limiti finiti, probabilità) | `src/generatori/v3/m03/a01-g1.ts` — determinante | estrazione ripetuta finché i numeri sono puliti e gli errori danno risultati tutti diversi, verifica con un altro algoritmo |
+| una matrice o un vettore (sistemi, prodotti, inverse) | `src/generatori/v3/m02/a01-g1.ts` — sistemi con Gauss | costruzione `L·U` perché i conti restino interi, passaggi registrati dal motore, verifica `A·x = b` |
+
+Per vero o falso, scelta multipla scritta a mano, limiti e riordini non c'è ancora un riferimento: il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella).
+
+**La struttura, uguale in tutti e cinque.** Un file ha sempre queste parti, in quest'ordine:
+
+1. **Commento in cima**: che cosa allena, come è costruito all'indietro, che cosa cambia tra i tre livelli.
+2. **Il modello** (`interface Model`): i pochi dati che definiscono un esercizio (gli zeri, i fattori, i pezzi della funzione, la matrice). Tutto il resto si ricava da lì.
+3. **`buildModel(level, rng)`**: sceglie la soluzione e costruisce il modello. È l'**unico** punto che usa `rng`. Ogni livello ha la sua funzione (`buildLevel1`, …); dentro un livello, `rng.pick([...] as const)` sceglie la «forma» dell'esercizio e uno `switch` la costruisce.
+4. **`draftOf(model)`**: dal modello ricava risposta giusta, risposte sbagliate, passaggi, indizi, testo. Non usa `rng`.
+5. **`verify(exercise)`**: ricostruisce il modello con `buildModel(exercise.level, Rng.forExercise(exercise.generator, exercise.level, exercise.seed))` e controlla la risposta per una strada diversa da quella di `draftOf`.
+
+**Procedura**
+
+1. Scegli il riferimento dalla tabella e copialo nel posto del nuovo codice (`src/generatori/<volume>/<modulo>/<abilità>-g1.ts`); copia anche il suo test in `test/generatori/…` con lo stesso percorso.
+2. Cambia `code`, `skill`, `lesson`, `title`. I codici di lezione e di abilità si prendono dalla scaletta (o da `STATO.md`): non si inventano.
+3. Riscrivi il **modello** e `buildModel` per il nuovo argomento. Decidi prima a parole i tre livelli e scrivili nel commento in cima.
+4. Elenca gli **errori tipici** dell'argomento, guardando il catalogo (`src/errori/catalog.ts`). Per ognuno scrivi nel commento come si manifesta («moltiplica per il denominatore: resta numeratore ⋛ 0») e poi il codice che **rifà il conto con quell'errore**. Se l'errore giusto nel catalogo non c'è, lo aggiungi (sezione «Catalogo degli errori»): non si usa un codice che parla d'altro, perché la spiegazione che Andrea leggerebbe sarebbe sbagliata.
+5. Passa i candidati a `distinctWrongSets`, `distinctWrongExpressions` o `distinctWrongMatrices` (`src/generatori/comuni/wrong.ts`): tengono solo le risposte diverse dalla giusta e tra loro. Un candidato che per certi numeri non ha senso vale `null`. L'ordine conta: i primi quattro diventano le opzioni della scelta multipla, quindi gli errori più importanti vanno per primi.
+6. Scrivi passaggi e indizi. Dove il motore sa già scrivere i passaggi (`factorPolynomial`, `gaussElimination`, `signStudySteps`, `solveQuadratic`, `ruffini`), si usano i suoi.
+7. Scrivi `verify` (vedi sotto «Come scrivere `verify`»).
+8. Aggiungi il generatore a `src/generatori/index.ts` (una riga di `import` e il nome nell'elenco).
+9. Esegui il test. Poi **leggi una ventina di esercizi** per livello, con risposte sbagliate e passaggi: la verifica automatica non vede un testo goffo, un esercizio banale o un errore poco credibile. Basta un test provvisorio che stampa `generateExercise(generator, livello, seme)` per i semi da 0 a 20.
+
+**Che cosa deve contenere il test del generatore** (oltre a `verifyGenerator`): quante risposte sbagliate ha ogni esercizio (almeno tre dal livello 2, perché l'esercizio possa diventare una scelta multipla); che la risposta giusta **scritta come la scriverebbe Andrea** sia accettata da `evaluateResponse` e ogni risposta sbagliata sia riconosciuta con il suo codice; per i generatori con vincolo di forma, che la risposta equivalente ma nella forma sbagliata dia `FORMA.NON_RICHIESTA`.
+
+**Abitudini che evitano i difetti più comuni**
+
+- **Numeri sotto controllo alla fonte.** Se una risposta (anche sbagliata) esce dai `limits`, non si allargano i limiti: si restringono i numeri estratti, oppure si estrae di nuovo finché l'esercizio va bene (come fa `draw` nel determinante), sempre con lo stesso `rng`.
+- **Errori che coincidono.** Capita che per certi numeri due errori diano la stessa risposta, o la risposta giusta. Se capita di rado, basta `distinctWrong…`, che scarta il doppione. Se capita spesso, si cambia la costruzione in modo che non capiti (nelle disequazioni fratte la posizione del fattore comune dipende dal verso; nei sistemi si accettano solo i numeri per cui i tre errori danno tre vettori diversi).
+- **Una forma, tanti errori possibili.** Una forma di esercizio che lascia meno di due errori credibili (per esempio una frazione con il denominatore sempre positivo) si limita ai casi in cui gli errori ci sono, oppure si toglie.
+- **Scrittura a mano.** Le espressioni mostrate si scrivono come su un quaderno: `−x` e non `−1x`, il meno davanti alla frazione, niente parentesi doppie. Il generatore decide la forma che mostra; `simplify` da solo non basta sempre.
+- **Semi congelati.** Un test controlla il testo di due o tre semi fissi: se cambia, vuol dire che è cambiato l'ordine delle estrazioni, e gli esercizi già salvati nel registro di Andrea non sono più gli stessi.
+- **Strumenti comuni.** `src/generatori/comuni/` contiene quello che serve a più generatori (`rationalAt` per il valore esatto in un punto, `distinctWrong…`). Una funzione che serve a un secondo generatore si sposta lì; una funzione di matematica vera va nel motore, in una sessione dedicata, non dentro un generatore.
 
 ## Come scrivere una lezione
 
-*La sessione 3 aggiunge la lezione di riferimento e le indicazioni sul tono viste all'opera.* La sintassi è fissa; la legge e la controlla `src/contenuti/formato/` (`parseLesson`), che dice riga e motivo di ogni problema.
+La sintassi è fissa; la legge e la controlla `src/contenuti/formato/` (`parseLesson`), che dice riga e motivo di ogni problema. **La lezione di riferimento è `src/contenuti/v1/m06/l04.md` (disequazioni fratte): una lezione nuova si scrive tenendola aperta accanto.**
+
+**Che cosa mostra la lezione di riferimento**
+
+- Comincia da quello che Andrea sa già e dice subito che cosa cambia. Niente premesse.
+- Prima di dare il metodo fa vedere **perché serve**: un conto semplice che, fatto nel modo spontaneo, dà un risultato falso (e lo si controlla con un numero).
+- Ogni termine nuovo ha la sua definizione in un riquadro; ogni errore tipico ha il suo riquadro `attenzione` con il codice del catalogo, messo **dove quell'errore si fa**, non in fondo.
+- Il metodo è un elenco numerato di passi, e gli esempi svolti ripetono gli stessi passi con le stesse parole («Passo 1», «Passo 2»…).
+- Gli esempi vanno dal più semplice al più ricco, e ognuno aggiunge una sola difficoltà.
+- L'app mostra la lezione **a tratti: ogni tratto finisce con una domanda lampo**, e il tratto seguente si apre dopo la risposta. Quindi le domande vanno messe ogni due o tre blocchi, subito dopo l'idea che controllano; quello che sta dopo l'ultima domanda è la chiusura (riepilogo).
+- Domande lampo di due tipi: scritte a mano per controllare un'idea (con il codice di errore sulle opzioni sbagliate tipiche), prese dal generatore per provare il metodo (livello 1 a metà lezione, livello 2 verso la fine).
+- Frasi brevi, dando del tu, senza punti esclamativi né complimenti. Il rigore non si abbassa: le condizioni si scrivono sempre.
+
+**Per aggiungere una lezione**: il file `.md` al suo posto, una riga in `src/contenuti/index.ts`, e `npm test` (il test `test/contenuti/lezioni.test.ts` esegue la verifica dei contenuti su tutte le lezioni vere, prova ogni formula con KaTeX e controlla che l'elenco sia completo). Le abilità dichiarate in `abilita` devono avere il loro generatore `…g1`, che rimanda a quella lezione.
 
 **Dove**: `src/contenuti/<volume>/<modulo>/<lezione>.md`, in minuscolo: la lezione `V1.M06.L04` sta in `src/contenuti/v1/m06/l04.md`.
 
@@ -373,3 +434,14 @@ Il lavoro si salva su GitHub (commit e push) dopo ogni parte completata, non sol
 - Il service worker (`src/app/sw.ts`) salva in anticipo tutti i file della build; la versione della cache è un hash del contenuto. Una versione nuova si usa dalla riapertura successiva (nessun `skipWaiting`, per non cambiare l'app sotto gli occhi di chi sta studiando).
 - GitHub Pages serve l'app sotto `/compasso/`: nell'app si usano solo percorsi relativi.
 - `src/app/sw.ts` ha un suo `tsconfig.sw.json` (libreria WebWorker) ed è escluso dal `tsconfig.json` principale.
+- I file `.md` delle lezioni si importano come testo: `loader: { ".md": "text" }` in `scripts/build.mjs`, un piccolo plugin in `vitest.config.ts`, la dichiarazione in `src/contenuti/markdown.d.ts`.
+
+## L'app in breve (fetta verticale)
+
+- `src/app/state.ts`: sezione aperta, schermata aperta (`open(...)`), dati di Andrea in segnali (`attempts`, `lessonProgress`), `recordAttempt`, `markDistraction`, `saveLessonProgress`.
+- `src/app/testo/render.ts`: `renderRichText` trasforma il testo ricco (Markdown, `$formule$`, `[[rimandi]]`) in HTML con marked e KaTeX. Ci passa solo testo dell'app, mai testo scritto da Andrea.
+- `src/app/risposta/`: `preview.ts` (anteprima in tempo reale con gli stessi parser della valutazione), `keys.ts` (i tasti della tastiera matematica per livello e `pressKey`, la funzione che applica un tasto a testo e cursore).
+- `src/app/componenti/ExerciseView.tsx`: **l'unica** schermata di esercizio, usata dappertutto (domande lampo, esercizi dopo la lezione, sezione Esercizi). Riceve un `Exercise` e il contesto; registra da sola il tentativo. Un tipo di risposta nuovo si aggiunge qui e in `preview.ts`.
+- `src/app/schermate/`: `LessonView` (la lezione a tratti), `Practice` (una serie di esercizi), `Sections` (le pagine iniziali delle cinque sezioni).
+- `src/dati/`: `openStore()` apre IndexedDB (ripiego: localStorage, poi memoria). `DATA_VERSION` è la versione della struttura dei dati: **quando si cambia un tipo in `types.ts` il numero sale di uno**, si aggiunge il passo in `upgrade` (`store.ts`) e in `STEPS` (`migrate.ts`), con un test che parte da dati della versione precedente.
+- Il campo di risposta è un `<input inputmode="none">`: sul telefono non apre la tastiera di sistema (si scrive con quella matematica), sul computer accetta la tastiera fisica e Invio conferma.
