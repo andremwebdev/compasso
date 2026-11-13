@@ -2,7 +2,7 @@
 
 Revisione critica di `src/motore` e dei suoi test, fatta come la farebbe un revisore esterno: lettura di tutto il codice, più prove a tappeto contro modelli indipendenti (valutazione numerica, forza bruta, conti rifatti in un altro modo). Questo documento si aggiorna mentre il lavoro procede.
 
-Stato: **in corso** — fatte le parti 1 (numeri, espressioni, LaTeX, parser) e 2 (algebra, equivalenza, forma, derivate, passaggi).
+Stato: **in corso** — fatte le parti 1 (numeri, espressioni, LaTeX, parser), 2 (algebra, equivalenza, forma, derivate, passaggi) e 3 (insiemi, matrici, complessi, tabelle); restano i documenti.
 
 ## Come è stata fatta
 
@@ -44,6 +44,20 @@ Nessun difetto trovato, né leggendo né con le prove, in: `Rational`, interi, `
 | 10 | `form` · `trigonometricForm` | Rifiutava `ρ(i sin θ + cos θ)`: stessa forma, addendi scambiati. | I due addendi valgono in qualunque ordine. Con la correzione 4, `2(cos π/3 + i sin π/3)` scritto senza parentesi è accettato. |
 | 11 | `algebra/upoly.ts` | L'ordine dei fattori di `upFactor` usava `localeCompare`, che **dipende dalla lingua del dispositivo**: contro il principio «deterministico» (l'ordine entra nei passaggi di scomposizione e negli autovalori complessi). | Ordine per grado e poi per coefficienti confrontati come numeri. Un test controlla che in `src/motore` non ci siano `localeCompare`, `Intl`, `Math.random`, `Date`. |
 | 12 | `steps/quadratic.ts` | Nel calcolo del discriminante una frazione al quadrato usciva `\frac{1}{2}^{2}`, senza parentesi. | `\left(\frac{1}{2}\right)^{2}`. |
+
+### Parte 3 — insiemi di soluzioni (lettura)
+
+Operazioni, forma canonica, confronto, matrici, complessi, tabelle e passaggi hanno retto a tutte le prove: le correzioni di questa parte sono tutte in `parser/sets.ts`.
+
+| # | Difetto | Correzione |
+| --- | --- | --- |
+| 13 | **Il numero e letto come la congiunzione «e»**: `x ≤ e ∨ x ≥ e²` e `0 < x ≤ e ∨ x > 10` davano «Manca un estremo»; `x > e e x < 5` pure. Sono le risposte tipiche delle disequazioni con logaritmi ed esponenziali (V1.M09). | «e» è una congiunzione solo tra due condizioni complete (dopo la fine di un numero o di una lettera, prima dell'inizio di un'altra condizione). `x = 2 e + 1` resta un numero. |
+| 14 | Due soluzioni di un'equazione si potevano scrivere solo con `∨` o tra graffe: `x = 3; x = 5`, `x=1, x=2`, `3; 5` erano errori. | Fuori dalle parentesi, `;` (o virgola e spazio) tra **uguaglianze o numeri** vale «oppure». Con le disuguaglianze resta un errore, ma spiegato: lì `;` sarebbe ambiguo (unione o sistema?). |
+| 15 | `x_1 = 2 ∨ x_2 = 3` era un errore («scrivi la soluzione con x da sola»). | L'incognita vale anche con l'indice: `x_1`, `x1`, `x₁`. |
+| 16 | `[−∞; 2]` e `(2; +∞]` erano accettati in silenzio come se le parentesi fossero aperte: è proprio l'errore `DISEQ.ESTREMI` che lo standard rigoroso non deve lasciar passare. | Testo non valido, con il motivo («l'infinito non può essere incluso»): Andrea lo corregge prima di confermare. |
+| 17 | `{1,2}` era letto come il solo numero 1,2 e **l'anteprima lo disegnava identico a come l'aveva scritto**: chi intendeva «1 e 2» non poteva accorgersene. | Testo non valido, con il modo giusto di scrivere i due casi. `{1; 2}`, `{1, 2}`, `{1,5; 2}`, `x = 1,2` restano validi. |
+| 18 | `∀x ∈ ℝ` e `∄x ∈ ℝ` valevano solo con la lettera x. | Valgono con l'incognita dell'esercizio. |
+| 19 | `parseSolutionSet` poteva lanciare con testi enormi (stessa causa della correzione 2). | Limite di lunghezza e nessuna eccezione verso l'esterno. |
 
 ## Che cosa resta
 

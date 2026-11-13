@@ -8,7 +8,7 @@ import {
   isCanonicalSet, isEmptySet, lessThan, open, openClosed, periodic, points, realSet, setComplement, setContains, setDifference,
   setHasDecimal, setIntersection, setsEqual, setToInequalityLatex, setToLatex, setUnion, type RealSet, type SolutionSet,
 } from "../../src/motore/sets";
-import { draws, parse } from "./helpers";
+import { draws, drawsText, parse } from "./helpers";
 
 const show = (set: SolutionSet) => setToLatex(set);
 const read = (text: string): SolutionSet => {
@@ -355,5 +355,94 @@ describe("lettura degli insiemi scritti da Andrea", () => {
       }
     }
     expect(valid).toBeGreaterThan(100);
+  });
+});
+
+describe("revisione 4a: lettura degli insiemi, casi che sbagliavano", () => {
+  const latex = (text: string, variable = "x"): string => {
+    const result = parseSolutionSet(text, { variable });
+    if (!result.ok) throw new Error(`${text}: ${result.error.message}`);
+    return setToLatex(result.value, { asWritten: true, variable });
+  };
+  const message = (text: string): string => {
+    const result = parseSolutionSet(text);
+    return result.ok ? "(letto)" : result.error.message;
+  };
+
+  it.each([
+    // Prima davano «Manca un estremo»: il numero e seguito da uno spazio era letto come la congiunzione «e».
+    ["x ≤ e ∨ x ≥ e^2", "\\left(-\\infty; e\\right] \\cup \\left[e^{2}; +\\infty\\right)"],
+    ["0 < x ≤ e ∨ x > 10", "\\left(0; e\\right] \\cup \\left(10; +\\infty\\right)"],
+    ["x < e o x > 3", "\\left(-\\infty; e\\right) \\cup \\left(3; +\\infty\\right)"],
+    ["x > e e x < 5", "\\left(e; 5\\right)"],
+    ["x > 1 e x < e", "\\left(1; e\\right)"],
+    ["x < 5 e e < x", "\\left(e; 5\\right)"],
+    ["x > 1 e x < 3", "\\left(1; 3\\right)"],
+    ["x ≥ 2 e x ≠ 3", "\\left[2; 3\\right) \\cup \\left(3; +\\infty\\right)"],
+    ["(e; +∞) ∪ {1}", "\\left(e; +\\infty\\right) \\cup \\left\\{1\\right\\}"],
+    ["x = 2 e + 1", "\\left\\{2e + 1\\right\\}"],
+  ])("il numero e non è la congiunzione «e»: «%s»", (text, expected) => {
+    // Le intersezioni escono in forma canonica, le unioni come sono scritte.
+    expect(latex(text)).toBe(expected);
+  });
+
+  it("più soluzioni di un'equazione si possono separare con il punto e virgola o con la virgola e uno spazio", () => {
+    expect(latex("x = 3; x = 5")).toBe("\\left\\{3; 5\\right\\}");
+    expect(latex("x=1, x=2")).toBe("\\left\\{1; 2\\right\\}");
+    expect(latex("3; 5")).toBe("\\left\\{3; 5\\right\\}");
+    expect(latex("x = 1,5; x = 2")).toBe("\\left\\{1{,}5; 2\\right\\}");
+    expect(setsEqual(read("x = π/6 + 2kπ; x = 5π/6 + 2kπ"), read("x = π/6 + 2kπ ∨ x = 5π/6 + 2kπ"))).toBe(true);
+    // Con le disuguaglianze il punto e virgola resta ambiguo (unione o sistema?): non si indovina.
+    expect(parseSolutionSet("x > 1; x < 3").ok).toBe(false);
+    expect(message("x > 1; x < 3")).toContain("\\lor");
+    drawsText(message("x > 1; x < 3"));
+    // Dentro un intervallo il punto e virgola separa gli estremi, come sempre.
+    expect(latex("(1; 3) ∪ {5; 6}")).toBe("\\left(1; 3\\right) \\cup \\left\\{5; 6\\right\\}");
+    expect(latex("]1; 3[")).toBe("\\left(1; 3\\right)");
+  });
+
+  it("l'incognita si può scrivere con l'indice: x_1 = 2 ∨ x_2 = 3", () => {
+    expect(latex("x_1 = 2 ∨ x_2 = 3")).toBe("\\left\\{2; 3\\right\\}");
+    expect(latex("x1 = 2; x2 = 3")).toBe("\\left\\{2; 3\\right\\}");
+    expect(latex("x₁ = -1 o x₂ = 1/2")).toBe("\\left\\{-1; \\frac{1}{2}\\right\\}");
+    expect(latex("t_1 = 0; t_2 = 4", "t")).toBe("\\left\\{0; 4\\right\\}");
+    // Un'altra lettera resta un errore.
+    expect(parseSolutionSet("y_1 = 2").ok).toBe(false);
+  });
+
+  it("una parentesi quadra dalla parte dell'infinito è un errore, spiegato", () => {
+    for (const text of ["[-∞; 2]", "(2; +∞]", "[-inf; +inf]", "x ∈ [−∞; 3)"]) {
+      expect(parseSolutionSet(text).ok, text).toBe(false);
+      expect(message(text), text).toContain("infinito");
+    }
+    // Le parentesi aperte, anche all'italiana, restano valide.
+    expect(latex("(-∞; 2]")).toBe("\\left(-\\infty; 2\\right]");
+    expect(latex("]-∞; 2]")).toBe("\\left(-\\infty; 2\\right]");
+    expect(latex("[2; +∞[")).toBe("\\left[2; +\\infty\\right)");
+  });
+
+  it("{1,2} è ambiguo (due soluzioni o un decimale?): si chiede di scriverlo in modo chiaro", () => {
+    expect(parseSolutionSet("{1,2}").ok).toBe(false);
+    expect(message("{1,2}")).toContain("ambigu");
+    drawsText(message("{1,2}"));
+    // Le scritture chiare restano valide.
+    expect(latex("{1; 2}")).toBe("\\left\\{1; 2\\right\\}");
+    expect(latex("{1, 2}")).toBe("\\left\\{1; 2\\right\\}");
+    expect(latex("{1,5; 2}")).toBe("\\left\\{1{,}5; 2\\right\\}");
+    expect(latex("x = 1,2")).toBe("\\left\\{1{,}2\\right\\}");
+  });
+
+  it("«per ogni» e «non esiste» valgono con qualunque lettera dell'incognita", () => {
+    expect(latex("∀t∈ℝ", "t")).toBe("\\mathbb{R}");
+    expect(latex("∀ t ∈ R", "t")).toBe("\\mathbb{R}");
+    expect(latex("∄t∈ℝ", "t")).toBe("\\emptyset");
+    expect(latex("∀x∈ℝ")).toBe("\\mathbb{R}");
+    expect(parseSolutionSet("∀y∈ℝ", { variable: "t" }).ok).toBe(false);
+  });
+
+  it("non lancia mai, nemmeno con testi enormi o parentesi annidate a migliaia", () => {
+    for (const text of ["(".repeat(30000), "[" + "(".repeat(9000) + "1; 2]", "x = " + "√".repeat(9000) + "2", "{" + "1; ".repeat(5000) + "1}", "x < " + "2^".repeat(9000) + "2"]) {
+      expect(() => parseSolutionSet(text), text.slice(0, 12)).not.toThrow();
+    }
   });
 });

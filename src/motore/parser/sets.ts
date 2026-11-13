@@ -39,6 +39,9 @@ interface Bound {
   readonly period: Expr | null;
 }
 
+/** Oltre questa lunghezza il testo non è una risposta: lo si rifiuta subito. */
+const MAX_LENGTH = 2000;
+
 const numberExpr = (value: number): Expr => ({ kind: "num", value: Rational.of(value) });
 const EMPTY: RealSet = { kind: "realset", pieces: [] };
 const ALL: RealSet = { kind: "realset", pieces: [{ lower: "-inf", upper: "+inf", lowerClosed: false, upperClosed: false }] };
@@ -49,7 +52,10 @@ const PLUS_INFINITY = /^\+?(∞|inf|infinito|oo)$/i;
 const MINUS_INFINITY = /^-(∞|inf|infinito|oo)$/i;
 const RELATION = /(<=|>=|=<|=>|!=|≠|≤|≥|<|>|=)/;
 const UNION = /∪|∨|\s+(?:o|oppure|or|vel)\s+/i;
-const INTERSECTION = /∧|∩|\s+(?:e|and|et)\s+/i;
+// La congiunzione «e» sta tra due condizioni complete: prima c'è la fine di un numero o di una lettera, dopo
+// l'inizio di un'altra condizione. Il numero e (di Nepero) invece segue un segno o un'operazione, oppure
+// chiude la condizione: «x ≤ e ∨ x ≥ 3», «x > e e x < 5», «x = 2 e + 1».
+const INTERSECTION = /∧|∩|(?<=[^\s<>=≤≥≠+\-*/^(;,[{·:])\s+(?:e|and|et)\s+(?=[^\s<>=≤≥≠+\-*/^);,\]}·:])/i;
 
 type Operator = "<" | "<=" | ">" | ">=" | "=" | "!=";
 const OPERATORS: Readonly<Record<string, Operator>> = {
@@ -59,8 +65,11 @@ const FLIPPED: Readonly<Record<Operator, Operator>> = { "<": ">", "<=": ">=", ">
 
 class SetReader {
   complete = true;
+  private readonly variablePattern: RegExp;
 
-  constructor(private readonly variable: string) {}
+  constructor(private readonly variable: string) {
+    this.variablePattern = new RegExp(`^${variable}(?:_?\\d+|[₀-₉]+)?$`);
+  }
 
   /** Spezza un testo con un separatore, tenendo la posizione di ogni pezzo nel testo di partenza. */
   private split(text: string, offset: number, separator: RegExp): { text: string; offset: number }[] {
@@ -145,6 +154,9 @@ class SetReader {
     const upper = this.bound(inner.slice(cut + 1), offset + cut + 2);
     const lowerClosed = text.startsWith("[");
     const upperClosed = text.endsWith("]");
+    if ((lowerClosed && typeof lower.value === "string") || (upperClosed && typeof upper.value === "string")) {
+      throw new SetFailure("L'infinito non è un numero e non può essere incluso: dalla sua parte la parentesi è sempre aperta.", offset);
+    }
     if (this.complete) {
       const order = compareEndpoints(lower.value, upper.value);
       const single = order === 0 && lowerClosed && upperClosed && typeof lower.value !== "string";
@@ -154,6 +166,15 @@ class SetReader {
   }
 
   private pointSet(text: string, offset: number): SolutionSet {
+    // {1,2}: due soluzioni o il decimale 1,2? Scritto così si disegna allo stesso modo: meglio chiedere.
+    const ambiguous = /^\s*(\d+),(\d+)\s*$/.exec(text.slice(1, -1));
+    if (ambiguous) {
+      const [, first, second] = ambiguous;
+      throw new SetFailure(
+        `Qui la virgola è ambigua: per due soluzioni scrivi $\\left\\{${first}; ${second}\\right\\}$, per il numero decimale scrivi $${this.variable} = ${first}{,}${second}$.`,
+        offset,
+      );
+    }
     const elements = this.split(text.slice(1, -1), offset + 1, /;|,(?!\d)|(?<!\d),/);
     let result: SolutionSet = EMPTY;
     let pieces: Interval[] = [];
@@ -179,7 +200,8 @@ class SetReader {
       else operators.push(OPERATORS[token] as Operator);
       position += token.length;
     });
-    const isVariable = (side: { text: string }): boolean => side.text.trim() === this.variable;
+    // L'incognita, anche con l'indice delle soluzioni: x, x_1, x1, x₂.
+    const isVariable = (side: { text: string }): boolean => this.variablePattern.test(side.text.trim());
     if (sides.length === 2) {
       const [left, right] = sides as [{ text: string; offset: number }, { text: string; offset: number }];
       if (isVariable(left) === isVariable(right)) throw new SetFailure(`Scrivi la soluzione con $${this.variable}$ da sola, per esempio $${this.variable} > 2$.`, offset);
@@ -230,7 +252,14 @@ class SetReader {
       const plus = /(^|[=<>≤≥≠(;{,[\]]\s*)±/.test(body) ? body.replace(/±\s*/, "") : body.replace("±", "+");
       return setUnionAsWritten(this.atom(plus, start), this.atom(body.replace("±", "-"), start));
     }
-    const compact = body.toLowerCase().replace(/\s+/g, "");
+    // Le parole note sono scritte con la x: l'incognita dell'esercizio vale come lei («∀t ∈ ℝ»).
+    const name = this.variable.toLowerCase();
+    const compact = body
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/^(∀|∄|ogni)(.+?)(∈[ℝr])?$/, (whole, quantifier: string, letter: string, tail: string | undefined) =>
+        letter === name ? `${quantifier}x${tail ?? ""}` : letter === "x" ? `${quantifier}?${tail ?? ""}` : whole,
+      );
     if (EMPTY_WORDS.has(compact)) return EMPTY;
     if (ALL_WORDS.has(compact)) return ALL;
     // «x ∈ [1; 3)» vale «[1; 3)».
@@ -276,6 +305,25 @@ function setUnionAsWritten(a: SolutionSet, b: SolutionSet): SolutionSet {
 }
 
 /**
+ * Le posizioni dei separatori fuori da ogni parentesi: il punto e virgola, e la virgola che non è
+ * decimale (non sta tra due cifre). null se le parentesi non tornano (per esempio con quelle
+ * all'italiana, «]1; 3[»): lì non si tocca niente.
+ */
+function topLevelSeparators(text: string): number[] | null {
+  const cuts: number[] = [];
+  let depth = 0;
+  for (let index = 0; index < text.length; index++) {
+    const char = text[index] as string;
+    if (char === "(" || char === "[" || char === "{") depth += 1;
+    else if (char === ")" || char === "]" || char === "}") depth -= 1;
+    else if (depth === 0 && char === ";") cuts.push(index);
+    else if (depth === 0 && char === "," && !(/\d/.test(text[index - 1] ?? "") && /\d/.test(text[index + 1] ?? ""))) cuts.push(index);
+    if (depth < 0) return null;
+  }
+  return depth === 0 ? cuts : null;
+}
+
+/**
  * Legge un insieme di soluzioni. Non lancia mai. L'insieme resta com'è stato scritto (i pezzi di
  * un'unione non vengono riordinati né fusi), così se ne può controllare la forma.
  */
@@ -289,6 +337,24 @@ export function parseSolutionSet(text: string, options: SetParseOptions = {}): P
   // «S = …» davanti all'insieme si può scrivere o no.
   source = source.replace(/^\s*S\s*=\s*/, (prefix) => " ".repeat(prefix.length));
   if (source.trim() === "") return { ok: false, error: { message: "Scrivi l'insieme delle soluzioni.", position: 0 } };
+  if (source.length > MAX_LENGTH) return { ok: false, error: { message: "Il testo è troppo lungo.", position: MAX_LENGTH } };
+  // Più soluzioni di un'equazione separate da «;» (o da virgola e spazio): «x = 1; x = 2», «3; 5».
+  // Con le disuguaglianze il separatore sarebbe ambiguo (unione o sistema?): lì si chiede ∨ oppure ∧.
+  const cuts = topLevelSeparators(source) ?? [];
+  if (cuts.length > 0) {
+    if (/[<>≤≥≠]|!=/.test(source)) {
+      const message = "Tra due disuguaglianze scrivi $\\lor$ (oppure) o $\\land$ (e): il punto e virgola da solo è ambiguo.";
+      return { ok: false, error: { message, position: cuts[0] as number } };
+    }
+    // Sostituzione carattere per carattere: le posizioni degli errori restano quelle del testo scritto.
+    let rebuilt = "";
+    let from = 0;
+    for (const cut of cuts) {
+      rebuilt += `${source.slice(from, cut)}∨`;
+      from = cut + 1;
+    }
+    source = rebuilt + source.slice(from);
+  }
   const reader = new SetReader(options.variable ?? "x");
   try {
     const value = reader.read(source);
@@ -296,6 +362,7 @@ export function parseSolutionSet(text: string, options: SetParseOptions = {}): P
   } catch (error) {
     if (error instanceof SetFailure) return { ok: false, error: { message: error.reason, position: Math.min(error.position, text.length) } };
     if (error instanceof EngineError) return { ok: false, error: { message: error.message, position: 0 } };
-    throw error;
+    // Qualunque altro errore non deve uscire da qui: chi legge quello che scrive Andrea si aspetta sempre un risultato.
+    return { ok: false, error: { message: "Questa scrittura è troppo complicata da leggere.", position: 0 } };
   }
 }
