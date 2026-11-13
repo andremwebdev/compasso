@@ -148,3 +148,32 @@ describe("numeri con radici quadrate", () => {
     expect(() => sqrt(2).toRational()).toThrow();
   });
 });
+
+describe("revisione 4a: segno esatto dei numeri con radici quando i termini si cancellano quasi del tutto", () => {
+  it("decide il segno anche quando servono molte più di 40 cifre", () => {
+    // (√2 − 1)^k è positivo ma piccolissimo: per k = 150 vale circa 10^(−57).
+    const tiny = Surd.sqrt(2).sub(1).pow(150);
+    expect(tiny.isRational()).toBe(false);
+    expect(tiny.sign()).toBe(1);
+    expect(tiny.neg().sign()).toBe(-1);
+    expect(tiny.cmp(0)).toBe(1);
+    // (√3 − √2)^k, con due radici diverse.
+    const other = Surd.sqrt(3).sub(Surd.sqrt(2)).pow(121);
+    expect(other.sign()).toBe(1);
+    expect(other.neg().sign()).toBe(-1);
+    // Con 40 cifre fisse questi uscivano negativi: (√5 − 2)^k per k dispari da 91 in su.
+    for (let k = 91; k <= 131; k += 10) {
+      const power = Surd.sqrt(5).sub(2).pow(k);
+      expect(power.sign(), `(√5 − 2)^${k}`).toBe(1);
+      expect(power.neg().sign(), `−(√5 − 2)^${k}`).toBe(-1);
+    }
+  });
+
+  it("il confronto resta coerente: a < b se e solo se b − a è positivo", () => {
+    const a = Surd.sqrt(2).sub(1).pow(151);
+    const b = Surd.sqrt(2).sub(1).pow(150);
+    expect(a.cmp(b)).toBe(-1);
+    expect(b.cmp(a)).toBe(1);
+    expect(a.cmp(a)).toBe(0);
+  });
+});

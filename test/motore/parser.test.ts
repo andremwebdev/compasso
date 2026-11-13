@@ -215,3 +215,40 @@ describe("parser: equazioni e disequazioni", () => {
     expect(parseRelation("2x+1").ok).toBe(false);
   });
 });
+
+describe("revisione 4a: il parser non lancia mai e legge gli angoli come si scrivono", () => {
+  it("un testo con migliaia di parentesi annidate dà un errore, non un'eccezione", () => {
+    for (const text of ["(".repeat(20000), "√".repeat(20000) + "2", "-".repeat(50000) + "x", "2^".repeat(20000) + "2", "|(".repeat(8000)]) {
+      let result: ReturnType<typeof parseExpression> | undefined;
+      expect(() => (result = parseExpression(text))).not.toThrow();
+      expect(() => parseRelation(text)).not.toThrow();
+      // Qualunque sia l'esito, è un risultato ben formato.
+      expect(result !== undefined && (result.ok || typeof result.error.message === "string")).toBe(true);
+    }
+  });
+
+  it("un testo troppo lungo è rifiutato con un messaggio chiaro", () => {
+    const result = parseExpression("x+".repeat(3000) + "1");
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error.message).toMatch(/troppo lung/);
+  });
+
+  it("sin π/3 è il seno di π/3: con π nell'argomento, la divisione per un intero resta dentro", () => {
+    expect(value("sin π/6")).toBeCloseTo(0.5, 12);
+    expect(value("cos 2π/3")).toBeCloseTo(-0.5, 12);
+    expect(value("tan -π/4")).toBeCloseTo(-1, 12);
+    expect(value("2 sin π/6 cos π/3")).toBeCloseTo(0.5, 12);
+    expect(value("sin^2 π/4")).toBeCloseTo(0.5, 12);
+    expect(tex("cos π/3 + i sin π/3", { complex: true })).toBe("\\cos \\frac{\\pi}{3} + i \\sin \\frac{\\pi}{3}");
+  });
+
+  it("senza π la divisione resta fuori dall'argomento, come prima", () => {
+    expect(tex("sin x/2")).toBe("\\frac{\\sin x}{2}");
+    expect(tex("sin x / cos x")).toBe("\\frac{\\sin x}{\\cos x}");
+    expect(tex("sin π/x")).toBe("\\frac{\\sin \\pi}{x}");
+    expect(tex("sin π/2,5")).toBe("\\frac{\\sin \\pi}{2{,}5}");
+    expect(value("sin(π)/2")).toBeCloseTo(0, 12);
+    // Dopo l'intero non può continuare un'altra operazione che cambierebbe il senso: sin π/2^2 resta com'era.
+    expect(tex("sin π/2^2")).toBe("\\frac{\\sin \\pi}{2^{2}}");
+  });
+});

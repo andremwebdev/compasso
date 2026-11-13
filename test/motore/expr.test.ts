@@ -4,6 +4,7 @@ import {
   abs, add, cos, decimal, div, e, evaluate, exp, fn, frac, i, isConstant, containsDecimal, ln, log, mul, neg, num,
   pi, pow, relation, root, sameStructure, sin, sqrt, sub, substitute, sym, toLatex, variables, type Expr,
 } from "../../src/motore/expr";
+import { parseExpression } from "../../src/motore/parser";
 
 const x = sym("x");
 const y = sym("y");
@@ -133,5 +134,35 @@ describe("conversione in LaTeX", () => {
   it("equazioni e disequazioni", () => {
     expect(toLatex(relation(mul(2, x), "<=", 3))).toBe("2x \\le 3");
     expect(toLatex(relation(x, "!=", 0))).toBe("x \\ne 0");
+  });
+});
+
+describe("revisione 4a: LaTeX di somme e opposti con un fattore negativo tra parentesi", () => {
+  const draws = (latex: string): void => {
+    expect(() => katex.renderToString(latex, { throwOnError: true, strict: "error" }), latex).not.toThrow();
+  };
+
+  it("un prodotto che comincia con (−x) dentro una somma resta LaTeX valido", () => {
+    // Prima usciva «1 - left(-x\right)y»: il meno veniva tolto da una parentesi che non era un meno.
+    expect(toLatex(add(1, mul(neg(x), y)))).toBe("1 + \\left(-x\\right)y");
+    expect(toLatex(add(1, mul(neg(add(x, 1)), y)))).toBe("1 + \\left(-\\left(x + 1\\right)\\right)y");
+    expect(toLatex(neg(mul(neg(x), y)))).toBe("-\\left(-x\\right)y");
+    draws(toLatex(add(1, mul(neg(x), y), neg(mul(neg(x), y)))));
+  });
+
+  it("i termini che cominciano davvero con un meno continuano a sottrarsi", () => {
+    expect(toLatex(add(x, mul(-2, y)))).toBe("x - 2y");
+    expect(toLatex(add(x, neg(mul(2, y))))).toBe("x - 2y");
+    expect(toLatex(add(x, mul(frac(-1, 2), y)))).toBe("x - \\frac{1}{2}y");
+    expect(toLatex(add(x, decimal("-0,5")))).toBe("x - 0{,}5");
+    expect(toLatex(neg(neg(x)))).toBe("-\\left(-x\\right)");
+  });
+
+  it("quello che Andrea scrive con un fattore negativo tra parentesi si disegna", () => {
+    for (const text of ["1 + (-x)y", "2 - (-x)(x+1)", "x + (-2)^2 y", "-(-x)y - (-(-x))y"]) {
+      const parsed = parseExpression(text);
+      expect(parsed.ok, text).toBe(true);
+      if (parsed.ok) draws(toLatex(parsed.value));
+    }
   });
 });

@@ -7,7 +7,7 @@
 // delle espressioni (vedi docs/ARCHITETTURA.md).
 
 import { EngineError } from "../errors";
-import { extractPower, gcd, iroot, lcm, smallestPrimeFactor } from "./integers";
+import { absBig, extractPower, gcd, iroot, lcm, smallestPrimeFactor } from "./integers";
 import { Rational, type RationalLike } from "./rational";
 
 export class Surd {
@@ -144,14 +144,21 @@ export class Surd {
     const approx = this.toNumber();
     const scale = this.terms.reduce((sum, [radicand, coefficient]) => sum + Math.abs(coefficient.toNumber()) * Math.sqrt(Number(radicand)), 0);
     if (Math.abs(approx) > 1e-9 * scale) return approx > 0 ? 1 : -1;
-    // Cancellazione quasi totale: si rifà il conto con 40 cifre, usando radici intere esatte.
-    const digits = 10n ** 40n;
+    // Cancellazione quasi totale: si rifà il conto con radici intere esatte, raddoppiando le cifre
+    // finché il totale supera l'errore possibile (ogni radice intera sbaglia per meno di 1).
+    // Finisce sempre: la forma normale è unica, quindi un numero con dei termini non è zero.
     const common = this.terms.reduce((acc, [, coefficient]) => lcm(acc, coefficient.d), 1n);
-    let total = 0n;
-    for (const [radicand, coefficient] of this.terms) {
-      total += ((coefficient.n * common) / coefficient.d) * iroot(radicand * digits * digits, 2);
+    for (let digits = 40; ; digits *= 2) {
+      const scale = 10n ** BigInt(digits);
+      let total = 0n;
+      let slack = 0n;
+      for (const [radicand, coefficient] of this.terms) {
+        const weight = (coefficient.n * common) / coefficient.d;
+        total += weight * iroot(radicand * scale * scale, 2);
+        slack += absBig(weight);
+      }
+      if (absBig(total) > slack) return total > 0n ? 1 : -1;
     }
-    return total > 0n ? 1 : -1;
   }
 
   /** Confronto esatto con un altro numero. */

@@ -328,8 +328,21 @@ class Parser {
       if (this.atEnd()) return this.placeholder();
       throw new Failure("Dopo il nome della funzione serve l'argomento.", this.current.pos);
     }
-    const product = mul(...factors);
-    return negative ? neg(product) : product;
+    let argument = mul(...factors);
+    // Con π nell'argomento, la divisione per un intero resta dentro: sin π/3 è sin(π/3), perché
+    // (sin π)/3 non lo scrive nessuno. Senza π vale la regola solita: sin x/2 è (sin x)/2.
+    if (this.isOp("/") && factors.some((factor) => factor.kind === "const" && factor.name === "pi")) {
+      const denominator = this.tokens[this.index + 1];
+      const after = this.tokens[this.index + 2];
+      const isInteger = denominator?.type === "num" && /^\d+$/.test(denominator.text);
+      const goesOn = after?.type === "sup" || (after?.type === "op" && (after.op === "^" || after.op === "%"));
+      if (denominator?.type === "num" && isInteger && !goesOn) {
+        this.advance();
+        this.advance();
+        argument = div(argument, parseNumber(denominator.text));
+      }
+    }
+    return negative ? neg(argument) : argument;
   }
 
   /** Argomenti tra parentesi separati da punto e virgola: root(3; x), log(2; x). */
@@ -405,7 +418,11 @@ function parseNumber(text: string): Expr {
   return text.includes(",") || text.includes(".") ? { kind: "num", value, decimals } : { kind: "num", value };
 }
 
+/** Oltre questa lunghezza il testo non è una risposta: lo si rifiuta subito (e le parentesi annidate restano poche). */
+const MAX_LENGTH = 1000;
+
 function run<T>(text: string, options: ParseOptions, body: (parser: Parser) => T): ParseResult<T> {
+  if (text.length > MAX_LENGTH) return { ok: false, error: { message: "Il testo è troppo lungo.", position: MAX_LENGTH } };
   const lexed = tokenize(text, options);
   if ("error" in lexed) return { ok: false, error: lexed.error };
   const parser = new Parser(lexed.tokens);
@@ -426,7 +443,9 @@ function run<T>(text: string, options: ParseOptions, body: (parser: Parser) => T
   } catch (failure) {
     if (failure instanceof Failure) return { ok: false, error: { message: failure.reason, position: failure.position } };
     if (failure instanceof EngineError) return { ok: false, error: { message: failure.message, position: 0 } };
-    throw failure;
+    // Qualunque altro errore (per esempio troppe parentesi una dentro l'altra) non deve uscire da qui:
+    // chi legge quello che scrive Andrea si aspetta sempre un risultato.
+    return { ok: false, error: { message: "Questa scrittura è troppo complicata da leggere.", position: 0 } };
   }
 }
 

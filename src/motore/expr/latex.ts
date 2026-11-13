@@ -100,7 +100,8 @@ function renderSum(terms: readonly Expr[]): string {
     // Una somma dentro una somma tiene le sue parentesi: l'albero è fedele alla scrittura.
     const body = term.kind === "add" ? parens(render(term)) : render(term);
     if (index === 0) out = body;
-    else if (startsWithMinus(term)) out += ` - ${body.slice(1)}`;
+    // Si guarda il testo, non l'albero: (−x)·y comincia con una parentesi, non con un meno, e si somma.
+    else if (body.startsWith("-")) out += ` - ${body.slice(1)}`;
     else out += ` + ${body}`;
   });
   return out;
@@ -108,7 +109,8 @@ function renderSum(terms: readonly Expr[]): string {
 
 /** L'argomento di un meno: le somme e i termini che cominciano con un meno vogliono le parentesi. */
 function renderNegated(arg: Expr): string {
-  return arg.kind === "add" || startsWithMinus(arg) ? parens(render(arg)) : render(arg);
+  const body = render(arg);
+  return arg.kind === "add" || body.startsWith("-") ? parens(body) : body;
 }
 
 type FactorShape = "number" | "fraction" | "letter" | "group" | "function" | "other";
