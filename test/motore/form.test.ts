@@ -135,3 +135,56 @@ describe("vincoli di forma", () => {
     }
   });
 });
+
+describe("revisione 4a: vincoli di forma, casi che sfuggivano", () => {
+  const accepts = (constraint: FormConstraint, texts: string[], complex = false): void => {
+    for (const text of texts) expect(checkForm(p(text, complex), constraint), `${constraint}: ${text}`).toEqual({ ok: true });
+  };
+  const rejects = (constraint: FormConstraint, texts: string[], complex = false): void => {
+    for (const text of texts) {
+      const result = checkForm(p(text, complex), constraint);
+      expect(result.ok, `${constraint}: ${text}`).toBe(false);
+      if (result.ok) continue;
+      expect(result.reason).toMatch(/^[A-ZÈ].*\.$/s);
+      for (const [, formula] of result.reason.matchAll(/\$([^$]+)\$/g)) {
+        expect(() => katex.renderToString(formula as string, { throwOnError: true, strict: true })).not.toThrow();
+      }
+    }
+  };
+
+  it("expanded: un numero e un radicale, o due radicali diversi, non sono termini simili", () => {
+    // Prima «3 + 2√2» (lo sviluppo di (1 + √2)²) era rifiutato come «termini simili ancora da sommare».
+    accepts("expanded", ["3+2√2", "√2+√3", "1+√2+√3", "x^2+√2x+1", "x√2+x√3", "5-2√6"]);
+    rejects("expanded", ["2√2+3√2", "√8+√2", "x√2+3x√2", "3+2", "1/2+1/3", "√2+√2"]);
+  });
+
+  it("factored: la potenza di un prodotto già scomposto è scomposta", () => {
+    accepts("factored", ["((x+1)(x-1))^2", "(x(x+1))^3", "2((x-1)(x+2))^2"]);
+    rejects("factored", ["((x^2-1)(x+2))^2", "(x(x^2-4))^2"]);
+  });
+
+  it("reducedFraction: un fattore intero comune si vede anche in mezzo ai radicali", () => {
+    accepts("reducedFraction", ["√2/2", "(1+√3)/2", "(3+2√2)/4", "2√3/3", "√6/√2"]);
+    rejects("reducedFraction", ["2√2/2", "(2+2√3)/4", "√8/2", "(6+3√2)/3", "4√5/6"]);
+  });
+
+  it("factored: lo stesso vale per il numero da raccogliere in un fattore", () => {
+    accepts("factored", ["(x-√2)(x+√2)", "(√2x+2)(x-1)"]);
+    rejects("factored", ["(2x+2√2)(x-1)"]);
+  });
+
+  it("rationalized: una frazione sotto radice ha ancora la radice al denominatore", () => {
+    accepts("rationalized", ["√2/2", "√(x+1)/2", "√6/3", "x^(1/2)/2", "2^(1/2)"]);
+    rejects("rationalized", ["√(1/2)", "√(x/2)", "(1/2)^(1/2)", "√0,5", "√(3/4 x)", "2√(2/3)", "∛(1/4)"]);
+  });
+
+  it("simplifiedRadicals: potenze e prodotti di radici numeriche ancora da calcolare", () => {
+    accepts("simplifiedRadicals", ["2√2", "√2√x", "√2·∛3", "√2+√3", "(√x)^3", "√2^1"]);
+    rejects("simplifiedRadicals", ["(√2)^3", "(√2)^2", "(∛2)^4", "√2·√2", "√2·√3", "2√3·√5", "√0"]);
+  });
+
+  it("trigonometricForm: l'ordine dei due addendi non conta, e gli angoli si scrivono anche senza parentesi", () => {
+    accepts("trigonometricForm", ["2(i sin(pi/3)+cos(pi/3))", "2(cos π/3 + i sin π/3)", "cos 3π/4 + i sin 3π/4", "√2(sin(pi/4)i+cos(pi/4))"], true);
+    rejects("trigonometricForm", ["2(i sin(pi/3)+cos(pi/6))", "2(i cos(pi/3)+sin(pi/3))", "2(cos(pi/3)+cos(pi/3))", "2(cos(pi/3)-i sin(pi/3))"], true);
+  });
+});

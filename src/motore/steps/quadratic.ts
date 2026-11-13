@@ -29,6 +29,8 @@ export interface QuadraticSolution {
 /** Un numero tra parentesi se è negativo, come si scrive sostituendo in una formula. */
 const inFormula = (value: Rational): string => (value.sign() < 0 ? `\\left(${rationalToLatex(value)}\\right)` : rationalToLatex(value));
 
+/** Un numero come base di una potenza: tra parentesi anche le frazioni, (1/2)² e non 1/2². */
+const asBase = (value: Rational): string => (value.sign() < 0 || !value.isInteger() ? `\\left(${rationalToLatex(value)}\\right)` : rationalToLatex(value));
 /** Risolve ax² + bx + c = 0 (a ≠ 0) con la formula risolutiva, registrando i passaggi. */
 export function solveQuadratic(a: RationalLike, b: RationalLike, c: RationalLike, options: QuadraticOptions = {}): QuadraticSolution {
   const [ra, rb, rc] = [Rational.from(a), Rational.from(b), Rational.from(c)];
@@ -43,7 +45,7 @@ export function solveQuadratic(a: RationalLike, b: RationalLike, c: RationalLike
     },
     {
       text: "Calcola il discriminante.",
-      formula: `\\Delta = b^{2} - 4ac = ${inFormula(rb)}^{2} - 4 \\cdot ${inFormula(ra)} \\cdot ${inFormula(rc)} = ${rationalToLatex(discriminant)}`,
+      formula: `\\Delta = b^{2} - 4ac = ${asBase(rb)}^{2} - 4 \\cdot ${inFormula(ra)} \\cdot ${inFormula(rc)} = ${rationalToLatex(discriminant)}`,
     },
   ];
   const twoA = ra.mul(2);

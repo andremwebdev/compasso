@@ -6,7 +6,7 @@
 
 import { tryNormalize } from "../algebra/normalize";
 import { simplify } from "../algebra/simplify";
-import { NormalContext } from "../algebra/poly";
+import { monomialKey, NormalContext } from "../algebra/poly";
 import { areCoprime, integerContent, isIrreducible } from "../algebra/specialize";
 import { equivalent } from "../equivalence/equivalence";
 import { EngineError } from "../errors";
@@ -101,11 +101,14 @@ function checkExpanded(expr: Expr): FormCheck {
     if (problem) return fail(problem);
     // Termini simili: due termini con la stessa parte letterale vanno sommati.
     const normal = tryNormalize(term, ctx);
-    const single = normal?.isPoly() && normal.num.terms.size === 1 ? [...normal.num.terms.keys()][0] : undefined;
     if (normal?.num.isZero()) return fail(`Il termine ${tex(signed)} vale zero: si toglie.`);
-    if (single !== undefined) {
-      if (seen.has(single)) return fail("Ci sono termini simili ancora da sommare.");
-      seen.add(single);
+    const only = normal?.isPoly() && normal.num.terms.size === 1 ? [...normal.num.terms.values()][0] : undefined;
+    // Due termini sono simili se hanno la stessa parte letterale e lo stesso radicale: 2√2 e 3√2 sì,
+    // 3 e 2√2 no. Un coefficiente con più radicali (una costante tra parentesi) non si confronta.
+    if (only && only.coeff.terms.length === 1) {
+      const key = `${monomialKey(only.mono)}|${(only.coeff.terms[0] as readonly [bigint, unknown])[0]}`;
+      if (seen.has(key)) return fail("Ci sono termini simili ancora da sommare.");
+      seen.add(key);
     }
   }
   return OK;
@@ -170,7 +173,10 @@ function checkFactored(expr: Expr): FormCheck {
 /** I fattori di un prodotto, aprendo i prodotti annidati e togliendo i segni. */
 function flattenProduct(expr: Expr): Expr[] {
   const core = stripSign(expr);
-  return core.kind === "mul" ? core.factors.flatMap(flattenProduct) : [core];
+  if (core.kind === "mul") return core.factors.flatMap(flattenProduct);
+  // La potenza di un prodotto si guarda fattore per fattore: ((x+1)(x−1))² è scomposta.
+  if (core.kind === "pow" && isPositiveIntegerLiteral(core.exp) && stripSign(core.base).kind === "mul") return flattenProduct(core.base);
+  return [core];
 }
 
 // ───────────────────────────── reducedFraction ─────────────────────────────
@@ -222,7 +228,32 @@ function hasRadical(expr: Expr): boolean {
   });
 }
 
+/** Vero se l'espressione, così com'è scritta, ha un denominatore: una frazione, un decimale, un esponente negativo. */
+function hasDenominator(expr: Expr): boolean {
+  switch (expr.kind) {
+    case "div":
+      return true;
+    case "num":
+      return !expr.value.isInteger();
+    case "neg":
+      return hasDenominator(expr.arg);
+    case "mul":
+      return expr.factors.some(hasDenominator);
+    case "pow": {
+      const exponent = literalRational(expr.exp);
+      return (exponent !== null && exponent.sign() < 0) || hasDenominator(expr.base);
+    }
+    default:
+      return false;
+  }
+}
+
 function checkRationalized(expr: Expr): FormCheck {
+  // Una frazione sotto radice nasconde una radice al denominatore: √(1/2) = 1/√2.
+  const fractionalPower = expr.kind === "pow" && !(literalRational(expr.exp)?.isInteger() ?? true);
+  if ((expr.kind === "root" && hasDenominator(expr.arg)) || (fractionalPower && expr.kind === "pow" && hasDenominator(expr.base))) {
+    return fail(`In ${tex(expr)} c'è una frazione sotto radice: è ancora una radice al denominatore.`);
+  }
   // Un esponente negativo è un denominatore nascosto: x^(−1/2) = 1/√x.
   const exponent = expr.kind === "pow" ? literalRational(expr.exp) : null;
   const offending =
@@ -238,10 +269,28 @@ function checkRationalized(expr: Expr): FormCheck {
 
 // ───────────────────────────── simplifiedRadicals ─────────────────────────────
 
+/** Vero se è una radice di un numero scritto in cifre. */
+const isNumericRoot = (expr: Expr): expr is Extract<Expr, { kind: "root" }> => expr.kind === "root" && literalRational(expr.arg) !== null;
+
 function checkSimplifiedRadicals(expr: Expr): FormCheck {
+  // (ⁿ√a)ᵏ con k ≥ n si calcola ancora: (√2)³ = 2√2.
+  if (expr.kind === "pow" && isNumericRoot(expr.base)) {
+    const exponent = literalRational(expr.exp);
+    if (exponent && exponent.isInteger() && exponent.cmp(expr.base.index) >= 0) {
+      return fail(`La potenza ${tex(expr)} si può ancora calcolare: una radice elevata al suo indice dà il radicando.`);
+    }
+  }
+  // Due radici numeriche con lo stesso indice si moltiplicano sotto un'unica radice: √2·√3 = √6.
+  if (expr.kind === "mul") {
+    const indices = expr.factors.filter(isNumericRoot).map((factor) => factor.index);
+    if (new Set(indices).size < indices.length) {
+      return fail(`In ${tex(expr)} le radici con lo stesso indice si moltiplicano tra loro sotto un'unica radice.`);
+    }
+  }
   if (expr.kind === "root") {
     const radicand = literalRational(expr.arg);
     if (radicand) {
+      if (radicand.isZero()) return fail(`La radice ${tex(expr)} vale zero: si scrive $0$.`);
       if (!radicand.isInteger()) return fail(`In ${tex(expr)} c'è una frazione sotto radice.`);
       if (radicand.sign() < 0 && expr.index % 2 === 1) return fail(`In ${tex(expr)} il segno meno si porta fuori dalla radice.`);
       if (radicand.sign() > 0) {
@@ -306,11 +355,13 @@ function checkTrigonometricForm(expr: Expr): FormCheck {
   if (modulus.some((factor) => !isConstant(factor) || containsImaginaryUnit(factor))) return wrong;
   if (modulus.length > 0 && !(modulus.reduce((product, factor) => product * evaluate(factor), 1) > 0)) return wrong;
 
-  const [first, second] = bracket.terms as [Expr, Expr];
-  if (first.kind !== "fn" || first.name !== "cos" || second.kind !== "mul" || second.factors.length !== 2) return wrong;
-  const sine = second.factors.find((factor) => factor.kind === "fn" && factor.name === "sin");
-  if (!second.factors.some(isImaginaryUnit) || sine?.kind !== "fn") return wrong;
-  return equivalent(first.arg, sine.arg) ? OK : wrong;
+  // I due addendi in qualunque ordine: cos θ e i·sin θ (oppure sin θ·i).
+  const cosine = bracket.terms.find((term) => term.kind === "fn" && term.name === "cos");
+  const imaginary = bracket.terms.find((term) => term !== cosine);
+  if (cosine?.kind !== "fn" || imaginary?.kind !== "mul" || imaginary.factors.length !== 2) return wrong;
+  const sine = imaginary.factors.find((factor) => factor.kind === "fn" && factor.name === "sin");
+  if (!imaginary.factors.some(isImaginaryUnit) || sine?.kind !== "fn") return wrong;
+  return equivalent(cosine.arg, sine.arg) ? OK : wrong;
 }
 
 function checkExponentialForm(expr: Expr): FormCheck {

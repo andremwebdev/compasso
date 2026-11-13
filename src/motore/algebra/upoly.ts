@@ -242,6 +242,15 @@ export function upFactor(p: UPoly): UFactorization {
     if (entry) entry.multiplicity += 1;
     else grouped.set(key, { poly, multiplicity: 1 });
   }
-  const factors = [...grouped.values()].sort((a, b) => upDegree(a.poly) - upDegree(b.poly) || a.poly.join(",").localeCompare(b.poly.join(",")));
+  // Ordine per grado e poi per coefficienti (dal termine noto in su), confrontati come numeri: il
+  // confronto tra stringhe «secondo la lingua» può cambiare da un dispositivo all'altro.
+  const byCoefficients = (a: UPoly, b: UPoly): number => {
+    for (let k = 0; k < a.length; k++) {
+      const order = at(a, k).cmp(at(b, k));
+      if (order !== 0) return order;
+    }
+    return 0;
+  };
+  const factors = [...grouped.values()].sort((a, b) => upDegree(a.poly) - upDegree(b.poly) || byCoefficients(a.poly, b.poly));
   return { constant, factors };
 }

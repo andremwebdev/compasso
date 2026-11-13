@@ -11,7 +11,6 @@
 // solo dai polinomi (il risultato è sempre lo stesso).
 
 import { gcd } from "../numbers/integers";
-import type { Rational } from "../numbers/rational";
 import { Rng } from "../random/rng";
 import type { NormalContext, Poly } from "./poly";
 import { upAdd, upDegree, upGcd, upIsIrreducible, upMul, upoly, upPow, type UPoly } from "./upoly";
@@ -90,15 +89,18 @@ export function areCoprime(a: Poly, b: Poly, ctx: NormalContext): boolean | null
   return false;
 }
 
-/** Il MCD dei coefficienti, se sono tutti interi; altrimenti null. Serve a vedere se c'è un numero da raccogliere. */
+/**
+ * Il MCD dei coefficienti, se sono tutti interi; altrimenti null. Serve a vedere se c'è un numero da
+ * raccogliere. In un coefficiente con radicali contano i numeri davanti alle radici: in 2 + 4√3 è 2.
+ */
 export function integerContent(polys: readonly Poly[]): bigint | null {
   let content = 0n;
   for (const poly of polys) {
     for (const { coeff } of poly.terms.values()) {
-      if (!coeff.isRational()) return null;
-      const value: Rational = coeff.toRational();
-      if (!value.isInteger()) return null;
-      content = gcd(content, value.n);
+      for (const [, value] of coeff.terms) {
+        if (!value.isInteger()) return null;
+        content = gcd(content, value.n);
+      }
     }
   }
   return content;

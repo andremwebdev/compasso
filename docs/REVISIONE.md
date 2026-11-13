@@ -2,7 +2,7 @@
 
 Revisione critica di `src/motore` e dei suoi test, fatta come la farebbe un revisore esterno: lettura di tutto il codice, più prove a tappeto contro modelli indipendenti (valutazione numerica, forza bruta, conti rifatti in un altro modo). Questo documento si aggiorna mentre il lavoro procede.
 
-Stato: **in corso** — fatta la parte 1 (numeri, espressioni, LaTeX, parser).
+Stato: **in corso** — fatte le parti 1 (numeri, espressioni, LaTeX, parser) e 2 (algebra, equivalenza, forma, derivate, passaggi).
 
 ## Come è stata fatta
 
@@ -31,6 +31,19 @@ Nessun difetto trovato, né leggendo né con le prove, in: `Rational`, interi, `
 | 2 | `parser/parse.ts` | `parseExpression` **poteva lanciare** (`RangeError`) con migliaia di parentesi annidate, contro la promessa «non lancia mai». | Testo oltre 1.000 caratteri rifiutato con un messaggio; qualunque errore imprevisto diventa un risultato di errore. |
 | 3 | `numbers/surd.ts` | Il **segno «esatto»** di un numero con radici usava 40 cifre fisse: con cancellazioni più forti poteva sbagliare (`(√5 − 2)^91` risultava negativo). Non raggiungibile con i numeri degli esercizi, ma la funzione promette un segno esatto. | Le cifre raddoppiano finché il totale supera l'errore massimo possibile: il segno è dimostrato, non stimato. |
 | 4 | `parser/parse.ts` | `sin π/3` valeva `(sin π)/3`, cioè zero. È la scrittura più naturale per gli angoli (forma trigonometrica dei complessi, goniometria) e nessuno intende `(sin π)/3`. | Se l'argomento senza parentesi contiene π, la divisione per un intero resta nell'argomento: `sin π/3 = sin(π/3)`, `cos 2π/3`, `tan −π/4`. Senza π resta la regola di prima (`sin x/2 = (sin x)/2`). Decisione annotata in `STATO.md`. |
+
+### Parte 2 — algebra, vincoli di forma, passaggi
+
+| # | Dove | Difetto | Correzione |
+| --- | --- | --- | --- |
+| 5 | `form` · `expanded` | **Risposta giusta rifiutata**: `3 + 2√2` (lo sviluppo di `(1 + √2)²`) e `√2 + √3` erano «termini simili ancora da sommare», perché ogni costante contava come termine noto. | Due termini sono simili solo se hanno la stessa parte letterale **e lo stesso radicale**: `2√2 + 3√2` sì, `3 + 2√2` no. |
+| 6 | `form` · `rationalized` | **Risposta non razionalizzata accettata**: `√(1/2)`, `(1/2)^(1/2)`, `√0,5`, `√(x/2)` passavano il controllo (la radice non era scritta in un denominatore). | Una frazione sotto radice (o sotto esponente frazionario) è rifiutata, con il motivo. |
+| 7 | `form` · `reducedFraction`, `factored` | Un fattore intero comune non si vedeva in mezzo ai radicali: `2√2/2`, `(2 + 2√3)/4`, `√8/2` erano «ridotte»; in `(2x + 2√2)` non si chiedeva di raccogliere 2. | `integerContent` guarda i numeri davanti alle radici. |
+| 8 | `form` · `factored` | **Risposta giusta rifiutata**: `((x+1)(x−1))²` risultava «non scomposta». | La potenza di un prodotto si controlla fattore per fattore. |
+| 9 | `form` · `simplifiedRadicals` | Accettava `(√2)³`, `(√2)²`, `√2·√2`, `√2·√3`, `√0`. | Rifiutate: potenza di una radice numerica con esponente ≥ indice, prodotto di radici numeriche con lo stesso indice, radice di zero. |
+| 10 | `form` · `trigonometricForm` | Rifiutava `ρ(i sin θ + cos θ)`: stessa forma, addendi scambiati. | I due addendi valgono in qualunque ordine. Con la correzione 4, `2(cos π/3 + i sin π/3)` scritto senza parentesi è accettato. |
+| 11 | `algebra/upoly.ts` | L'ordine dei fattori di `upFactor` usava `localeCompare`, che **dipende dalla lingua del dispositivo**: contro il principio «deterministico» (l'ordine entra nei passaggi di scomposizione e negli autovalori complessi). | Ordine per grado e poi per coefficienti confrontati come numeri. Un test controlla che in `src/motore` non ci siano `localeCompare`, `Intl`, `Math.random`, `Date`. |
+| 12 | `steps/quadratic.ts` | Nel calcolo del discriminante una frazione al quadrato usciva `\frac{1}{2}^{2}`, senza parentesi. | `\left(\frac{1}{2}\right)^{2}`. |
 
 ## Che cosa resta
 

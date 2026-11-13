@@ -145,3 +145,39 @@ describe("polinomi in più variabili ristretti a una retta", () => {
     expect(areCoprime(poly("xy"), poly("z+1"), ctx)).toBe(true);
   });
 });
+
+describe("revisione 4a: l'ordine dei fattori non dipende dalla lingua del dispositivo", () => {
+  it("fattori dello stesso grado in ordine di coefficienti, dal termine noto in su", () => {
+    // (t − 3)(t − 1)(t + 1)(t + 2): termini noti −3, −1, 1, 2... scritti come li ordina il confronto tra numeri.
+    const linear = upFactor(upMul(upMul(upoly(2, 1), upoly(-1, 1)), upMul(upoly(1, 1), upoly(-3, 1))));
+    expect(linear.factors.map(({ poly }) => show(poly))).toEqual(["-3 1", "-1 1", "1 1", "2 1"]);
+    // t⁴ + 4 = (t² − 2t + 2)(t² + 2t + 2)
+    const quartic = upFactor(upoly(4, 0, 0, 0, 1));
+    expect(quartic.factors.map(({ poly }) => show(poly))).toEqual(["2 -2 1", "2 2 1"]);
+    // Frazioni e interi insieme: (2t − 1)(t − 1)(3t + 1), termini noti −1, −1, 1; a parità decide il coefficiente successivo.
+    const mixed = upFactor(upMul(upMul(upoly(-1, 2), upoly(-1, 1)), upoly(1, 3)));
+    expect(mixed.factors.map(({ poly }) => show(poly))).toEqual(["-1 1", "-1 2", "1 3"]);
+  });
+
+  it("il codice del motore non usa confronti che dipendono dalla lingua, né l'ora, né Math.random", async () => {
+    const { readdirSync, readFileSync, statSync } = await import("node:fs");
+    const { join } = await import("node:path");
+    const { fileURLToPath } = await import("node:url");
+    const files: string[] = [];
+    const walk = (dir: string): void => {
+      for (const name of readdirSync(dir)) {
+        const path = join(dir, name);
+        if (statSync(path).isDirectory()) walk(path);
+        else if (path.endsWith(".ts")) files.push(path);
+      }
+    };
+    walk(fileURLToPath(new URL("../../src/motore", import.meta.url)));
+    expect(files.length).toBeGreaterThan(40);
+    for (const file of files) {
+      // Si guarda il codice, non i commenti (che queste cose le nominano per vietarle).
+      const code = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+      expect(/localeCompare|toLocale|Intl\./.test(code), file).toBe(false);
+      expect(/Math\.random|Date\.now|new Date/.test(code), file).toBe(false);
+    }
+  });
+});

@@ -235,3 +235,14 @@ describe("scomposizione con i passaggi", () => {
     }
   });
 });
+
+describe("revisione 4a: passaggi con coefficienti frazionari", () => {
+  it("nel discriminante una frazione elevata al quadrato sta tra parentesi", () => {
+    const solution = solveQuadratic(1, Rational.of(1, 2), Rational.of(-1, 2));
+    expect(solution.steps[1]?.formula).toBe(
+      "\\Delta = b^{2} - 4ac = \\left(\\frac{1}{2}\\right)^{2} - 4 \\cdot 1 \\cdot \\left(-\\frac{1}{2}\\right) = \\frac{9}{4}",
+    );
+    expect(solution.roots.map(toLatex)).toEqual(["-1", "\\frac{1}{2}"]);
+    drawsSteps(solution.steps);
+  });
+});
