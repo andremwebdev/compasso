@@ -1,249 +1,188 @@
 # STATO
 
-Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione 4b (revisione di generatori, lezione e app).
+Ultimo aggiornamento: fine della sessione 4c (regole e piano per i modelli successivi). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
-**Sessione 0 — impalcatura (fase 1)**
+Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
 
-- Progetto TypeScript con Preact, @preact/signals, esbuild, Vitest, KaTeX. Due build dallo stesso codice (`dist/telefono/` PWA offline, `dist/pc/compasso.html` file unico). App vuota con le cinque sezioni.
-- Workflow GitHub Actions: tipi, build, test a ogni push; pubblicazione su GitHub Pages dal ramo `main`.
-- `docs/SPECIFICA.md`, catalogo errori in `src/errori/` (65 voci, 12 categorie) con verifica sympy degli esempi, `REGOLE.md` (scheletro).
-
-**Sessione 1 — architettura e nucleo del motore (fase 2, prima metà)**
-
-- **`docs/ARCHITETTURA.md`**: architettura del motore per l'intero perimetro della sezione 6 (tre volumi), con quello che è fatto (✅) e quello che resta alla sessione 2 (🔜) già collocato; come si estende ad analisi 2 e alla fisica.
-- **Numeri esatti** (`src/motore/numbers/`): interi `bigint`, `Rational` (frazioni sempre ridotte, lettura e scrittura dei decimali con la virgola), `Surd` (numeri con radici quadrate: campo esatto con razionalizzazione e segno esatto). π ed e sono simboli.
-- **Generatore casuale con seme** (`random/rng.ts`): deterministico, sequenza congelata da un test.
-- **Espressioni** (`expr/`): albero immutabile fedele alla scrittura (12 tipi di nodo), costruttori, visita, sostituzione, valutazione numerica, equazioni e disequazioni come oggetti.
-- **LaTeX** (`expr/latex.ts`): convenzioni italiane (virgola decimale, punto di moltiplicazione solo dove serve); ogni uscita provata con KaTeX rigoroso.
-- **Parser tollerante** (`parser/`): moltiplicazione implicita, virgola o punto, `sqrt`/`√`, `x^2`/`x²`, `pi`/`π`, funzioni con o senza parentesi e con i nomi italiani (sen, tg, arcsen…), logaritmi con base, valore assoluto, percentuali, relazioni; testo incompleto completato con `□` per l'anteprima in tempo reale; errori in italiano con posizione; non lancia mai.
-- **Forma normale ed equivalenza** (`algebra/poly.ts`, `algebra/normalize.ts`, `equivalence/`): confronto esatto con polinomi in più «atomi» a coefficienti `Surd` e prodotto in croce per le frazioni; ripiego numerico deterministico in punti casuali per le identità goniometriche, esponenziali e logaritmiche.
-- **Polinomi in una variabile** (`algebra/upoly.ts`): divisione con resto, MCD, radici razionali, irriducibilità e scomposizione sui razionali (completa fino al grado 5); **restrizione a una retta** per i polinomi in più variabili (`algebra/specialize.ts`).
-- **Vincoli di forma** (`form/`): `expanded`, `factored`, `reducedFraction`, `rationalized`, `simplifiedRadicals`, `algebraicForm`, `trigonometricForm`, ognuno con il motivo in italiano quando non è rispettato.
-- **Tipi per il resto del perimetro**: insiemi di soluzioni (`sets/types.ts`), matrici e vettori con confronto e LaTeX (`linalg/matrix.ts`), valori di limite con lettura, confronto e LaTeX (`calculus/limit.ts`).
-- **Schema dei generatori e valutazione** (`src/esercizi/`): tipi di generatore, esercizio, otto tipi di risposta con le risposte sbagliate previste tipizzate; `defineGenerator`, `generateExercise` (deterministico, controlla le regole di base), `evaluateResponse` (giusta / sbagliata con codice di errore o `NON_CLASSIFICATO` / non data / non valida; `FORMA.DECIMALE` e `FORMA.NON_RICHIESTA`), `choiceOptions` (qualunque esercizio con tre risposte sbagliate previste diventa scelta multipla).
-- **Codici fissi** (`src/codici.ts`): tipi e controlli di forma per tutti i codici della sezione 4.
-- **Formato delle lezioni** (`src/contenuti/formato/`): sintassi fissata, `parseLesson` (legge e controlla una lezione, con riga e motivo di ogni problema), `lessonReferences`, `splitInline`.
-- **`REGOLE.md`, parte tecnica**: convenzioni del codice, il motore in breve, come si aggiunge un generatore, come si scrive una lezione. Un test controlla che gli esempi di REGOLE.md funzionino davvero.
-- **Test**: 553 test in 15 file alla fine della sessione.
-
-**Sessione 2 — motore completo e sistema di verifica (fase 2, seconda metà)**
-
-- **Pulizia e sviluppo** (`algebra/simplify.ts`, `algebra/expand.ts`): `simplify` (coefficienti, segni, una sola linea di frazione, potenze, termini simili, radicali numerici in forma normale, potenze di `i`; non sviluppa e non scompone) ed `expand` (sviluppo dalla forma normale); passaggio tra espressioni e polinomi in una variabile.
-- **Derivate simboliche** (`calculus/derive.ts`): somma, prodotto, quoziente, potenza, esponenziale, composizione, tutte le funzioni elementari; regole usate per i passaggi; verifica delle primitive derivandole (`isAntiderivative`).
-- **Matrici esatte** (`linalg/`): somma, prodotto, potenza, trasposta, traccia, determinante (Laplace senza divisioni), inversa, rango, nucleo, sistemi lineari (una, nessuna, infinite soluzioni); **riduzione di Gauss con ogni operazione elementare registrata** e scritta in LaTeX; polinomio caratteristico, autovalori (razionali, con radicali, complessi), autovettori, diagonalizzabilità, costruzione all'indietro `P·D·P⁻¹`. Funziona con numeri esatti, complessi e parametri.
-- **Numeri complessi** (`numbers/complex.ts`, `complex/`): aritmetica esatta, angoli notevoli (multipli di π/12), le tre forme (algebrica, trigonometrica, esponenziale) e il passaggio dall'una all'altra, potenze (De Moivre), radici n-esime; valutazione numerica complessa (`evaluateComplex`) usata dall'equivalenza; vincolo di forma `exponentialForm`.
-- **Insiemi di soluzioni** (`sets/`, `parser/sets.ts`): intervalli, unioni, punti isolati, ∅, ℝ, soluzioni periodiche; forma canonica, unione, intersezione, complementare, differenza, appartenenza, confronto per struttura (anche tra periodi scritti in modo diverso); LaTeX con le convenzioni italiane; lettura di quello che scrive Andrea (intervalli, disuguaglianze, `x = π/6 + 2kπ`, `±`). Le risposte di tipo insieme ora **si valutano** e diventano scelta multipla.
-- **Tabelle e passaggi** (`display/`, `steps/`): tabella dei segni (dati, LaTeX, soluzione della disequazione, passaggi dello studio del segno), tabella di variazione (andamento, massimi e minimi), sistemi con la graffa; passaggi di formula risolutiva (anche con soluzioni complesse), Ruffini con la tabella, divisione tra polinomi, scomposizione (raccoglimento, prodotti notevoli, trinomio speciale, Ruffini); mcm di polinomi.
-- **Verifica automatica dei generatori** (`esercizi/verify.ts`): i **nove controlli** della specifica, sezione 12, su 2.000 semi per livello, con rapporto in italiano (controllo, livello, seme) e avvisi. Provata sul **generatore minimo di prova** (`test/esercizi/fixtures/sample-generator.ts`, una disequazione di primo grado): lo supera, e per ogni controllo una variante difettosa dimostra che il difetto viene scoperto.
-- **Verifica automatica dei contenuti** (`contenuti/formato/verify.ts`): intestazioni, posto dei file, codici unici, prerequisiti (esistenti, senza giri), rimandi a glossario, lezioni, definizioni, teoremi, errori, generatori e visualizzazioni, termini definiti una volta sola; ricava il glossario. Provata su lezioni minime di prova.
-- **Documenti**: `docs/ARCHITETTURA.md` aggiornato a quello che esiste; `REGOLE.md` con il motore completo e la procedura di verifica di un generatore (gli esempi sono provati da un test).
-- **Test**: 872 test in 24 file, verdi in locale e su GitHub. Tempi: la verifica del generatore di prova (4.000 esercizi) richiede meno di un secondo; generare un esercizio di prova circa 0,02 ms.
-
-**Sessione 3 — generatori di riferimento e fetta verticale (fase 3)**
-
-- **Cinque generatori di riferimento** in `src/generatori/` (il quarto punto della specifica, «determinanti e sistemi lineari», è diventato due generatori, uno per modulo), ognuno con tre livelli, verifica indipendente e test che chiama `verifyGenerator` (2.000 semi per livello, zero problemi e zero avvisi):
-  - `V1.M06.A04.g1` disequazioni fratte (risposta: insieme). Tabella dei segni nei passaggi; risposte sbagliate per `DISEQ.SEGNO_DENOMINATORE`, `DISEQ.UNIONE_INTERSEZIONE`, `DISEQ.ESTREMI`, `COND.DENOMINATORE`, più `CALC.MENO_PARENTESI` e `DISEQ.SECONDO_GRADO`. Verifica: la disequazione provata con conti esatti in un centinaio di punti.
-  - `V1.M04.A07.g1` scomposizione di polinomi (espressione con vincolo di forma `factored`). Passaggi di `factorPolynomial`.
-  - `V2.M06.A03.g1` derivate: prodotto, quoziente, funzione composta (espressione libera); al livello 3 due regole insieme.
-  - `V3.M03.A01.g1` calcolo del determinante, ordine 2, 3 e 4 (numero esatto).
-  - `V3.M02.A01.g1` sistemi lineari con Gauss, 2×2 e 3×3, al livello 3 con scambio di righe (vettore colonna).
-- **Elenco dei generatori** (`src/generatori/index.ts`) e **strumenti comuni** (`src/generatori/comuni/`); un test controlla che ogni file sia in elenco e abbia il suo test.
-- **Catalogo errori: 7 voci nuove** (72 in tutto), anche nella tabella di `docs/SPECIFICA.md` e nei controlli sympy: `CALC.SEGNO_TRASPORTO`, `ALG.RACCOGLIMENTO`, `ALG.SEGNI_FATTORI`, `AN.DERIVATA_QUOZIENTE`, `ALIN.GAUSS_TERMINE_NOTO`, `ALIN.DET_SEGNI`, `ALIN.DET_DIAGONALE`.
-- **Lezione `V1.M06.L04` «Disequazioni fratte»** (`src/contenuti/v1/m06/l04.md`): due definizioni, tre esempi svolti con la tabella dei segni, quattro riquadri attenzione, quattro domande lampo (due scritte a mano, due dal generatore), due flashcard, riepilogo. `src/contenuti/index.ts` elenca le lezioni; un test esegue `verifyContents` su tutte le lezioni vere contro l'elenco dei generatori veri.
-- **Strato dei dati** (`src/dati/`): registro dei tentativi e progressi delle lezioni in **IndexedDB con numero di versione dei dati** (`DATA_VERSION = 1`), ripiego su localStorage e poi memoria, migrazioni, dati di versione futura rifiutati. Provato con `fake-indexeddb`.
-- **Fetta verticale nell'app**:
-  - Teoria: la lezione letta dal Markdown, mostrata a tratti che finiscono con una domanda lampo; si riprende dal tratto raggiunto; alla fine, cinque esercizi a livelli crescenti (1, 1, 2, 2, 3).
-  - Schermata di esercizio completa: risposta scritta con anteprima in tempo reale, scelta multipla, caselle per i vettori, «Non lo so», due indizi, esito con icona e parola, errore riconosciuto con nome, spiegazione ed esempio dal catalogo, risposta giusta, soluzione passo passo, «Esercizio simile», «Torna alla lezione», «Segna come distrazione»; codice del generatore, livello e seme nell'angolo.
-  - Tastiera matematica con i livelli Base, Insiemi e Funzioni; sul telefono la tastiera di sistema non si apre, sul computer si scrive con quella fisica e Invio conferma.
-  - Esercizi: i cinque generatori, per livello. Tu: conteggi e stato dei dati. Oggi: scorciatoia alla lezione. Test: segnaposto.
-  - Primo abbozzo dello stile Compasso: carta avorio con quadrettatura, blu progetto, accenti arancioni, riquadri per tipo con etichetta a parole, tema chiaro e scuro secondo il sistema.
-- **`REGOLE.md`**: «Come replicare un generatore» (tabella dei riferimenti, struttura in cinque parti, procedura, abitudini), la lezione di riferimento, «L'app in breve». **`docs/ARCHITETTURA.md`**: sezione 15 bis.
-- **Prove fatte**: percorso completo in un telefono simulato (Chromium con le misure di un iPhone 11, tema chiaro e scuro): lezione dall'inizio alla fine, esercizi, dati che restano dopo il ricaricamento, nessun errore in console, nessuno scorrimento orizzontale. Versione PC aperta come file in Chromium: funziona, IndexedDB compresa. **Non è stata fatta una prova su un iPhone vero**: è la prima cosa da fare.
-- **Test**: 941 test in 33 file. La prova end-to-end percorre lezione ed esercizio nelle due versioni compilate.
-
-**Sessione 4a — revisione del motore**
-
-- Tutto `src/motore` riletto e provato a tappeto contro modelli indipendenti (dettagli, metodo e numeri in `docs/REVISIONE.md`). Solidi e senza difetti: numeri, forma normale, `simplify`, `expand`, equivalenza, derivate, operazioni sugli insiemi, matrici, complessi, tabelle, passaggi.
-- **19 correzioni**, ognuna con il suo test: LaTeX rotto per `1 + (−x)y`; parser che poteva lanciare; segno «esatto» dei radicali che non lo era sempre; cinque vincoli di forma che accettavano risposte sbagliate (`√(1/2)`, `2√2/2`, `(√2)³`) o rifiutavano risposte giuste (`3 + 2√2`, `((x+1)(x−1))²`); ordine dei fattori che dipendeva dalla lingua del dispositivo; il numero e letto come congiunzione negli insiemi (`x ≤ e ∨ x ≥ e²`); `[−∞; 2]` e `{1,2}` accettati o fraintesi in silenzio.
-- Fuori dal motore solo `SET_ENDINGS` in `src/app/risposta/preview.ts` (quattro chiusure in più, per restare allineati al parser).
-- **Test**: 976 in 33 file. I 45.000 esercizi dei cinque generatori (3 livelli, semi 1-3000) sono identici, byte per byte, a prima della revisione.
-
-**Sessione 4b — revisione di generatori, lezione e app**
-
-- Cinque generatori, lezione `V1.M06.L04` e fetta verticale riletti e provati (metodo, tabella delle 23 correzioni e numeri in `docs/REVISIONE.md`, seconda parte). **Nessuna risposta giusta sbagliata**: 26.718 esercizi diversi rifatti con sympy a partire dal testo mostrato, zero problemi.
-- **Generatori**: varietà della scomposizione (livello 3 da 78 a 193 esercizi diversi; `x⁴ − 1` non esce più una volta su quindici); errore «verso non invertito» nelle disequazioni fratte e almeno tre risposte sbagliate in ogni esercizio dei livelli 2 e 3; passaggi completi (segno dei trinomi, sostituzione all'indietro in Gauss, minori di ordine 3); niente sistemi 2×2 banali. La verifica automatica ora avvisa sulla poca varietà; semi congelati per tutti i generatori.
-- **Lezione**: definizione precisa, zero doppio e polinomio senza zeri spiegati (gli esercizi di livello 3 li usano), passo 1 nel terzo esempio, `∨` spiegato. 19 minuti.
-- **App**: l'anteprima non dà più per sbagliato un pezzo di risposta giusta (`-4 <`, `[2`); i motivi del parser con le formule si disegnano; le distrazioni restano errori; la soluzione si apre da sola quando l'errore non è riconosciuto; «Esercizio simile» non ripete; piccoli difetti di tastiera, salvataggio e a capo.
-- `REGOLE.md`: abitudini nuove in «Come replicare un generatore» (varietà, passaggi completi, una riga uno schermo, semi congelati). **Test**: 985 in 34 file.
+- **Impalcatura** (sessione 0): TypeScript, Preact, esbuild, Vitest, KaTeX; due build dallo stesso codice (`dist/telefono/` PWA offline, `dist/pc/compasso.html` file unico); controllo e pubblicazione su GitHub Pages a ogni push su `main`.
+- **Motore** (sessioni 1-2, rivisto in 4a): numeri esatti, espressioni, LaTeX all'italiana, parser tollerante, equivalenza, vincoli di forma, `simplify`/`expand`, polinomi, derivate, matrici, complessi, insiemi di soluzioni, tabelle dei segni e di variazione, passaggi delle procedure. Architettura in `docs/ARCHITETTURA.md`.
+- **Esercizi**: schema dei generatori, valutazione con riconoscimento degli errori, scelta multipla automatica, verifica automatica (nove controlli più avvisi di varietà) e verifica dei contenuti.
+- **Cinque generatori di riferimento** (rivisti in 4b, controllati con sympy dal testo mostrato): `V1.M06.A04.g1` disequazioni fratte, `V1.M04.A07.g1` scomposizione, `V2.M06.A03.g1` derivate, `V3.M03.A01.g1` determinante, `V3.M02.A01.g1` sistemi con Gauss.
+- **Lezione di riferimento** `V1.M06.L04` «Disequazioni fratte».
+- **Fetta verticale nell'app**: lezione a tratti con domande lampo, schermata di esercizio completa, tastiera matematica (Base, Insiemi, Funzioni), dati in IndexedDB con versione (`DATA_VERSION = 1`) e ripieghi, esercizi per generatore e livello.
+- **Catalogo errori**: 72 voci in 12 categorie, allineato alla tabella della specifica e verificato con sympy.
+- **Regole** (sessione 4c): `REGOLE.md` completo per generatori, lezioni, dimostrazioni, visualizzazioni, catalogo, con le trappole emerse dalle revisioni.
+- **Test**: 985 in 34 file, verdi in locale e su GitHub.
 
 ## In corso
 
-Niente. La sessione 4b è completa e caricata su GitHub (ramo `main`), controllo verde.
+Niente.
 
-## Codici assegnati (la scaletta futura deve rispettarli)
+## Lavoro per i modelli successivi
+
+In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quando» dice quando chiuderla. Le fasi 4 e 5 possono procedere in parallelo (specifica, sezione 13), purché seguendo `REGOLE.md`. Segnati con ⚙ i punti che toccano motore, schema o formato dei dati: vanno a un modello capace, in una sessione dedicata.
+
+**Fase 4 — involucro dell'app**
+
+1. **Prova su iPhone** della versione su Pages (la fa Andrea, o la sessione la prepara come elenco di cose da toccare): tastiera di sistema che non si apre, tasti comodi, tabelle dei segni che scorrono, installazione e uso offline. I difetti trovati diventano il primo lavoro.
+2. **Navigazione e sezioni**: cronologia del browser (tasto indietro), le cinque sezioni complete con i contenuti presenti (Oggi, Teoria, Esercizi, Test come segnaposto ordinato, Tu), avviso di prerequisiti mancanti con i link.
+3. **Impostazioni e backup**: esportazione e ripristino dei dati (`exportData` esiste), avviso «versione nuova disponibile», risoluzione del tentativo perso all'avvio (problemi noti).
+4. ⚙ **Tastiera completa**: livelli Analisi, Lineare, Complessi; cifre anche nel livello Funzioni; frazioni e potenze «a modello».
+5. **Aspetto Compasso definitivo**: due temi, modalità lettura, valori di colori e caratteri (specifica, sezione 10).
+6. **Flashcard, glossario, diario**: flashcard automatiche e manuali mostrate, glossario come pagina, diario degli errori.
+7. ⚙ **Riordino e dimostrazioni interattive**: risposta `ordering` nella schermata di esercizio; le tre modalità (riordina, trova lo sbagliato, completa) ricavate dal blocco `dimostrazione`; scheda Dimostrazioni.
+8. ⚙ **Impalcatura delle visualizzazioni** con la prima, `VIS.disequazioni-grafico`, e la sua scheda in `docs/VISUALIZZAZIONI.md` (`REGOLE.md`, «Come aggiungere una visualizzazione»); poi aggiungerla alla lezione `V1.M06.L04`.
+9. ⚙ **Caricamento dei contenuti per modulo** nella versione telefono (specifica, sezione 12): `src/contenuti/index.ts` diviso per modulo.
+   - Fase finita quando: tutte le sezioni funzionano con i contenuti presenti, e l'app è installata su iPhone e funziona offline.
+
+**Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14)
+
+1. **Scaletta di ogni modulo** prima dei contenuti: lezioni e abilità con codici, prerequisiti, generatori previsti, termini del glossario, visualizzazione. Una sessione può fare la scaletta di più moduli; si rispettano i codici assegnati qui sotto. Proposta: in `docs/SCALETTA.md`.
+2. **Completare V1.M06** per primo, attorno al riferimento: lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
+3. **Lezione `V1.M04.L07`** sulla scomposizione (il generatore esiste già) e il resto di V1.M04.
+4. **Gli altri moduli in ordine di prerequisiti** (M01, M02, M03, M05, M07, … M14). Per ogni modulo, in quest'ordine: generatori (uno per sessione se complessi), lezioni, flashcard manuali, dimostrazioni dove servono, visualizzazione del modulo (M08, M09, M10, M12), controllo «Lo so già».
+   - Prima di M02, M03, M10, M13: ⚙ estendere il parser (numeri periodici, notazione scientifica, gradi, fattoriale).
+   - In M09: un generatore con estremi `e`, `e²`, `ln 2` per provare la lettura degli insiemi (`docs/REVISIONE.md`, punti da incrociare).
+   - In M10: equazioni goniometriche con soluzioni tutte periodiche (trappole del motore in `REGOLE.md`).
+5. ⚙ **Controllo «Lo so già»** nell'app (specifica, sezione 3), quando i primi moduli hanno contenuti.
+   - Fase finita quando: ogni modulo ha lezioni, abilità con generatori verificati e controllo «Lo so già».
+
+**Fase 6 — Volumi 2 e 3, in parallelo**
+
+1. **Decidere prima**: `log` o `ln` per il naturale nel Volume 2 (decisione 5).
+2. **Lezioni dei generatori già esistenti**: `V2.M06.L03` (regole di derivazione), `V3.M02.L01` (Gauss), `V3.M03.L01` (determinante).
+3. ⚙ **Motore**: nodi per successioni e somme (prima di V2.M03 e V2.M11), grafici statici (prima di V2.M07), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
+4. **Scaletta, generatori, lezioni con dimostrazioni** (confrontate con un libro di testo), modulo per modulo, alternando i due binari; le sei visualizzazioni nei loro moduli (V2.M04, M06, M08, M09; V3.M05, M06).
+   - Fase finita quando: come il Volume 1, più dimostrazioni interattive per i teoremi principali.
+
+**Fase 7 — sezione Test**: prima la composizione della simulazione TOL e il numero di opzioni (da tarare sulla Demo TOL, specifica sezione 14), poi simulazione a tempo, mini-test di modulo, storico, analisi della penalità.
+
+**Fase 8 — strato adattivo**: formula della padronanza (oggi solo conteggi), ripasso a intervalli, test d'ingresso, Oggi composto da padronanza ed errori.
+
+**Fase 9 — rifinitura**: prestazioni misurate su iPhone XR (`app.js` oggi circa 560 KB), versione PC provata in Safari e Firefox, ritocchi.
+
+## Codici assegnati (la scaletta deve rispettarli)
 
 | Codice | Che cos'è |
 |---|---|
-| `V1.M06.L04` | Lezione «Disequazioni fratte» (`src/contenuti/v1/m06/l04.md`) |
-| `V1.M06.A04` | Abilità: risolvere una disequazione fratta — generatore `V1.M06.A04.g1` |
-| `V1.M06.D02` | Definizione «Disequazione fratta» — termine di glossario `disequazione-fratta` |
-| `V1.M06.D03` | Definizione «Regola dei segni per una frazione» — termine `segno-di-una-frazione` |
+| `V1.M06.L04` | Lezione «Disequazioni fratte» |
+| `V1.M06.A04` | Abilità: disequazione fratta — generatore `V1.M06.A04.g1` |
+| `V1.M06.D02`, `V1.M06.D03` | Definizioni «Disequazione fratta» (`disequazione-fratta`), «Regola dei segni per una frazione» (`segno-di-una-frazione`) |
 | `V1.M06.F01`, `V1.M06.F02` | Flashcard della lezione V1.M06.L04 |
-| `V1.M04.L07` | Lezione (da scrivere) sulla scomposizione di polinomi: è il rimando del generatore |
-| `V1.M04.A07` | Abilità: scomporre completamente un polinomio — generatore `V1.M04.A07.g1` |
-| `V2.M06.L03` | Lezione (da scrivere) sulle regole di derivazione: prodotto, quoziente, composta |
-| `V2.M06.A03` | Abilità: derivare con le regole di calcolo — generatore `V2.M06.A03.g1` |
-| `V3.M02.L01` | Lezione (da scrivere) sul metodo di Gauss |
-| `V3.M02.A01` | Abilità: risolvere un sistema lineare con Gauss — generatore `V3.M02.A01.g1` |
-| `V3.M03.L01` | Lezione (da scrivere) sul calcolo del determinante |
-| `V3.M03.A01` | Abilità: calcolare un determinante — generatore `V3.M03.A01.g1` |
+| `V1.M04.L07`, `V1.M04.A07` | Lezione (da scrivere) e abilità: scomposizione — generatore `V1.M04.A07.g1` |
+| `V2.M06.L03`, `V2.M06.A03` | Lezione (da scrivere) e abilità: regole di derivazione — generatore `V2.M06.A03.g1` |
+| `V3.M02.L01`, `V3.M02.A01` | Lezione (da scrivere) e abilità: metodo di Gauss — generatore `V3.M02.A01.g1` |
+| `V3.M03.L01`, `V3.M03.A01` | Lezione (da scrivere) e abilità: determinante — generatore `V3.M03.A01.g1` |
 
-Restano liberi per la scaletta: `V1.M06.L01`–`L03` (le lezioni che precedono le fratte: primo grado, secondo grado, studio del segno di un prodotto), `V1.M06.D01`, `V1.M06.A01`–`A03`. La lezione V1.M06.L04 ha per ora `prerequisiti: []` perché le lezioni precedenti non esistono (la verifica dei contenuti rifiuta un prerequisito che non c'è): quando esistono, vanno messi `V1.M06.L03` e `V1.M04.L07`, e i termini che la lezione oggi spiega a parole (zero di un polinomio, condizione di esistenza, tabella dei segni) diventano rimandi `[[…]]` al glossario.
-
-## Prossimo passo
-
-**Fase 4 — involucro dell'app** (specifica, sezione 13), e in parallelo le prime lezioni del Volume 1 seguendo `REGOLE.md`:
-
-1. **Prova su iPhone** della versione su Pages: lezione ed esercizi dall'inizio alla fine. In particolare: che la tastiera di sistema non si apra toccando il campo di risposta, che i tasti siano comodi, che le tabelle dei segni scorrano di lato.
-2. Le cinque sezioni complete, navigazione (oggi non c'è la cronologia del browser: si torna indietro solo con il pulsante in alto), impostazioni, backup (`exportData` esiste già).
-3. Tastiera matematica completa: livelli Analisi, Lineare, Complessi; frazioni e potenze «a modello» invece che come testo.
-4. Aspetto Compasso definitivo con i due temi e la modalità lettura.
-5. Flashcard (le due della lezione sono lette ma non ancora mostrate), glossario come pagina, diario degli errori.
-6. Prima di scrivere i contenuti: la scaletta delle lezioni e delle abilità di ogni modulo, rispettando i codici assegnati qui sopra.
-
-## Decisioni da rivedere
-
-Decisioni prese seguendo la sezione 0 della specifica, dove il testo non decide.
-
-*Sessione 2*
-
-1. **Intervalli**: si scrivono sempre con il punto e virgola tra gli estremi e con le parentesi tonde per gli estremi esclusi, `(1; 3]`. In lettura sono accettate anche le parentesi all'italiana `]1; 3[` e la virgola come separatore se non sta tra due cifre. Se a scuola Andrea usa `]1; 3[`, si può cambiare la sola scrittura in `sets/latex.ts`.
-2. **`(1,5)` è il numero 1,5**, non l'intervallo da 1 a 5 (che si scrive `(1; 5)` o `(1, 5)` con lo spazio). È la conseguenza della virgola decimale.
-3. **Un numero da solo**, come risposta a un esercizio di tipo insieme, vale `x = numero` (un punto isolato).
-4. **Insiemi e forma**: senza richieste nel testo, `[1; 2] ∪ [2; 3]` vale quanto `[1; 3]`. La forma canonica si pretende solo se il generatore mette `canonicalForm: true` (aggiunto allo schema). Un estremo decimale dove la risposta giusta è esatta (`x > 0,5` per `x > 1/2`) è `FORMA.DECIMALE`.
-5. **Numeri complessi**: argomento principale in **(−π, π]**; le radici n-esime hanno argomenti `(θ + 2kπ)/n` con `k = 0, …, n−1`, non riportati nell'intervallo principale. Angoli notevoli: i multipli di π/12. Da allineare al libro di Analisi 1 che userà Andrea.
-6. **`algebraicForm` allentato** (vincolo della sessione 1): una parte reale con più termini è accettata se i termini non si possono sommare (`1 + √2 + i` sì, `1 + 2 + i` no). Prima era rifiutata.
-7. **Come pulisce `simplify`**: una sola linea di frazione (`3x/2`, non `(3/2)x`; `(1 + √5)/2`, non `1/2 + √5/2`); lettere in ordine alfabetico nei prodotti; segno davanti; non sviluppa e non scompone.
-8. **Scomposizioni**: i fattori di primo grado si scrivono per radice crescente, quindi `(x + 3)(x − 3)` e `(x − 2)(x − 3)`.
-9. **Matrici**: polinomio caratteristico come `det(A − λI)`; nella riduzione di Gauss il pivot è il primo elemento non nullo e le righe si scambiano solo se serve; con i parametri rango e riduzione sono quelli «generici» (i valori particolari li discute il generatore).
-10. **Verifica dei generatori, soglie**: 50 ms al massimo per esercizio e 5 ms in media; i limiti di pulizia valgono anche per le risposte sbagliate previste (una sbagliata con numeri brutti si riconosce come sbagliata nella scelta multipla); un confronto «non deciso» tra due risposte conta come problema. Gli avvisi (verifica indipendente mancante, codici dichiarati mai prodotti, poca varietà) non bocciano, ma `REGOLE.md` chiede che un generatore finito non ne abbia.
-11. **Verifica dei contenuti**: un termine usato da una lezione che non ha tra i prerequisiti quella che lo definisce è un avviso, non un errore; un'abilità dichiarata da due lezioni è un errore.
-12. **Cartelle e file in più**: `motore/complex/` (le forme dei numeri complessi; il tipo `Complex` sta in `numbers/`), `motore/steps/`, `motore/display/`; `esercizi/verify.ts` non è esportato da `esercizi/index.ts` perché è uno strumento dei test.
-13. **Rimandati**: i grafici statici di funzioni e i nodi per successioni e somme. Erano nell'elenco di `ARCHITETTURA.md` per la sessione 2 ma non nel compito della sessione; nessuno li usa ancora.
-
-*Sessione 1*
-
-14. **Cartelle in più rispetto all'albero della specifica**: `src/esercizi/` (schema dei generatori e valutazione: sta fuori dal motore perché usa il catalogo errori), `src/codici.ts`, `src/contenuti/formato/` (codice che legge le lezioni, accanto alle lezioni).
-15. **`log` senza base = logaritmo in base 10**, `ln` = naturale (convenzione dei testi delle superiori). In Analisi 1 molti testi scrivono `log` per il naturale: da decidere se nel Volume 2 cambiare convenzione o scrivere sempre `ln`.
-16. **`1/2x` vale `(1/2)·x`** (prodotti e divisioni da sinistra a destra). L'anteprima mostra subito come è stato capito.
-17. **«Equivalenti» = uguali dove entrambe sono definite**: `(x²−1)/(x−1)` e `x+1` sono equivalenti. Le condizioni di esistenza vanno chieste con una risposta di tipo insieme.
-18. **Un decimale è `FORMA.DECIMALE` anche quando è esatto** (0,5 al posto di 1/2), salvo quando la risposta giusta stessa è scritta con i decimali o l'esercizio chiede un'approssimazione.
-19. **Decimale approssimato riconosciuto** se è l'arrotondamento o il troncamento della risposta giusta alle cifre scritte (1,41 e 1,414 per √2 sì; 1,42 no).
-20. **Tipo di risposta in più: `limit`** (numero, +∞, −∞, «non esiste»). Non è nella tabella della sezione 7 ma la sezione 6 lo richiede.
-21. **Esito `invalid`**: un testo non interpretabile o incompleto non è un tentativo, non si registra: Andrea lo corregge.
-22. **Scelta multipla da qualunque esercizio** con almeno tre risposte sbagliate previste (serve alla simulazione TOL); con quattro o più le opzioni sono cinque. Da allineare al numero di opzioni del TOL vero.
-23. **Aggiunte allo schema dei generatori**: `title` (nome dell'abilità), `limits` (limiti di pulizia dei numeri), `verify` (verifica indipendente).
-24. **Lezioni, perfezionamenti alla sintassi proposta**: `obiettivo` nell'intestazione; blocco `riepilogo` obbligatorio e ultimo; blocco `glossario` per i termini senza riquadro; `nome` obbligatorio per definizioni e teoremi (serve alle flashcard automatiche); sezioni interne con `::nome`; rimandi `[[termine|testo mostrato]]`; blocchi non annidabili; codici di definizioni, teoremi e flashcard del modulo della lezione; durata tra 10 e 20 minuti imposta dal controllo.
-25. **Ogni dimostrazione è a passaggi**, con almeno due passaggi con versione sbagliata (come dice la specifica). Se per le dimostrazioni brevi è troppo, si allenta il controllo in `readProofSteps`.
-26. **Libreria Markdown: `marked`**, da installare nella fase 3 quando l'app mostra la prima lezione. Il parser di Compasso toglie prima formule e rimandi, così il Markdown non tocca il LaTeX.
-27. **«Scomposta»**: irriducibilità sui razionali, completa fino al grado 5. Sono accettati `(x+1)(x+1)` al posto di `(x+1)²` e fattori con coefficienti frazionari o irrazionali (`(x−√2)(x+√2)`).
-28. **`i` è l'unità immaginaria solo negli esercizi sui complessi** (opzione `complex`); altrove è una variabile. `e` è sempre il numero di Nepero.
-29. **Confronto numerico**: 12 punti concordi, tolleranza relativa 10⁻⁸, punti che dipendono solo dalle due espressioni.
-30. **`Rng`**: sfc32 con chiave `codice|livello|seme`. Congelato: cambiarlo cambia tutti gli esercizi.
-
-*Sessione 0*
-
-31. **Versioni delle dipendenze**: ultime maggiori (Preact 11, TypeScript 7, Vitest 5, esbuild 0.28, KaTeX 0.19, jsdom 31), fissate da `package-lock.json`. CI con Node 22.
-32. **Service worker senza `skipWaiting`**; l'avviso «versione nuova disponibile» è della fase 4.
-33. **Percorsi relativi ovunque** (Pages serve sotto `/compasso/`).
-34. **Solo caratteri KaTeX woff2.**
-35. **Aspetto provvisorio** (palette, icona): il vero aspetto è della fase 4.
-36. **Catalogo errori come file TypeScript**: `ErrorCode` è l'unione dei codici, un codice inesistente non compila.
-37. **Rimandi del catalogo a livello di modulo**, da affinare quando ci sono le lezioni.
-38. **`ALG.SOMMA_QUADRATI`**: la specifica generalizza («a²+b² non si scompone»), ma `x⁴+4` si scompone; nel catalogo l'esempio è limitato a `x²+9`. La specifica andrebbe precisata.
-39. **`NON_CLASSIFICATO`** è una costante, non una voce del catalogo.
-40. **Verifica sympy fuori da CI**: va eseguita a mano quando si cambiano gli esempi del catalogo.
-
-41. **«Determinanti e sistemi lineari» = due generatori** (`V3.M03.A01.g1` e `V3.M02.A01.g1`), perché sono due abilità in due moduli; così ci sono anche i riferimenti per le risposte «numero» e «matrice».
-42. **Sette voci nuove nel catalogo errori** (elenco in «Fatto», sessione 3): sono nella tabella di `docs/SPECIFICA.md` e nella copia della specifica dentro il Progetto di Claude. Dal 12 novembre le due copie sono identiche (anche la riga della sezione 6 su «fisica e analisi 2»).
-43. **Risposte sbagliate con lo stesso codice**: uno stesso errore può manifestarsi in due modi (per esempio `CALC.SEGNO_TRASPORTO` in due punti diversi della sostituzione all'indietro); i generatori lo usano per arrivare a tre risposte sbagliate.
-44. **Lezione a tratti**: il tratto successivo si apre solo dopo aver risposto alla domanda lampo (qualunque risposta, anche «Non lo so»). Riaprendo la lezione le domande dei tratti già visti tornano senza risposta.
-45. **Prerequisiti di V1.M06.L04 vuoti** finché le lezioni precedenti non esistono (dettagli sotto la tabella dei codici).
-46. **Tastiera come testo**: i tasti inseriscono testo che il parser legge (`/` per la frazione, `^` per la potenza, `√(`); l'anteprima mostra la formula. La tastiera «a modello» è della fase 4.
-47. **Livello Funzioni della tastiera** aggiunto già ora (serve alle derivate), oltre a Base e Insiemi chiesti.
-48. **Esercizi dopo la lezione**: cinque, ai livelli 1, 1, 2, 2, 3. La difficoltà automatica arriva con la padronanza (fase 8).
-49. **Glossario**: confermato che si ricava dalle lezioni (`src/app/lezione/glossary.ts`); la cartella `src/glossario/` resta vuota e si può togliere.
-50. **Padronanza**: non c'è ancora una formula; `skillSummaries` dà solo conteggi per abilità (le domande lampo non contano; dalla sessione 4b le distrazioni contano come errori, come dice la specifica, con un conteggio a parte).
-51. **Formule dei testi degli esercizi ingrandite** dal foglio di stile, perché le frazioni in riga erano piccole; in alternativa i generatori potrebbero scrivere la disequazione a centro pagina.
-
-*Sessione 4a (revisione del motore)*
-
-52. **`sin π/3` = `sin(π/3)`**: con π nell'argomento senza parentesi, la divisione per un intero resta dentro. Senza π resta `sin x/2` = `(sin x)/2`. Alternativa: lasciare tutto com'era e contare sulla parentesi inserita dalla tastiera.
-53. **`[−∞; 2]` è un testo non valido** (con il motivo), non una risposta sbagliata: Andrea lo corregge prima di confermare e non entra nel diario come `DISEQ.ESTREMI`. Alternativa: accettarlo come scritto e valutarlo sbagliato.
-54. **`{1,2}` è rifiutato come ambiguo** (due soluzioni o il decimale 1,2?), perché l'anteprima lo disegnava uguale nei due casi. `(1,5)` resta il numero 1,5 (decisione della sessione 2).
-55. **`;` tra più soluzioni vale «oppure» solo tra uguaglianze o numeri** (`x = 3; x = 5`); tra disuguaglianze è un errore spiegato, perché potrebbe voler dire sistema.
-56. **Vincoli di forma più severi**: `simplifiedRadicals` rifiuta `√2·√3` (vuole `√6`) e `(√2)³`; `rationalized` rifiuta la frazione sotto radice; `reducedFraction` vede l'intero comune tra i radicali.
-57. **Limite di lunghezza delle risposte scritte**: 1.000 caratteri per un'espressione, 2.000 per un insieme.
-
-*Sessione 4b (revisione di generatori, lezione e app)*
-
-58. **Esercizi cambiati per alcuni semi**: scomposizione livelli 2 e 3, derivate livello 2 (una forma), Gauss livello 1 (i sistemi con uno zero), disequazioni fratte livello 3 (solo il verso, nel 4% dei casi). Numeri in `docs/REVISIONE.md`, «Esercizi cambiati». Un vecchio tentativo su quei semi, riaperto, mostrerebbe l'esercizio nuovo. Alternativa scartata: tenere gli esercizi vecchi e la poca varietà.
-59. **Soglie di varietà** nella verifica automatica: almeno 100 esercizi diversi per livello, nessun esercizio oltre il 4% dei semi. Sono avvisi, ma i test dei generatori pretendono zero avvisi.
-60. **Zero doppio con verso stretto**: quando restano solo due errori possibili la disequazione prende l'uguale (≤ o ≥), per avere sempre tre risposte sbagliate.
-61. **«Esercizio simile» e «Avanti»** scartano i semi che ridanno un testo già uscito nella serie in corso (fino a 12 tentativi).
-62. **Campo vuoto di un insieme**: l'anteprima mostra come si scrive (intervalli oppure disuguaglianze). La risposta sbagliata non riconosciuta apre da sola la soluzione passo passo.
-63. **Campi di risposta**: 200 caratteri al massimo.
-
-## Domande aperte
-
-- **Errore tipico nuovo?** «Zero doppio trattato come uno zero semplice» (`(x − 3)²` studiato come `x − 3`): è l'errore naturale di una forma del livello 3 delle disequazioni fratte, ma nel catalogo non c'è (e `DISEQ.SECONDO_GRADO` parla d'altro). Aggiungerlo cambia il catalogo e la tabella della specifica: decide Andrea.
-
-- **IndexedDB nella versione PC**: in Chromium funziona anche nel file aperto con doppio clic (provato). Da provare in Safari e Firefox; il ripiego su localStorage e poi sulla memoria esiste ed è testato.
-- **Parentesi degli intervalli**: `(1; 3)` oppure `]1; 3[` nella scrittura dell'app? Oggi `(1; 3)`; in lettura valgono entrambe (decisione 1 della sessione 2).
-- **Grafici statici**: la lezione sulle disequazioni fratte non ne usa; si fanno nella fase 4 con le visualizzazioni.
-- **Riordino** (`ordering`): la schermata di esercizio non lo mostra ancora; serve con le dimostrazioni interattive.
+Liberi per la scaletta di V1.M06: `L01`-`L03` (primo grado, secondo grado, segno di un prodotto), `D01`, `A01`-`A03`. Quando esistono, `V1.M06.L04` prende i prerequisiti `V1.M06.L03` e `V1.M04.L07` (oggi `[]`, perché la verifica rifiuta lezioni che non ci sono), e i termini che oggi spiega a parole (zero di un polinomio, condizione di esistenza, tabella dei segni) diventano rimandi `[[…]]`.
 
 ## Problemi noti
 
-Limiti del motore (dettagli in `docs/ARCHITETTURA.md`, sezione 18):
+Motore (fatto così di proposito; dettagli in `docs/REVISIONE.md` e in `REGOLE.md`, «Trappole del motore»):
 
-- La forma normale e `simplify` non conoscono le identità goniometriche, esponenziali e logaritmiche: per l'equivalenza decide il confronto numerico; nei risultati mostrati il generatore scrive lui la forma che vuole.
-- Irriducibilità completa solo fino al grado 5.
-- Angoli notevoli solo multipli di π/12; autovalori solo per matrici razionali con polinomio caratteristico scomponibile in fattori di primo e secondo grado; zeri automatici (`realZeros`) solo per polinomi scomponibili allo stesso modo.
-- Insiemi: l'unione tra soluzioni periodiche e un intervallo non è rappresentabile.
-- `FORMA.DECIMALE` per valori approssimati si riconosce solo nelle risposte costanti, non in espressioni con coefficienti decimali (`0,33x`) né negli estremi approssimati di un insieme.
-- Il parser non legge fattoriale, gradi (`30°`), numeri periodici, notazione scientifica con `E`: si aggiungono al parser quando un modulo li richiede.
+- Identità goniometriche, esponenziali e logaritmiche decise solo dal confronto numerico (raramente sbagliato vicino a cancellazioni forti).
+- Irriducibilità garantita fino al grado 5; angoli notevoli solo multipli di π/12; autovalori e `realZeros` solo con fattori di primo e secondo grado.
+- Insiemi: unione tra soluzioni periodiche e punti o intervalli non rappresentabile (il messaggio parla di «intervallo» anche per un punto); `x = 1 e 2` vale ∅.
+- `FORMA.DECIMALE` per valori approssimati solo nelle risposte costanti.
+- Parser: niente fattoriale, gradi, numeri periodici, notazione `1E5`; il parser degli insiemi non completa i testi a metà (l'app prova le chiusure di `SET_ENDINGS`).
+- Risposte `matrix`: caselle senza numeri complessi.
+- Passaggi della scomposizione di un quadrato di binomio: `(x + 1)(x + 1)` prima di `(x + 1)²` (`src/motore/steps/factor.ts`).
 
-Della sessione 4a (punti fragili rimasti, spiegati in `docs/REVISIONE.md`, «Che cosa resta»):
+Generatori e lezione:
 
-- Il confronto numerico può, molto raramente, dare «diverse» per due scritture equivalenti vicino a una cancellazione numerica.
-- `x = 1 e 2` si legge come ∅ (lettura rigorosa di «e»); `sin x/2` resta `(sin x)/2`.
-- Risposta `matrix`: le caselle si leggono senza numeri complessi (serve un campo `complex` quando V3 li userà).
-- L'unione tra soluzioni periodiche e un punto isolato dà un messaggio che parla di «intervallo».
-
-Della sessione 4b (dettagli in `docs/REVISIONE.md`, seconda parte, «Che cosa resta»):
-
-- Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno.
 - Al livello 1 scomposizione, Gauss e qualche derivata hanno due sole risposte sbagliate: niente scelta multipla per quegli esercizi.
-- Nei passaggi della scomposizione di un quadrato di binomio il motore scrive `(x + 1)(x + 1)` prima di `(x + 1)²` (`src/motore/steps/factor.ts`).
-- `∀x ∈ ℝ` e `∄x ∈ ℝ` sono mostrati ma non si possono scrivere: si usano `ℝ` e `∅`.
-- La lezione V1.M06.L04 non ha ancora la visualizzazione `VIS.disequazioni-grafico` (non esiste).
-- Il livello Funzioni della tastiera non ha le cifre.
-- Un tentativo fatto prima che l'archivio dei dati sia aperto (pochi millisecondi all'avvio) non viene salvato.
-- La prova con sympy sugli esercizi non è nel repository né in CI: va rifatta a mano per un generatore nuovo.
+- Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno (sotto la soglia).
+- La lezione V1.M06.L04 non ha ancora la visualizzazione `VIS.disequazioni-grafico`.
+- La prova con sympy dal testo mostrato non è nel repository né in CI: va rifatta a mano per ogni generatore nuovo (`REGOLE.md`).
 
-Della sessione 3:
+App:
 
-- Il parser degli insiemi non completa i testi scritti a metà (dà un errore invece dei quadratini): l'anteprima dell'app lo aggira provando alcune chiusure plausibili (`src/app/risposta/preview.ts`). La soluzione vera è nel parser.
-- Nei passaggi delle disequazioni fratte la riga finale (disuguaglianze e intervalli sulla stessa riga) su telefono va fatta scorrere di lato.
-- Le opzioni di scelta multipla di un insieme mostrano solo gli intervalli, non le disuguaglianze.
-- `app.js` pesa circa 560 KB (KaTeX, motore, marked): va bene per ora, da misurare sul telefono nella fase 9.
+- Non provata su un iPhone vero.
+- Niente cronologia del browser: si torna indietro solo con il pulsante in alto.
+- `∀x ∈ ℝ` e `∄x ∈ ℝ` sono mostrati ma non si possono scrivere (si usano `ℝ` e `∅`); il livello Funzioni della tastiera non ha le cifre.
+- Un tentativo fatto nei millisecondi prima che l'archivio dei dati sia aperto non viene salvato.
+- Su telefono la riga finale dei passaggi delle disequazioni fratte va fatta scorrere di lato; le opzioni di scelta multipla di un insieme mostrano solo gli intervalli.
+- `ordering` non è mostrato dalla schermata di esercizio; le dimostrazioni sono solo statiche; flashcard lette ma non mostrate.
 
 Altro:
 
-- Il commit `6f7577b` (verifica dei generatori) ha il controllo su GitHub rosso per un errore di tipo in un test, corretto dal commit successivo: l'ultimo stato del ramo è verde.
-- I commit della sessione 4b da `b2d9086` a `d1564a8` hanno il controllo su GitHub rosso o annullato per un solo motivo: un test nuovo (2.000 semi per due livelli) superava i 5 secondi sulla macchina di GitHub. Corretto dal commit successivo (meno semi, tempo massimo esplicito): l'ultimo stato del ramo è verde.
-- Icone PNG provvisorie; `README.md` contiene solo il titolo.
-- GitHub Actions avvisa che `actions/checkout@v4`, `setup-node@v4` e `upload-artifact@v4` usano Node 20, deprecato: funziona ancora, ma conviene passare alle versioni successive delle azioni quando si tocca il workflow.
+- Icone PNG provvisorie; `README.md` con il solo titolo.
+- GitHub Actions avvisa che `actions/checkout@v4`, `setup-node@v4` e `upload-artifact@v4` usano Node 20, deprecato: passare alle versioni successive quando si tocca il workflow.
+- Alcuni commit passati hanno il controllo rosso (corretti dai successivi): conta solo l'ultimo stato del ramo.
+
+## Domande aperte (decide Andrea)
+
+- **Errore tipico nuovo** «zero doppio trattato come zero semplice» (`(x − 3)²` studiato come `x − 3`): aggiungerlo cambia catalogo e tabella della specifica.
+- **Parentesi degli intervalli**: `(1; 3)` (oggi) oppure `]1; 3[` nella scrittura dell'app? In lettura valgono entrambe.
+- **IndexedDB nella versione PC**: funziona in Chromium anche da file; da provare in Safari e Firefox (il ripiego esiste).
+
+## Decisioni da rivedere
+
+Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero tra parentesi è la sessione.
+
+*Scrittura e lettura*
+
+1. Intervalli con punto e virgola e tonde per gli estremi esclusi, `(1; 3]`; in lettura anche `]1; 3[` e la virgola non tra cifre (2).
+2. `(1,5)` è il numero 1,5; `{1,2}` è rifiutato come ambiguo (2, 4a).
+3. Un numero da solo, in una risposta di tipo insieme, vale `x = numero` (2).
+4. `[1; 2] ∪ [2; 3]` vale `[1; 3]`; la forma canonica si pretende solo con `canonicalForm: true`; estremo decimale per uno esatto = `FORMA.DECIMALE` (2).
+5. `log` senza base = base 10, `ln` = naturale; per il Volume 2 da decidere (1).
+6. `1/2x` = `(1/2)·x`; `sin π/3` = `sin(π/3)`, ma `sin x/2` = `(sin x)/2` (1, 4a).
+7. `i` è l'unità immaginaria solo negli esercizi sui complessi; `e` è sempre il numero di Nepero (1).
+8. `[−∞; 2]` è testo non valido, non un errore `DISEQ.ESTREMI` (4a).
+9. `;` tra più soluzioni vale «oppure» solo tra uguaglianze o numeri (4a).
+10. Limiti di lunghezza: 1.000 caratteri per un'espressione, 2.000 per un insieme (parser), 200 nei campi dell'app (4a, 4b).
+
+*Valutazione*
+
+11. «Equivalenti» = uguali dove entrambe sono definite; le condizioni di esistenza si chiedono con una risposta di tipo insieme (1).
+12. Un decimale è `FORMA.DECIMALE` anche quando è esatto, salvo risposte decimali o approssimazioni chieste; un decimale approssimato è riconosciuto se è arrotondamento o troncamento della giusta (1).
+13. Testo non interpretabile = esito `invalid`, non registrato (1).
+14. Scelta multipla da qualunque esercizio con almeno tre risposte sbagliate previste; cinque opzioni con quattro o più (1). Da allineare al TOL vero.
+15. Confronto numerico: 12 punti concordi, tolleranza relativa 10⁻⁸ (1).
+16. «Scomposta» = irriducibile sui razionali fino al grado 5; accettati `(x+1)(x+1)` e fattori irrazionali (1).
+17. Vincoli di forma severi: `simplifiedRadicals` rifiuta `√2·√3` e `(√2)³`; `rationalized` la frazione sotto radice; `reducedFraction` vede l'intero comune tra i radicali (4a). `algebraicForm` accetta parti reali con termini non sommabili (2).
+
+*Generatori e verifica*
+
+18. Aggiunte allo schema: `title`, `limits`, `verify`, `canonicalForm`; tipo di risposta in più `limit` (1, 2).
+19. Soglie della verifica: 50 ms al massimo e 5 ms in media per esercizio; limiti di pulizia anche per le sbagliate; confronto «non deciso» = problema; varietà: almeno 100 esercizi diversi per livello e nessuno oltre il 4% dei semi (2, 4b).
+20. `Rng` sfc32 con chiave `codice|livello|seme`, congelato (1).
+21. Esercizi cambiati per alcuni semi nella revisione 4b (scomposizione livelli 2-3, derivate livello 2, Gauss livello 1, fratte livello 3): un vecchio tentativo su quei semi mostra l'esercizio nuovo (4b).
+22. Zero doppio con verso stretto: la disequazione prende l'uguale, per avere tre risposte sbagliate (4b).
+23. Risposte sbagliate diverse con lo stesso codice di errore ammesse (3).
+24. «Determinanti e sistemi lineari» = due generatori in due moduli (3).
+25. Scomposizioni: fattori di primo grado per radice crescente; `simplify` con una sola linea di frazione e lettere in ordine alfabetico (2).
+26. Matrici: polinomio caratteristico `det(A − λI)`; pivot = primo elemento non nullo; con i parametri rango «generico» (2).
+27. Complessi: argomento principale in (−π, π]; radici con argomenti `(θ + 2kπ)/n` (2). Da allineare al libro di Analisi 1.
+
+*Contenuti*
+
+28. Sintassi delle lezioni perfezionata (obiettivo, riepilogo ultimo, blocco glossario, `nome` obbligatorio, `::sezioni`, `[[termine|testo]]`, blocchi non annidati, durata 10-20 imposta) (1).
+29. Ogni dimostrazione a passaggi, con almeno due versioni sbagliate (1).
+30. Termine usato fuori dalla catena dei prerequisiti = avviso; abilità dichiarata da due lezioni = errore (2).
+31. Prerequisiti di V1.M06.L04 vuoti finché le lezioni precedenti non esistono (3).
+32. Glossario ricavato dalle lezioni; la cartella `src/glossario/` resta vuota e si può togliere (3).
+33. Visualizzazioni: SVG con Preact senza librerie, file in `src/visualizzazioni/`, scheda di ognuna in `docs/VISUALIZZAZIONI.md` prima del codice (4c, proposta in `REGOLE.md`: la fissa la prima visualizzazione).
+34. Scaletta dei moduli proposta in `docs/SCALETTA.md` (4c).
+
+*App e dati*
+
+35. Lezione a tratti: il tratto successivo si apre dopo la risposta alla domanda lampo; riaprendo, le domande già viste tornano senza risposta (3).
+36. Cinque esercizi dopo la lezione, livelli 1, 1, 2, 2, 3 (3).
+37. Tastiera come testo (`/`, `^`, `√(`), livello Funzioni già presente (3).
+38. Distrazioni contate come errori, con un conteggio a parte; nessuna formula di padronanza ancora (3, 4b).
+39. «Esercizio simile» e «Avanti» scartano i testi già usciti nella serie (fino a 12 tentativi) (4b).
+40. Risposta sbagliata non riconosciuta: la soluzione si apre da sola; campo vuoto di un insieme: l'anteprima mostra come si scrive (4b).
+41. Formule dei testi ingrandite dal foglio di stile (3).
+
+*Tecnica*
+
+42. Dipendenze alle ultime maggiori (Preact 11, TypeScript 7, Vitest 5, esbuild 0.28, KaTeX 0.19), CI con Node 22; Markdown con `marked` (0, 1).
+43. Service worker senza `skipWaiting`; percorsi relativi; solo caratteri KaTeX woff2 (0).
+44. Catalogo errori come file TypeScript; rimandi a livello di modulo; `NON_CLASSIFICATO` costante; verifica sympy fuori da CI (0).
+45. `ALG.SOMMA_QUADRATI` limitato a `x² + 9` (`x⁴ + 4` si scompone): la specifica andrebbe precisata (0).
+46. Cartelle in più: `src/esercizi/`, `src/codici.ts`, `src/contenuti/formato/`, `motore/complex/`, `motore/steps/`, `motore/display/` (1, 2).
+47. Rimandati: grafici statici e nodi per successioni e somme (2); sono nel piano, fase 6.
