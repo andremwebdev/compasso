@@ -74,6 +74,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V1.M06.F01`, `V1.M06.F02` | Flashcard della lezione V1.M06.L04 |
 | `V1.M04.L07`, `V1.M04.A07` | Lezione (da scrivere) e abilità: scomposizione — generatore `V1.M04.A07.g1` |
 | `V2.M03.A01`, `V2.M03.L02` | Abilità: limiti di successioni — generatore `V2.M03.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M03.L02` «Calcolo dei limiti di successioni» (da scrivere) |
+| `V2.M04.A01`, `V2.M04.L03` | Abilità: limiti notevoli e forme indeterminate — generatore `V2.M04.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M04.L03` «Limiti notevoli e forme indeterminate» (da scrivere) |
 | `V2.M06.L03`, `V2.M06.A03` | Lezione (da scrivere) e abilità: regole di derivazione — generatore `V2.M06.A03.g1` |
 | `V3.M02.L01`, `V3.M02.A01` | Lezione (da scrivere) e abilità: metodo di Gauss — generatore `V3.M02.A01.g1` |
 | `V3.M03.L01`, `V3.M03.A01` | Lezione (da scrivere) e abilità: determinante — generatore `V3.M03.A01.g1` |

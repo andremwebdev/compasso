@@ -8,12 +8,13 @@ import type { GeneratorDefinition } from "../esercizi";
 import v1m04a07g1 from "./v1/m04/a07-g1";
 import v1m06a04g1 from "./v1/m06/a04-g1";
 import v2m03a01g1 from "./v2/m03/a01-g1";
+import v2m04a01g1 from "./v2/m04/a01-g1";
 import v2m06a03g1 from "./v2/m06/a03-g1";
 import v3m02a01g1 from "./v3/m02/a01-g1";
 import v3m03a01g1 from "./v3/m03/a01-g1";
 
 /** Tutti i generatori, nell'ordine del programma (volume, modulo, abilità). */
-export const generators: readonly GeneratorDefinition[] = [v1m04a07g1, v1m06a04g1, v2m03a01g1, v2m06a03g1, v3m02a01g1, v3m03a01g1];
+export const generators: readonly GeneratorDefinition[] = [v1m04a07g1, v1m06a04g1, v2m03a01g1, v2m04a01g1, v2m06a03g1, v3m02a01g1, v3m03a01g1];
 
 const byCode: ReadonlyMap<string, GeneratorDefinition> = new Map(generators.map((generator) => [generator.code, generator]));
 

@@ -27,6 +27,7 @@ import { finiteLimit, limitToLatex, minusInfinity, noLimit, plusInfinity, type L
 import { add, cos, div, e, frac, mul, neg, num, pow, sin, sqrt, sub, sym, toLatex, type Expr } from "../../../motore/expr";
 import { Rng } from "../../../motore/random/rng";
 import { confirmsLimit, distinctWrongLimits, limitLatex, toPlusInfinity } from "../../comuni/limits";
+import { first, leading, plusSigned, signedFraction, termWriter, times, type Poly, type Term } from "../../comuni/terms";
 import type { WrongCandidate } from "../../comuni/wrong";
 
 type Rng_ = GeneratorContext["rng"];
@@ -36,13 +37,6 @@ const LIMITS = { maxInteger: 30, maxDenominator: 12 } as const;
 const n = sym("n");
 
 // ───────────────────────────── il modello ─────────────────────────────
-
-/** Un termine c·n^deg. Un polinomio è l'elenco dei suoi termini, nell'ordine in cui si scrive. */
-interface Term {
-  readonly coef: number;
-  readonly deg: number;
-}
-type Poly = readonly Term[];
 
 type Model =
   /** Rapporto di due polinomi. */
@@ -75,33 +69,7 @@ interface Plan {
 
 // ───────────────────────────── scrittura ─────────────────────────────
 
-const power = (deg: number): Expr => (deg === 1 ? n : pow(n, deg));
-
-function termExpr({ coef, deg }: Term): Expr {
-  if (deg === 0) return num(coef);
-  if (coef === 1) return power(deg);
-  if (coef === -1) return neg(power(deg));
-  return mul(coef, power(deg));
-}
-
-const polyExpr = (poly: Poly): Expr => (poly.length === 1 ? termExpr(poly[0] as Term) : add(...poly.map(termExpr)));
-/** Il termine di grado massimo: è quello che decide. */
-const leading = (poly: Poly): Term => poly.reduce((best, term) => (term.deg > best.deg ? term : best));
-const first = (poly: Poly): Term => poly[0] as Term;
-const byDegree = (poly: Poly): Term[] => [...poly].sort((s, t) => t.deg - s.deg);
-
-/** «head ± piece» con il segno scritto davanti: 3 − 2/n, non 3 + (−2)/n. */
-const plusSigned = (head: Expr, sign: number, piece: Expr): Expr => (sign < 0 ? sub(head, piece) : add(head, piece));
-
-/** a/m con il segno davanti alla frazione. */
-const signedFraction = (a: number, m: Expr): Expr => (a < 0 ? neg(div(-a, m)) : div(a, m));
-
-/** Il polinomio diviso per n^deg, termine per termine: a + c/n + d/n². È quello che resta in parentesi dopo aver raccolto. */
-function collected(poly: Poly, deg: number): Expr {
-  const terms = byDegree(poly);
-  const pieces = terms.slice(1).map((term) => signedFraction(term.coef, power(deg - term.deg)));
-  return pieces.length === 0 ? num(first(terms).coef) : add(num(first(terms).coef), ...pieces);
-}
+const { power, termExpr, polyExpr, collected } = termWriter(n);
 
 const tex = (expr: Expr): string => toLatex(expr);
 /** Un fattore scritto dopo il punto di moltiplicazione: tra parentesi se comincia con il meno. */
@@ -173,7 +141,6 @@ function rootOf(k: number, a: number, c: number): { readonly radicand: Expr; rea
   return { radicand: polyExpr(terms), root: sqrt(polyExpr(terms)), reduced: sqrt(collected(terms, 2)) };
 }
 
-const times = (k: number, expr: Expr): Expr => (k === 1 ? expr : mul(k, expr));
 
 function rootMinusPlan(k: number, a: number, c: number): Plan {
   const kn = times(k, n);
