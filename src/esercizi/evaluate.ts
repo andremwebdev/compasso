@@ -22,9 +22,10 @@ import { matrix, matricesEquivalent, matrixSize, type Matrix } from "../motore/l
 import { parseExpression } from "../motore/parser/parse";
 import { parseSolutionSet } from "../motore/parser/sets";
 import { isCanonicalSet, setHasDecimal, setsEqual, type SolutionSet } from "../motore/sets";
+import { checkVerdict, matchesWrong } from "./checks";
 import { choiceOptions } from "./choices";
 import { errorCodesOf } from "./generate";
-import type { Evaluation, ExpectedWrong, Exercise, NumberAnswer, Response, SetAnswer } from "./schema";
+import type { Evaluation, ExpectedWrong, Exercise, ExpressionCheck, NumberAnswer, Response, SetAnswer } from "./schema";
 
 const CORRECT: Evaluation = { outcome: "correct" };
 const UNCLASSIFIED_WRONG: Evaluation = { outcome: "wrong", error: UNCLASSIFIED, cause: "unclassified" };
@@ -69,6 +70,7 @@ export function evaluateResponse(exercise: Exercise, response: Response): Evalua
         if (!isConstant(parsed.value)) return { outcome: "invalid", message: "Qui serve un numero, senza lettere." };
         if (answer.mode.kind === "approx") return judgeApproximation(parsed.value, answer, answer.mode.tolerance);
       }
+      if (answer.kind === "expression" && answer.check) return judgeChecked(parsed.value, answer.correct, answer.wrong, answer.check);
       return judgeExpression(parsed.value, answer.correct, answer.wrong, answer.form ?? []);
     }
 
@@ -129,6 +131,21 @@ function judgeExpression(
     if (equivalent(given, candidate.value)) return expected(candidate.error);
   }
   if (decimalNotAllowed && approximates(given, correct)) return DECIMAL_WRONG;
+  return UNCLASSIFIED_WRONG;
+}
+
+/**
+ * Valutazione con un controllo speciale (primitive, equazioni differenziali): decide il controllo,
+ * non l'equivalenza con la risposta giusta; le risposte sbagliate previste si riconoscono a meno
+ * della costante di integrazione o del nome delle costanti arbitrarie.
+ */
+function judgeChecked(given: Expr, correct: Expr, wrong: readonly ExpectedWrong<Expr>[], check: ExpressionCheck): Evaluation {
+  const verdict = checkVerdict(given, correct, check);
+  if (verdict.kind === "correct") return containsDecimal(given) && !containsDecimal(correct) ? DECIMAL_WRONG : CORRECT;
+  if (verdict.kind === "error") return expected(verdict.error);
+  for (const candidate of wrong) {
+    if (matchesWrong(given, candidate.value, check)) return expected(candidate.error);
+  }
   return UNCLASSIFIED_WRONG;
 }
 

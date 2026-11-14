@@ -4,6 +4,7 @@ import { isGeneratorCode, isLessonCode, skillOf } from "../codici";
 import { isErrorCode } from "../errori";
 import { EngineError } from "../motore/errors";
 import { Rng } from "../motore/random/rng";
+import { checkErrorCodes } from "./checks";
 import type { AnswerSpec, Exercise, ExerciseDraft, GeneratorDefinition, Level } from "./schema";
 
 /**
@@ -34,9 +35,12 @@ export function defineGenerator(definition: GeneratorDefinition): GeneratorDefin
 /** I codici di errore usati dalle risposte sbagliate previste di una risposta. */
 export function errorCodesOf(answer: AnswerSpec): string[] {
   switch (answer.kind) {
+    case "expression":
+      // Prima le risposte sbagliate previste (l'ordine serve alla scelta multipla), poi i codici
+      // che il controllo speciale assegna da solo.
+      return [...answer.wrong.map((wrong) => wrong.error), ...(answer.check ? checkErrorCodes(answer.check) : [])];
     case "choice":
     case "number":
-    case "expression":
     case "set":
     case "limit":
     case "matrix":

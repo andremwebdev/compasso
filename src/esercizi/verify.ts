@@ -18,6 +18,7 @@ import { checkForms } from "../motore/form/constraints";
 import { matricesEquivalent, matrixSize, matrixToLatex, type Matrix } from "../motore/linalg/matrix";
 import { Rng } from "../motore/random/rng";
 import { canonicalSet, isCanonicalSet, setsEqual, setToLatex, type SolutionSet } from "../motore/sets";
+import { checkVerdict, sameUnderCheck } from "./checks";
 import { draftProblems, errorCodesOf } from "./generate";
 import type { AnswerSpec, CleanLimits, Exercise, ExpectedWrong, GeneratorDefinition, Level } from "./schema";
 
@@ -222,6 +223,11 @@ function sameValue(answer: AnswerSpec, a: unknown, b: unknown): Sameness {
       }
       return sameExpression(a as Expr, b as Expr);
     case "expression":
+      if (answer.check) {
+        // Con un controllo speciale «vale quanto la giusta» significa «supera il controllo».
+        if (b === answer.correct) return checkVerdict(a as Expr, answer.correct, answer.check).kind === "correct" ? "same" : "different";
+        return sameUnderCheck(a as Expr, b as Expr, answer.check);
+      }
       return sameExpression(a as Expr, b as Expr);
     case "set":
       return setsEqual(a as SolutionSet, b as SolutionSet) ? "same" : "different";
@@ -254,6 +260,9 @@ function checkCorrect(definition: GeneratorDefinition, exercise: Exercise): stri
     }
     case "expression":
       if (compare(answer.correct, answer.correct).method === "undecided") return `la risposta giusta $${toLatex(answer.correct)}$ non è definita in nessun punto di prova.`;
+      if (answer.check && checkVerdict(answer.correct, answer.correct, answer.check).kind !== "correct") {
+        return `la risposta giusta $${toLatex(answer.correct)}$ non supera il suo controllo speciale (${answer.check.kind}).`;
+      }
       break;
     case "set":
       canonicalSet(answer.correct);

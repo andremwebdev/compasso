@@ -71,7 +71,67 @@ export interface ExpressionAnswer {
   /** Vincoli di forma, se il testo li chiede («scomponi», «sviluppa»). Senza vincoli vale qualunque forma equivalente. */
   readonly form?: readonly FormConstraint[];
   readonly complex?: boolean;
+  /**
+   * Controllo speciale, quando l'equivalenza con `correct` non basta a dire se la risposta scritta è
+   * giusta: una primitiva (vale qualunque costante abbia) o la soluzione di un'equazione differenziale
+   * (vale se risolve l'equazione, con il numero giusto di costanti e le condizioni iniziali).
+   * `correct` resta la scrittura mostrata ad Andrea e deve superare lei stessa il controllo.
+   * Con un controllo speciale i vincoli di forma non si usano.
+   */
+  readonly check?: ExpressionCheck;
 }
+
+/**
+ * Primitiva (integrale indefinito): la risposta è giusta se la sua derivata è la funzione integranda
+ * e contiene una costante arbitraria, comunque si chiami.
+ */
+export interface AntiderivativeCheck {
+  readonly kind: "antiderivative";
+  /** La funzione integranda, nella variabile `variable`. */
+  readonly integrand: Expr;
+  readonly variable: string;
+  /** L'errore di chi scrive una primitiva giusta senza la costante arbitraria. */
+  readonly missingConstant: ErrorCode;
+  /**
+   * L'errore di chi scrive una primitiva che esiste solo su una parte del dominio di `correct`
+   * (ln x al posto di ln|x|). Se manca, quella risposta è accettata.
+   */
+  readonly smallerDomain?: ErrorCode;
+}
+
+/** I nomi delle lettere con cui un controllo «differentialEquation» scrive l'equazione: y, y′ e y″. */
+export const ODE_SYMBOLS = { y: "y", first: "dy", second: "ddy" } as const;
+
+/** Una condizione di Cauchy: y(at) = value (order 0) oppure y′(at) = value (order 1). */
+export interface CauchyCondition {
+  readonly order: 0 | 1;
+  readonly at: Expr;
+  readonly value: Expr;
+}
+
+/**
+ * Soluzione di un'equazione differenziale: la risposta è giusta se, sostituita nell'equazione, la
+ * rende vera, ha il numero richiesto di costanti arbitrarie indipendenti (comunque si chiamino) e
+ * rispetta le condizioni di Cauchy.
+ */
+export interface DifferentialEquationCheck {
+  readonly kind: "differentialEquation";
+  /** La variabile indipendente (di solito x). */
+  readonly variable: string;
+  /** L'equazione `left = right`, scritta nelle lettere `variable` e ODE_SYMBOLS (y, y′, y″). */
+  readonly left: Expr;
+  readonly right: Expr;
+  /** Quante costanti arbitrarie deve avere la risposta: l'ordine dell'equazione per l'integrale generale, 0 per un problema di Cauchy. */
+  readonly constants: number;
+  /** Le condizioni iniziali (nessuna per l'integrale generale). */
+  readonly conditions: readonly CauchyCondition[];
+  /** L'errore di chi dà una soluzione dell'equazione con il numero sbagliato di costanti arbitrarie. */
+  readonly wrongConstants: ErrorCode;
+  /** L'errore di chi dà una soluzione dell'equazione che non rispetta le condizioni iniziali. */
+  readonly wrongConditions?: ErrorCode;
+}
+
+export type ExpressionCheck = AntiderivativeCheck | DifferentialEquationCheck;
 
 /** Un intervallo o un insieme di soluzioni: si confronta per struttura (estremi, inclusione, periodo). */
 export interface SetAnswer {
