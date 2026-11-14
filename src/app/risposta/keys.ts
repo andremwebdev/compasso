@@ -80,9 +80,10 @@ export function pressKey(field: FieldState, key: Key): FieldState {
     case "backspace": {
       if (start !== end) return { text: text.slice(0, start) + text.slice(end), start, end: start };
       if (start === 0) return field;
-      // Un nome di funzione con la sua parentesi («sin(», «root(», «√(») si cancella tutto insieme.
+      // Un nome di funzione con la sua parentesi («sin(», «root(», «√(») si cancella tutto insieme, come
+      // i simboli con gli spazi attorno (« ∪ »). Solo i nomi che la tastiera scrive: in «2x(» la x resta.
       const before = text.slice(0, start);
-      const chunk = /(?:[a-z]+\(|√\(|\s[^\s]\s|; )$/.exec(before)?.[0] ?? before.slice(-1);
+      const chunk = /(?:(?:arcsin|arccos|arctan|sin|cos|tan|ln|log|root)\(|√\(|\s[^\s]\s|; )$/.exec(before)?.[0] ?? before.slice(-1);
       const at = start - chunk.length;
       return { text: text.slice(0, at) + text.slice(end), start: at, end: at };
     }

@@ -1,9 +1,10 @@
-import { useMemo, useState } from "preact/hooks";
+import { useMemo, useRef, useState } from "preact/hooks";
 import type { Evaluation, Level } from "../../esercizi";
 import { generateExercise } from "../../esercizi";
 import { loadLesson } from "../../contenuti";
 import { findGenerator } from "../../generatori";
 import { ExerciseView } from "../componenti/ExerciseView";
+import { freshSeed } from "../risposta/seeds";
 import { open, randomSeed, type Screen } from "../state";
 
 type PracticeScreen = Extract<Screen, { kind: "practice" }>;
@@ -18,6 +19,9 @@ export function Practice({ plan }: { plan: PracticeScreen }) {
   const [finished, setFinished] = useState(false);
   const level: Level = plan.levels[Math.min(position, plan.levels.length - 1)] ?? 1;
   const exercise = useMemo(() => (generator ? generateExercise(generator, level, seed) : null), [generator, level, seed]);
+  // I testi degli esercizi già usciti: il prossimo seme ne deve dare uno diverso.
+  const seen = useRef(new Set<string>());
+  if (exercise) seen.current.add(exercise.prompt);
   const lessonExists = generator ? loadLesson(generator.lesson) !== null : false;
   const back = (): void => (plan.lesson ? open({ kind: "lesson", code: plan.lesson }, "teoria") : open({ kind: "home" }));
 
@@ -55,7 +59,7 @@ export function Practice({ plan }: { plan: PracticeScreen }) {
               onClick={() => {
                 setPosition(0);
                 setResults([]);
-                setSeed(randomSeed());
+                setSeed(freshSeed(generator, plan.levels[0] ?? 1, seen.current, randomSeed));
                 setFinished(false);
               }}
             >
@@ -73,13 +77,13 @@ export function Practice({ plan }: { plan: PracticeScreen }) {
           context={plan.context}
           onAnswered={(evaluation) => setResults([...results, evaluation.outcome])}
           // «Esercizio simile»: stessi livello e posizione, numeri nuovi.
-          onSimilar={() => setSeed(randomSeed())}
+          onSimilar={() => setSeed(freshSeed(generator, level, seen.current, randomSeed))}
           onLesson={lessonExists ? () => open({ kind: "lesson", code: generator.lesson }, "teoria") : undefined}
           onNext={() => {
             if (last) setFinished(true);
             else {
               setPosition(position + 1);
-              setSeed(randomSeed());
+              setSeed(freshSeed(generator, plan.levels[position + 1] ?? level, seen.current, randomSeed));
             }
           }}
           nextLabel={last ? "Fine della serie" : "Avanti"}

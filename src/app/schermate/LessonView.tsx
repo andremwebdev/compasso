@@ -9,6 +9,7 @@ import { ExerciseView } from "../componenti/ExerciseView";
 import { RichText } from "../componenti/RichText";
 import { lessonChunks } from "../lezione/chunks";
 import { glossaryItem, type GlossaryItem } from "../lezione/glossary";
+import { freshSeed } from "../risposta/seeds";
 import { lessonProgress, newId, open, randomSeed, recordAttempt, saveLessonProgress } from "../state";
 
 /** Una lezione letta dal suo file Markdown, a tratti: ogni tratto finisce con una domanda lampo. */
@@ -253,10 +254,13 @@ function GeneratorQuestion({ generator, level, onAnswered }: { generator: string
   const [seed, setSeed] = useState(randomSeed);
   const definition = findGenerator(generator);
   const exercise = useMemo(() => (definition ? generateExercise(definition, level, seed) : null), [definition, level, seed]);
-  if (!exercise) return null;
+  // «Esercizio simile» non ripropone un esercizio già uscito in questa domanda.
+  const seen = useRef(new Set<string>());
+  if (!definition || !exercise) return null;
+  seen.current.add(exercise.prompt);
   return (
     <Box kind="question" label="Domanda lampo">
-      <ExerciseView key={seed} exercise={exercise} context="lampo" preferChoice onAnswered={onAnswered} onSimilar={() => setSeed(randomSeed())} />
+      <ExerciseView key={seed} exercise={exercise} context="lampo" preferChoice onAnswered={onAnswered} onSimilar={() => setSeed(freshSeed(definition, level, seen.current, randomSeed))} />
     </Box>
   );
 }

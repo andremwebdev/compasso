@@ -3,6 +3,10 @@ import { pressKey, type Key, type KeyboardLevel } from "../risposta/keys";
 import { previewText, type FieldKind, type Preview } from "../risposta/preview";
 import { renderMath } from "../testo/render";
 import { MathKeyboard } from "./MathKeyboard";
+import { RichText } from "./RichText";
+
+/** Nessuna risposta dell'app è così lunga; il parser legge fino a 1.000 caratteri, qui ci si ferma molto prima. */
+const MAX_LENGTH = 200;
 
 interface AnswerEditorProps {
   /** Che cosa si scrive in ogni casella. */
@@ -34,6 +38,7 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
     if (!input) return;
     const [row = 0, col = 0] = (inputs.current.has(active) ? active : "0-0").split("-").map(Number);
     const next = pressKey({ text: input.value, start: input.selectionStart ?? input.value.length, end: input.selectionEnd ?? input.value.length }, key);
+    if (next.text.length > MAX_LENGTH) return;
     input.value = next.text;
     input.setSelectionRange(next.start, next.end);
     setCell(row, col, next.text);
@@ -65,6 +70,7 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
                   autocapitalize="off"
                   autocorrect="off"
                   spellcheck={false}
+                  maxLength={MAX_LENGTH}
                   aria-label={single ? "La tua risposta" : `Casella ${rowLabels?.[row] ?? `riga ${row + 1}, colonna ${col + 1}`}`}
                   value={value}
                   onFocus={() => setActive(id)}
@@ -81,7 +87,7 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
       {single && <PreviewLine preview={preview} />}
       {problem && (
         <p class="answer-problem" role="alert">
-          {problem}
+          <RichText text={problem} inline />
         </p>
       )}
       {children}
@@ -98,7 +104,12 @@ function PreviewLine({ preview }: { preview: Preview }) {
     case "typing":
       return <p class="preview preview-empty">Continua a scrivere…</p>;
     case "error":
-      return <p class="preview preview-error">{preview.message}</p>;
+      // I motivi del parser contengono formule tra $…$ («scrivi $\\lor$ oppure $\\land$»): vanno disegnate.
+      return (
+        <p class="preview preview-error">
+          <RichText text={preview.message} inline />
+        </p>
+      );
     case "ok":
       return (
         <p class={preview.complete ? "preview" : "preview preview-partial"} aria-live="polite">

@@ -81,19 +81,24 @@ export async function loadData(): Promise<void> {
 /** Aggiunge un tentativo al registro. */
 export function recordAttempt(attempt: AttemptRecord): void {
   attempts.value = [...attempts.value, attempt];
-  void dataStore.value?.addAttempt(attempt);
+  dataStore.value?.addAttempt(attempt).catch(reportSaveProblem);
+}
+
+/** Una scrittura non riuscita (spazio finito, archivio chiuso dal sistema): Andrea deve saperlo, non perdere dati in silenzio. */
+function reportSaveProblem(): void {
+  dataProblem.value = "Non riesco a salvare i progressi su questo dispositivo: quello che fai ora potrebbe andare perso alla chiusura.";
 }
 
 /** Mette o toglie l'etichetta «distrazione» a un tentativo. */
 export function markDistraction(id: string, distraction: boolean): void {
   attempts.value = attempts.value.map((attempt) => (attempt.id === id ? { ...attempt, distraction } : attempt));
-  void dataStore.value?.setDistraction(id, distraction);
+  dataStore.value?.setDistraction(id, distraction).catch(reportSaveProblem);
 }
 
 /** Salva il punto raggiunto in una lezione. */
 export function saveLessonProgress(progress: LessonProgress): void {
   lessonProgress.value = { ...lessonProgress.value, [progress.code]: progress };
-  void dataStore.value?.saveLessonProgress(progress);
+  dataStore.value?.saveLessonProgress(progress).catch(reportSaveProblem);
 }
 
 /** Un identificatore nuovo per una riga del registro. */

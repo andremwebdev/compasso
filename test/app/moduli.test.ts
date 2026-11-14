@@ -4,12 +4,14 @@ import { describe, expect, it } from "vitest";
 import { lessonChunks } from "../../src/app/lezione/chunks";
 import { KEYBOARD, KEYBOARD_LEVELS, pressKey, type FieldState, type Key } from "../../src/app/risposta/keys";
 import { fieldKindOf, previewText } from "../../src/app/risposta/preview";
+import { freshSeed } from "../../src/app/risposta/seeds";
 import { renderRichText } from "../../src/app/testo/render";
 import { loadLesson } from "../../src/contenuti";
 import { generateExercise } from "../../src/esercizi";
 import { generators } from "../../src/generatori";
 import { parseExpression } from "../../src/motore/parser";
 import { parseSolutionSet } from "../../src/motore/parser/sets";
+import { setToInequalityLatex, setToLatex } from "../../src/motore/sets";
 
 describe("testo ricco", () => {
   it("il Markdown diventa HTML e le formule passano da KaTeX senza essere toccate da Markdown", () => {
@@ -154,6 +156,70 @@ describe("tastiera matematica", () => {
     expect(type(KEYBOARD.insiemi.keys, "] ∪ ⌫").text).toBe("]");
     expect(type(KEYBOARD.funzioni.keys, "sin ⌫").text).toBe("");
     expect(pressKey({ text: "abc", start: 0, end: 3 }, KEYBOARD.base.keys[0] as Key)).toEqual({ text: "7", start: 1, end: 1 });
+    // Solo i nomi di funzione se ne vanno con la parentesi: in «2x(» si cancella la parentesi, la x resta.
+    expect(type(KEYBOARD.base.keys, "2 x ( ⌫").text).toBe("2x");
+    expect(type(KEYBOARD.funzioni.keys, "x arctan ⌫").text).toBe("x");
+  });
+});
+
+describe("mentre Andrea scrive, l'anteprima non dà per sbagliato un pezzo di risposta giusta", () => {
+  /** Il LaTeX di un insieme riscritto come lo si scrive con la tastiera. */
+  const typed = (latex: string): string =>
+    latex.replace(/\\left|\\right/g, "").replace(/\\infty/g, "∞").replace(/\\cup/g, "∪").replace(/\\emptyset/g, "∅").replace(/\\mathbb\{R\}/g, "ℝ")
+      .replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "$1/$2").replace(/\\\{/g, "{").replace(/\\\}/g, "}")
+      .replace(/\\lor/g, "∨").replace(/\\le\b/g, "≤").replace(/\\ge\b/g, "≥").replace(/\\ne\b/g, "≠").replace(/\s+/g, " ").trim();
+
+  it("le risposte delle disequazioni fratte, un carattere alla volta: intervalli (con e senza spazi) e disuguaglianze", () => {
+    const set = { kind: "set", variable: "x" } as const;
+    const generator = generators.find((item) => item.code === "V1.M06.A04.g1");
+    if (!generator) throw new Error("manca il generatore delle disequazioni fratte");
+    let texts = 0;
+    for (const level of generator.levels) {
+      for (let seed = 0; seed < 60; seed++) {
+        const { answer } = generateExercise(generator, level, seed);
+        if (answer.kind !== "set") throw new Error("tipo di risposta inatteso");
+        for (const value of [answer.correct, ...answer.wrong.map((wrong) => wrong.value)]) {
+          const interval = typed(setToLatex(value));
+          // «∀x ∈ ℝ» e «∄x ∈ ℝ» non si scrivono con la tastiera: lì si usano ℝ e ∅.
+          const forms = [interval, interval.replace(/; /g, ";").replace(/ ∪ /g, "∪"), typed(setToInequalityLatex(value))].filter((text) => !/[∀∄\\]/.test(text));
+          for (const text of forms) {
+            texts += 1;
+            expect(previewText(set, text), text).toMatchObject({ kind: "ok", complete: true });
+            for (let length = 1; length < text.length; length++) {
+              expect(previewText(set, text.slice(0, length)).kind, `«${text.slice(0, length)}», scrivendo «${text}»`).not.toBe("error");
+            }
+          }
+        }
+      }
+    }
+    expect(texts).toBeGreaterThan(1500);
+  });
+
+  it("i motivi del parser contengono formule, e l'app le disegna", () => {
+    const preview = previewText({ kind: "set", variable: "x" }, "x < 1; x > 2");
+    if (preview.kind !== "error") throw new Error("mi aspettavo un motivo");
+    expect(preview.message).toContain("$\\lor$");
+    const html = renderRichText(preview.message, { inline: true });
+    expect(html).toContain("katex");
+    expect(html).not.toContain("$");
+  });
+});
+
+describe("semi per gli esercizi nuovi", () => {
+  it("«Esercizio simile» e «Avanti» non ripropongono un esercizio già uscito nella serie", () => {
+    const generator = generators.find((item) => item.code === "V1.M04.A07.g1");
+    if (!generator) throw new Error("manca il generatore della scomposizione");
+    const prompt = (seed: number): string => generateExercise(generator, 1, seed).prompt;
+    // I semi «a caso» escono in quest'ordine: i primi due danno esercizi già visti.
+    const queue = [1, 2, 3, 4];
+    const random = (): number => queue.shift() ?? 99;
+    expect(freshSeed(generator, 1, new Set([prompt(1), prompt(2)]), random)).toBe(3);
+    // Niente di già visto: va bene il primo.
+    expect(freshSeed(generator, 1, new Set(), () => 7)).toBe(7);
+    // Se non ce n'è uno nuovo ci si ferma lo stesso (qui dopo tre tentativi).
+    let calls = 0;
+    expect(freshSeed(generator, 1, new Set([prompt(5)]), () => ((calls += 1), 5), 3)).toBe(5);
+    expect(calls).toBe(3);
   });
 });
 

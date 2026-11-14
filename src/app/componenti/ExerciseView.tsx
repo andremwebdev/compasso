@@ -152,8 +152,9 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
     });
     setProblem(null);
     setDone({ evaluation, attemptId, given: givenText(response) });
-    // Chi non sapeva rispondere vede subito la soluzione.
-    if (evaluation.outcome === "skipped") setShowSteps(true);
+    // Chi non sapeva rispondere vede subito la soluzione. Lo stesso per una risposta sbagliata in cui non
+    // si riconosce un errore tipico: non c'è una spiegazione da dare, resta la soluzione (specifica, sezione 3).
+    if (evaluation.outcome === "skipped" || (evaluation.outcome === "wrong" && evaluation.error === "NON_CLASSIFICATO")) setShowSteps(true);
     onAnswered?.(evaluation);
   };
 
@@ -247,7 +248,7 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
           )}
           {(options || answer.kind === "truefalse") && problem && (
             <p class="answer-problem" role="alert">
-              {problem}
+              <RichText text={problem} inline />
             </p>
           )}
 
@@ -278,7 +279,7 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
                 }}
               />
               <span>
-                Segna come distrazione <span class="muted-inline">(sapevo farlo: non pesa sulla diagnosi)</span>
+                Segna come distrazione <span class="muted-inline">(sapevo farlo: resta un errore, ma nel diario va tra le distrazioni)</span>
               </span>
             </label>
           )}
@@ -358,7 +359,7 @@ function Verdict({ evaluation }: { evaluation: Evaluation }) {
               <RichText text={`Esempio: ${entry.example}`} class="verdict-example" />
             </>
           ) : (
-            <p>Non riconosco un errore tipico in questa risposta: confrontala con la soluzione passo passo.</p>
+            <p>Non riconosco un errore tipico in questa risposta: confrontala con la soluzione passo passo qui sotto.</p>
           )}
         </div>
       );

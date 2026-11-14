@@ -45,8 +45,14 @@ export function fieldKindOf(answer: AnswerSpec): FieldKind | null {
   }
 }
 
-/** Modi plausibili di finire un insieme scritto a metà: «(-∞» → «(-∞; 0)», «x <» → «x < 0», «… ∪» → «… ∪ (0; 1)», «{1,5» → «{1,5; 0}», «x = 3; x» → «x = 3; x = 0». */
-const SET_ENDINGS = ["0", ")", "]", "}", "0)", "; 0)", "0; 1)", " (0; 1)", " x > 0", " > 0", "∞)", "0}", "; 0}", "5; 0}", " = 0", "1 = 0"] as const;
+/**
+ * Modi plausibili di finire un insieme scritto a metà: «(-∞» → «(-∞; 0)», «x <» → «x < 0», «… ∪» → «… ∪ (0; 1)»,
+ * «{1,5» → «{1,5; 0}», «x = 3; x» → «x = 3; x = 0», «[2» → «[2; +∞)», «-4 <» → «-4 < x».
+ * Le chiusure con +∞ servono perché un estremo sinistro positivo non si chiude con 0 («[2; 0)» è un
+ * intervallo al contrario). Un test scrive le risposte delle disequazioni fratte un carattere alla
+ * volta e controlla che nessun pezzo sia dato per sbagliato: se il parser cambia, l'elenco va riallineato.
+ */
+const SET_ENDINGS = ["0", ")", "]", "}", "0)", "; 0)", "0; 1)", " (0; 1)", " x > 0", " > 0", "∞)", "; +∞)", "+∞)", "0}", "; 0}", "5; 0}", " = 0", "1 = 0", "x", " x", "1; +∞)", "/9)", "/9]"] as const;
 
 /** L'anteprima del testo scritto in un campo. Non lancia mai. */
 export function previewText(field: FieldKind, text: string): Preview {

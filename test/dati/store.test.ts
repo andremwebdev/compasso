@@ -154,7 +154,9 @@ describe("migrazioni", () => {
 });
 
 describe("riassunto per abilità", () => {
-  it("le domande lampo non contano, le distrazioni non pesano", () => {
+  // Revisione 4b: prima le distrazioni non entravano nel conto. La specifica (sezioni 3, 5 e 9) dice che
+  // una distrazione resta un errore per la padronanza: cambia solo il posto in cui il diario la mostra.
+  it("le domande lampo non contano; le distrazioni restano errori, contate a parte", () => {
     const log = [
       attempt("a", { context: "lampo", outcome: "correct", error: null }),
       attempt("bb", { outcome: "correct", error: null, level: 2 }),
@@ -163,8 +165,8 @@ describe("riassunto per abilità", () => {
       attempt("eeeee", { outcome: "skipped", error: null, skill: "V1.M04.A07", generator: "V1.M04.A07.g1" }),
     ];
     expect(skillSummaries(log)).toEqual([
-      { skill: "V1.M04.A07", attempts: 1, correct: 0, bestLevel: 0, lastAt: attempt("eeeee").at },
-      { skill: "V1.M06.A04", attempts: 2, correct: 1, bestLevel: 2, lastAt: attempt("dddd").at },
+      { skill: "V1.M04.A07", attempts: 1, correct: 0, distractions: 0, bestLevel: 0, lastAt: attempt("eeeee").at },
+      { skill: "V1.M06.A04", attempts: 3, correct: 1, distractions: 1, bestLevel: 2, lastAt: attempt("dddd").at },
     ]);
   });
 });
