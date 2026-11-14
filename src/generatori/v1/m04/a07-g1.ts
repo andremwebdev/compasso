@@ -9,6 +9,10 @@
 // Livello 1: una sola tecnica (raccoglimento, differenza di quadrati, quadrato di binomio, trinomio
 // speciale).  Livello 2: due tecniche di seguito, trinomio con primo coefficiente diverso da 1, cubi,
 // differenza di quarte potenze.  Livello 3: Ruffini, polinomi di grado 3 e 4, fattori irriducibili.
+//
+// Varietà: ogni livello ha più «forme», e le forme con pochi esercizi possibili (x⁴ − t⁴ ne ha cinque)
+// escono più di rado delle altre: i pesi stanno negli elenchi di buildLevel2 e buildLevel3. Senza i
+// pesi un esercizio su quindici del livello 2 era x⁴ − 1 (revisione 4b).
 
 import { defineGenerator, type ExerciseDraft, type GeneratorContext } from "../../../esercizi";
 import { exprToUPoly, upolyToExpr } from "../../../motore/algebra/expand";
@@ -47,13 +51,22 @@ const binomial = (p: number, q: number): UPoly => upoly(q, p);
 const single = (poly: UPoly): Factor => ({ poly, power: 1 });
 const shown = (poly: UPoly): Expr => upolyToExpr(poly);
 
+const samePolynomial = (a: UPoly, b: UPoly): boolean => a.length === b.length && a.every((c, k) => c.eq(b[k] ?? 0));
+
 /** Un prodotto scritto come si scrive a mano: niente fattori 1, potenze per i fattori ripetuti. */
 function product(constant: number, xPower: number, parts: readonly (Factor | Expr)[]): Expr {
   const factors: Expr[] = [];
   if (constant !== 1) factors.push(num(constant));
   if (xPower === 1) factors.push(x);
   if (xPower > 1) factors.push(pow(x, xPower));
+  // Lo stesso fattore scritto due volte diventa una potenza: (x + 3)²(x − 3), non (x + 3)(x + 3)(x − 3).
+  const merged: (Factor | Expr)[] = [];
   for (const part of parts) {
+    const twin = "kind" in part ? -1 : merged.findIndex((other) => !("kind" in other) && samePolynomial(other.poly, part.poly));
+    if (twin >= 0 && !("kind" in part)) merged[twin] = { poly: part.poly, power: (merged[twin] as Factor).power + part.power };
+    else merged.push(part);
+  }
+  for (const part of merged) {
     // Un prodotto dentro un prodotto si scrive in fila, senza parentesi in più.
     if ("kind" in part) factors.push(...(part.kind === "mul" ? part.factors : [part]));
     else factors.push(part.power === 1 ? shown(part.poly) : pow(shown(part.poly), part.power));
@@ -131,31 +144,31 @@ function leadingCoefficient(p: number, q: number, r: number): Piece {
   };
 }
 
-/** Somma o differenza di cubi: x³ + t³ = (x + t)(x² − t·x + t²), con t di segno qualsiasi. */
-function cubes(t: number): Piece {
+/** Somma o differenza di cubi: (s·x)³ + t³ = (s·x + t)(s²x² − s·t·x + t²), con t di segno qualsiasi. */
+function cubes(t: number, s = 1): Piece {
   return {
-    factors: [single(binomial(1, t)), single(upoly(t * t, -t, 1))],
+    factors: [single(binomial(s, t)), single(upoly(t * t, -s * t, s * s))],
     wrong: [
       // Segno del termine di mezzo sbagliato.
-      { error: "ALG.SEGNI_FATTORI", value: inner(single(binomial(1, t)), single(upoly(t * t, t, 1))) },
+      { error: "ALG.SEGNI_FATTORI", value: inner(single(binomial(s, t)), single(upoly(t * t, s * t, s * s))) },
       // Al posto del «falso quadrato» è stato messo il quadrato del binomio, con il doppio prodotto.
-      { error: "ALG.QUADRATO_BINOMIO", value: inner(single(binomial(1, t)), single(upoly(t * t, -2 * t, 1))) },
+      { error: "ALG.QUADRATO_BINOMIO", value: inner(single(binomial(s, t)), single(upoly(t * t, -2 * s * t, s * s))) },
       // «A³ + B³ = (A + B)³»: come per il quadrato, mancano i termini misti.
-      { error: "ALG.QUADRATO_BINOMIO", value: inner({ poly: binomial(1, t), power: 3 }) },
+      { error: "ALG.QUADRATO_BINOMIO", value: inner({ poly: binomial(s, t), power: 3 }) },
     ],
   };
 }
 
-/** Differenza di quarte potenze: x⁴ − t⁴ = (x² + t²)(x + t)(x − t). */
-function fourthPowers(t: number): Piece {
-  const sumOfSquares = upoly(t * t, 0, 1);
+/** Differenza di quarte potenze: (s·x)⁴ − t⁴ = (s²x² + t²)(s·x + t)(s·x − t). */
+function fourthPowers(t: number, s = 1): Piece {
+  const sumOfSquares = upoly(t * t, 0, s * s);
   return {
-    factors: [single(binomial(1, t)), single(binomial(1, -t)), single(sumOfSquares)],
+    factors: [single(binomial(s, t)), single(binomial(s, -t)), single(sumOfSquares)],
     wrong: [
-      // Scomposta anche la somma di quadrati x² + t², che è irriducibile.
-      { error: "ALG.SOMMA_QUADRATI", value: inner({ poly: binomial(1, t), power: 2 }, { poly: binomial(1, -t), power: 2 }) },
-      { error: "ALG.QUADRATO_BINOMIO", value: inner(single(sumOfSquares), { poly: binomial(1, -t), power: 2 }) },
-      { error: "ALG.QUADRATO_BINOMIO", value: inner(single(sumOfSquares), { poly: binomial(1, t), power: 2 }) },
+      // Scomposta anche la somma di quadrati s²x² + t², che è irriducibile.
+      { error: "ALG.SOMMA_QUADRATI", value: inner({ poly: binomial(s, t), power: 2 }, { poly: binomial(s, -t), power: 2 }) },
+      { error: "ALG.QUADRATO_BINOMIO", value: inner(single(sumOfSquares), { poly: binomial(s, -t), power: 2 }) },
+      { error: "ALG.QUADRATO_BINOMIO", value: inner(single(sumOfSquares), { poly: binomial(s, t), power: 2 }) },
     ],
   };
 }
@@ -186,6 +199,47 @@ function rootAndSumOfSquares(r: number, t: number): Piece {
       { error: "ALG.SOMMA_QUADRATI", value: inner(single(binomial(1, -r)), single(binomial(1, t)), single(binomial(1, -t))) },
       // …oppure come se fosse il quadrato di un binomio.
       { error: "ALG.QUADRATO_BINOMIO", value: inner(single(binomial(1, -r)), { poly: binomial(1, t), power: 2 }) },
+    ],
+  };
+}
+
+/**
+ * Una radice doppia e una semplice: (x − r)²(x − s). Con Ruffini si trova una radice, poi resta un
+ * trinomio (un quadrato di binomio, oppure un trinomio speciale se la prima radice trovata è r).
+ */
+function doubleRoot(r: number, s: number): Piece {
+  const f = (root: number): Factor => single(binomial(1, -root));
+  // Ruffini trova prima la radice più piccola in valore assoluto.
+  const first = Math.abs(r) < Math.abs(s) ? r : s;
+  const others = first === r ? [f(r), f(s)] : [{ poly: binomial(1, -r), power: 2 }];
+  return {
+    factors: [{ poly: binomial(1, -r), power: 2 }, f(s)],
+    wrong: [
+      // Radice trovata con Ruffini, ma fattore scritto con il segno sbagliato.
+      { error: "ALG.RUFFINI_SEGNO", value: inner(f(-first), ...others) },
+      // Segno del doppio prodotto ignorato nel quadrato.
+      { error: "ALG.SEGNI_FATTORI", value: inner({ poly: binomial(1, r), power: 2 }, f(s)) },
+      // Visti due quadrati nel trinomio, scritta la differenza di quadrati: il doppio prodotto è sparito.
+      { error: "ALG.QUADRATO_BINOMIO", value: inner(f(r), f(-r), f(s)) },
+      // Il quadrato è giusto, ma l'altra radice ha il segno sbagliato.
+      { error: "ALG.SEGNI_FATTORI", value: inner({ poly: binomial(1, -r), power: 2 }, f(-s)) },
+    ],
+  };
+}
+
+/** x⁴ + (b² − a²)x² − a²b² = (x + a)(x − a)(x² + b²): un trinomio in x² con una differenza e una somma di quadrati. */
+function mixedBiquadratic(a: number, b: number): Piece {
+  const f = (r: number): Factor => single(binomial(1, -r));
+  const sumOfSquares = upoly(b * b, 0, 1);
+  return {
+    factors: [f(a), f(-a), single(sumOfSquares)],
+    wrong: [
+      // Scomposta anche la somma di quadrati x² + b², che è irriducibile.
+      { error: "ALG.SOMMA_QUADRATI", value: inner(f(a), f(-a), f(b), f(-b)) },
+      // Trinomio in x² scomposto con i segni scambiati: (x² + a²)(x² − b²).
+      { error: "ALG.SEGNI_FATTORI", value: inner(single(upoly(a * a, 0, 1)), f(b), f(-b)) },
+      // x² − a² scritto come (x − a)².
+      { error: "ALG.QUADRATO_BINOMIO", value: inner({ poly: binomial(1, -a), power: 2 }, single(sumOfSquares)) },
     ],
   };
 }
@@ -265,7 +319,8 @@ function buildLevel1(rng: Rng_): Model {
 }
 
 function buildLevel2(rng: Rng_): Model {
-  const shape = rng.pick(["commonThenNotable", "commonThenNotable", "leading", "cubes", "fourth"] as const);
+  // I pesi seguono quanti esercizi diversi ha ogni forma: le quarte potenze sono cinque in tutto, i cubi dodici.
+  const shape = rng.pick(["commonThenNotable", "commonThenNotable", "commonThenNotable", "commonThenNotable", "leading", "leading", "leading", "cubes", "cubes", "fourth"] as const);
   switch (shape) {
     case "commonThenNotable": {
       // Prima il raccoglimento, poi un prodotto notevole o un trinomio speciale.
@@ -280,35 +335,53 @@ function buildLevel2(rng: Rng_): Model {
       const r = rng.intExcept(-5, 5);
       return withCommonFactor(1, 0, leadingCoefficient(p, q, r));
     }
-    case "cubes":
-      return withCommonFactor(1, 0, cubes(rng.intExcept(-4, 4)));
-    case "fourth":
-      return withCommonFactor(1, 0, fourthPowers(rng.int(1, 3)));
+    case "cubes": {
+      // x³ ± t³ oppure 8x³ ± t³ con t dispari (2x e t primi tra loro: niente da raccogliere).
+      const [s, t] = rng.pick([[1, 1], [1, 2], [1, 3], [1, 4], [2, 1], [2, 3]] as const);
+      return withCommonFactor(1, 0, cubes(t * rng.sign(), s));
+    }
+    case "fourth": {
+      const [s, t] = rng.pick([[1, 1], [1, 2], [1, 3], [2, 1], [2, 3]] as const);
+      return withCommonFactor(1, 0, fourthPowers(t, s));
+    }
   }
 }
 
 function buildLevel3(rng: Rng_): Model {
-  const shape = rng.pick(["threeRoots", "threeRoots", "rootAndQuadratic", "biquadratic", "commonThenCubes"] as const);
+  // Pesi come al livello 2: le forme con pochi esercizi possibili (le biquadratiche) escono più di rado.
+  const shape = rng.pick([
+    "threeRoots", "threeRoots", "threeRoots", "threeRoots", "doubleRoot", "doubleRoot", "rootAndQuadratic", "rootAndQuadratic",
+    "commonThenCubes", "commonThenCubes", "biquadratic", "mixedBiquadratic",
+  ] as const);
   switch (shape) {
     case "threeRoots": {
       // Tre radici distinte, non tutte «facili»: nessuna è 0 (altrimenti basterebbe raccogliere x).
       // Nessuna coppia di radici opposte: lì cambiare i segni dei fattori ridarebbe per caso la risposta giusta.
       const sign = (): number => rng.sign();
-      const roots = (rng.sample([1, 2, 3, 4], 3) as [number, number, number]).map((value) => value * sign()) as [number, number, number];
+      const roots = (rng.sample([1, 2, 3, 4, 5], 3) as [number, number, number]).map((value) => value * sign()) as [number, number, number];
       // L'ordine è quello in cui Ruffini le trova: prima la più piccola in valore assoluto, la positiva prima della negativa.
       roots.sort((a, b) => Math.abs(a) - Math.abs(b) || b - a);
       return withCommonFactor(1, 0, threeRoots(...roots));
     }
+    case "doubleRoot": {
+      const r = rng.intExcept(-3, 3);
+      return withCommonFactor(1, 0, doubleRoot(r, rng.intExcept(-4, 4, [0, r, -r])));
+    }
     case "rootAndQuadratic": {
-      const r = rng.intExcept(-4, 4);
+      const r = rng.intExcept(-5, 5);
       return withCommonFactor(1, 0, rootAndSumOfSquares(r, rng.int(1, 3)));
     }
+    case "commonThenCubes":
+      return withCommonFactor(rng.int(2, 5), rng.int(0, 1), cubes(rng.intExcept(-2, 2)));
     case "biquadratic": {
       const [a, b] = rng.sample([1, 2, 3, 4], 2).sort((p, q) => p - q) as [number, number];
       return withCommonFactor(1, 0, biquadratic(a, b));
     }
-    case "commonThenCubes":
-      return withCommonFactor(rng.pick([2, 3]), rng.int(0, 1), cubes(rng.intExcept(-2, 2)));
+    case "mixedBiquadratic": {
+      // a ≠ b: con a = b sarebbe x⁴ − a⁴, che è del livello 2.
+      const a = rng.int(1, 4);
+      return withCommonFactor(1, 0, mixedBiquadratic(a, rng.intExcept(1, 3, [a])));
+    }
   }
 }
 

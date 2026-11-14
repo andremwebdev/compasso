@@ -68,6 +68,8 @@ function buildModel(level: number, rng: Rng_): Model {
     if (solution.filter((value) => value === 0).length > 1 || new Set(solution).size === 1) continue;
     if (entries.some((value) => Math.abs(value) > 9) || b.some((value) => Math.abs(value) > 30)) continue;
     if (entries.filter((value) => value === 0).length > 1) continue;
+    // Con due equazioni un coefficiente nullo dà già un'incognita: non resta niente da ridurre.
+    if (n === 2 && entries.includes(0)) continue;
     // 4. Gli errori tipici devono dare risposte con numeri puliti, diverse dalla giusta e tra loro.
     const slips = typicalSlips(upper, solution, b);
     if (slips) return { a, b, solution, slips };
@@ -170,14 +172,41 @@ function solutionSteps(model: Model, complete: Matrix, reduction: ReturnType<typ
   const rows = rationals(reduction.matrix);
   const equations = rows.map((row) => equation(row.slice(0, n).map((value) => value.toInteger()), (row[n] as Rational).toInteger()));
   steps.push({ text: `La matrice è a scala. Riscrivi il sistema, che è equivalente a quello di partenza:\n\n$$${systemToLatex(equations)}$$` });
+  // Sostituzione all'indietro, un'incognita per passaggio, con i conti scritti: è qui che si sbaglia il segno nel trasporto.
+  const ordinals = ["prima", "seconda", "terza"];
+  for (let r = n - 1; r >= 0; r--) {
+    const row = rows[r] as Rational[];
+    const name = NAMES[r] as string;
+    const pivot = (row[r] as Rational).toInteger();
+    const right = (row[n] as Rational).toInteger();
+    const value = model.solution[r] ?? 0;
+    const unknown = toLatex(simplify(mul(pivot, sym(name))));
+    // I termini con le incognite già trovate: coefficiente e valore.
+    const known = row.slice(r + 1, n).map((entry, k) => ({ coefficient: entry.toInteger(), value: model.solution[r + 1 + k] ?? 0 })).filter((term) => term.coefficient !== 0);
+    const solved = pivot === 1 ? "" : `, quindi $${name} = ${value}$`;
+    if (known.length === 0) {
+      steps.push({ text: `${r === n - 1 ? "Risolvi dal basso verso l'alto (sostituzione all'indietro). Dall'ultima" : `Dalla ${ordinals[r]}`} equazione: $${unknown} = ${right}$${solved}.` });
+      continue;
+    }
+    const substituted = known.map((term) => `${term.coefficient < 0 ? "-" : "+"} ${Math.abs(term.coefficient) === 1 ? "" : `${Math.abs(term.coefficient)} \\cdot `}${term.value < 0 ? `\\left(${term.value}\\right)` : term.value}`).join(" ");
+    const moved = known.reduce((total, term) => total + term.coefficient * term.value, 0);
+    const start = `Sostituisci nella ${ordinals[r]} equazione i valori già trovati: $${unknown} ${substituted} = ${right}$`;
+    if (moved === 0) {
+      // I termini sostituiti si annullano: non c'è niente da portare a secondo membro.
+      steps.push({ text: `${start}, cioè $${unknown} = ${right}$${solved}.` });
+      continue;
+    }
+    const transport = `${right} ${moved < 0 ? "+" : "-"} ${Math.abs(moved)}`;
+    const computed = `${moved < 0 ? "-" : "+"} ${Math.abs(moved)}`;
+    steps.push({
+      text:
+        // Se la sostituzione dà già un numero solo (−y − 1 = 0) non c'è un conto da mostrare.
+        `${start}${computed === substituted ? "" : `, cioè $${unknown} ${computed} = ${right}$`}. ` +
+        `Porta il numero a secondo membro **cambiandogli il segno**: $${unknown} = ${transport} = ${right - moved}$${solved}.`,
+    });
+  }
   const found = model.solution.map((value, k) => `${NAMES[k]} = ${value}`);
-  steps.push({
-    text: `Risolvi dal basso verso l'alto (sostituzione all'indietro): prima $${found[n - 1]}$, poi ${found
-      .slice(0, n - 1)
-      .reverse()
-      .map((item) => `$${item}$`)
-      .join(", poi ")}. Quando porti un termine a secondo membro, cambia il suo segno.`,
-  });
+  steps.push({ text: `La soluzione è $${found.join(",\\ ")}$.` });
   const checked = Math.max(0, model.a.findIndex((row) => row.every((value) => value !== 0)));
   const check = model.a[checked] as number[];
   const sum = check.map((value, k) => `${value < 0 ? `\\left(${value}\\right)` : value} \\cdot ${(model.solution[k] ?? 0) < 0 ? `\\left(${model.solution[k]}\\right)` : model.solution[k]}`).join(" + ");

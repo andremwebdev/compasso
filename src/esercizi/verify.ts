@@ -59,6 +59,10 @@ export interface VerifyOptions {
   readonly keep?: number;
   /** Orologio usato per misurare i tempi (in millisecondi). Se manca: performance.now. */
   readonly now?: () => number;
+  /** Quanti esercizi diversi deve dare almeno ogni livello (si guarda da 1.000 semi in su). Se manca: 100. */
+  readonly minDistinct?: number;
+  /** La parte dei semi che al massimo può dare lo stesso identico esercizio (da 1.000 semi in su). Se manca: 0,04. */
+  readonly maxShare?: number;
 }
 
 export interface VerificationReport {
@@ -69,7 +73,7 @@ export interface VerificationReport {
   readonly problems: readonly VerificationProblem[];
   /** Quanti esercizi hanno fallito ogni controllo. */
   readonly failures: Readonly<Record<CheckNumber, number>>;
-  /** Cose da guardare che non bocciano il generatore: verifica indipendente mancante, errori dichiarati mai prodotti, poca varietà. */
+  /** Cose da guardare che non bocciano il generatore: verifica indipendente mancante, errori dichiarati mai prodotti, poca varietà (pochi esercizi diversi, o uno stesso esercizio che esce troppo spesso). */
   readonly warnings: readonly string[];
   readonly averageMillis: number;
   readonly maxMillis: number;
@@ -403,6 +407,8 @@ export function verifyGenerator(definition: GeneratorDefinition, options: Verify
   const maxAverageMillis = options.maxAverageMillis ?? 5;
   const keep = options.keep ?? 5;
   const now = options.now ?? (() => performance.now());
+  const minDistinct = options.minDistinct ?? 100;
+  const maxShare = options.maxShare ?? 0.04;
 
   const problems: VerificationProblem[] = [];
   const failures: Record<CheckNumber, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
@@ -437,7 +443,8 @@ export function verifyGenerator(definition: GeneratorDefinition, options: Verify
       report(1, level, null, "livello non supportato dal generatore.");
       continue;
     }
-    const variety = new Set<string>();
+    // Quante volte esce ogni esercizio (stesso testo, stessa risposta).
+    const variety = new Map<string, number>();
     for (let seed = firstSeed; seed < firstSeed + seeds; seed++) {
       // Controllo 1: l'esercizio nasce senza errori, rispetta lo schema, in pochi millisecondi.
       let first: { exercise: Exercise; millis: number };
@@ -482,10 +489,22 @@ export function verifyGenerator(definition: GeneratorDefinition, options: Verify
         for (const finding of verifyExercise(definition, exercise)) report(finding.check, level, seed, finding.message);
       }
       for (const code of errorCodesOf(exercise.answer)) produced.add(code);
-      variety.add(fingerprint({ prompt: exercise.prompt, answer: exercise.answer }));
+      const print = fingerprint({ prompt: exercise.prompt, answer: exercise.answer });
+      variety.set(print, (variety.get(print) ?? 0) + 1);
     }
     if (seeds >= 50 && variety.size > 0 && variety.size < Math.min(10, seeds / 10)) {
       warnings.push(`Livello ${level}: su ${seeds} semi escono solo ${variety.size} esercizi diversi.`);
+    } else if (seeds >= 1000 && variety.size > 0) {
+      // Varietà: «Esercizio simile» e il ripasso devono dare esercizi nuovi, non sempre gli stessi dieci.
+      const most = Math.max(...variety.values());
+      if (variety.size < minDistinct) {
+        warnings.push(`Livello ${level}: su ${seeds} semi escono solo ${variety.size} esercizi diversi (ne servono almeno ${minDistinct}): allarga i numeri o aggiungi una forma.`);
+      }
+      if (most / seeds > maxShare) {
+        warnings.push(
+          `Livello ${level}: uno stesso esercizio esce ${most} volte su ${seeds} semi (più del ${Math.round(maxShare * 100)}%): la forma che lo produce ha pochi esercizi possibili e troppo peso. Dalle meno peso o più scelta.`,
+        );
+      }
     }
   }
 

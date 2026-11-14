@@ -310,13 +310,15 @@ function buildLevel2(rng: Rng_): Model {
   const kind = rng.pick(["product", "quotient", "chain"] as const);
   switch (kind) {
     case "product": {
-      const shape = rng.pick(["quadraticTimes", "twoElementary", "powerTimesLog"] as const);
+      const shape = rng.pick(["quadraticTimes", "twoElementary", "powerTimes"] as const);
       if (shape === "quadraticTimes") return { kind, f: basic(simplify(add(pow(x, 2), mul(rng.intExcept(-4, 4), x), rng.int(-5, 5)))), g: basic(rng.pick([sin(x), cos(x), exp(x)])) };
       if (shape === "twoElementary") {
         const [f, g] = rng.sample([sin(x), cos(x), exp(x), ln(x)], 2) as [Expr, Expr];
         return { kind, f: basic(f), g: basic(g) };
       }
-      return { kind, f: basic(pow(x, rng.int(2, 5))), g: basic(ln(x)) };
+      // x^n per una funzione elementare. (Con il solo logaritmo gli esercizi possibili erano quattro,
+      // e ognuno usciva tre volte su cento: revisione 4b.)
+      return { kind, f: basic(pow(x, rng.int(2, 5))), g: basic(elementary(rng)) };
     }
     case "quotient": {
       const shape = rng.pick(["quadraticOverLinear", "linearOverQuadratic", "elementaryOverPower", "linearOverElementary"] as const);

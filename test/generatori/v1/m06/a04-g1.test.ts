@@ -33,15 +33,37 @@ describe("V1.M06.A04.g1 — disequazioni fratte", () => {
     }
   });
 
-  it("ai livelli 2 e 3 quasi tutti gli esercizi hanno almeno tre risposte sbagliate (servono alla scelta multipla)", () => {
+  it("ai livelli 2 e 3 ogni esercizio ha almeno tre risposte sbagliate (servono alla scelta multipla)", () => {
     for (const level of [2, 3] as const) {
-      let enough = 0;
-      for (let seed = 0; seed < 500; seed++) {
-        const { answer } = generateExercise(generator, level, seed);
-        if (answer.kind === "set" && answer.wrong.length >= 3) enough += 1;
+      for (let seed = 0; seed < 2000; seed++) {
+        const { answer, prompt } = generateExercise(generator, level, seed);
+        if (answer.kind !== "set") throw new Error("tipo di risposta inatteso");
+        expect(answer.wrong.length, `livello ${level}, seme ${seed}: ${prompt}`).toBeGreaterThanOrEqual(3);
       }
-      expect(enough / 500).toBeGreaterThan(0.9);
     }
+  });
+
+  it("un fattore con il coefficiente di x negativo porta l'errore «verso non invertito»", () => {
+    // (−x + 2)/(x − 4) < 0: la risposta giusta è x < 2 ∨ x > 4. Chi studia −x + 2 > 0 come x > 2 trova 2 < x < 4.
+    const exercise = generateExercise(generator, 2, 5);
+    expect(exercise.prompt).toBe("Risolvi la disequazione $\\frac{-x + 2}{x - 4} < 0$.");
+    expect(evaluateResponse(exercise, { kind: "text", text: "x < 2 ∨ x > 4" }).outcome).toBe("correct");
+    expect(evaluateResponse(exercise, { kind: "text", text: "2 < x < 4" })).toMatchObject({ outcome: "wrong", error: "DISEQ.VERSO_NON_INVERTITO" });
+    // Senza coefficienti negativi l'errore non c'è.
+    const plain = generateExercise(generator, 1, 1);
+    if (plain.answer.kind !== "set") throw new Error("tipo di risposta inatteso");
+    expect(plain.answer.wrong.map((wrong) => wrong.error)).not.toContain("DISEQ.VERSO_NON_INVERTITO");
+  });
+
+  it("i passaggi spiegano il segno dei polinomi di secondo grado: due zeri, zero doppio", () => {
+    const notes = new Set<string>();
+    for (let seed = 0; seed < 400; seed++) {
+      const text = generateExercise(generator, 3, seed).steps.map((step) => step.text).join(" ");
+      if (text.includes("È un quadrato")) notes.add("quadrato");
+      if (text.includes("positivo fuori dai due zeri")) notes.add("due zeri");
+      if (text.includes("Il numeratore non si annulla mai")) notes.add("numeratore senza zeri");
+    }
+    expect([...notes].sort()).toEqual(["due zeri", "numeratore senza zeri", "quadrato"]);
   });
 
   it("riconosce la risposta giusta e ogni errore tipico scritti da Andrea", () => {

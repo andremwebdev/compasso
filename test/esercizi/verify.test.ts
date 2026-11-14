@@ -4,9 +4,13 @@ import { formatReport, verificationChecks, verifyExercise, verifyGenerator, type
 import type { ErrorCode } from "../../src/errori";
 import { add, div, frac, mul, num, pow, sub, sym } from "../../src/motore/expr";
 import { atMost, greaterThan, lessThan, realSet } from "../../src/motore/sets";
+import { Rng } from "../../src/motore/random/rng";
 import sample, { sampleDefinition, sampleDraft, sampleNumbers } from "./fixtures/sample-generator";
 
 const x = sym("x");
+
+/** Il generatore di prova ridotto a venti esercizi in tutto. */
+const twentyOnly: GeneratorDefinition["generate"] = (context) => sampleDraft(sampleNumbers(context.level, Rng.forExercise("V9.M01.A01.g1", context.level, context.seed % 20)));
 
 /** Una variante del generatore di prova con un difetto preciso. */
 function broken(change: (draft: ExerciseDraft, seed: number, level: number) => ExerciseDraft, overrides: Partial<GeneratorDefinition> = {}): GeneratorDefinition {
@@ -210,6 +214,21 @@ describe("verifica automatica: ogni controllo scopre il suo difetto", () => {
     const monotonous = verifyGenerator({ ...sampleDefinition, generate: () => fixed, verify: undefined }, { seeds: 100 });
     expect(monotonous.warnings).toContain("Livello 1: su 100 semi escono solo 1 esercizi diversi.");
     expect(formatReport(monotonous)).toContain("Avviso: Livello 1");
+  });
+
+  it("avvisi sulla varietà: pochi esercizi diversi, o uno stesso esercizio che esce troppo spesso", () => {
+    // Venti esercizi in tutto, ognuno una volta su venti: troppo pochi (ne servono 100) e troppo frequenti (5% > 4%).
+    // (Senza verify: quella del generatore di prova rifà i conti dal seme vero, non dal seme ridotto.)
+    const few: GeneratorDefinition = { ...sampleDefinition, generate: twentyOnly, verify: undefined };
+    const twenty = verifyGenerator(few, { seeds: 1000, levels: [1] });
+    expect(twenty.problems, formatReport(twenty)).toEqual([]);
+    const variety = twenty.warnings.filter((warning) => warning.startsWith("Livello"));
+    expect(variety).toHaveLength(2);
+    expect(variety[0]).toMatch(/^Livello 1: su 1000 semi escono solo \d+ esercizi diversi \(ne servono almeno 100\)/);
+    expect(variety[1]).toMatch(/^Livello 1: uno stesso esercizio esce \d+ volte su 1000 semi \(più del 4%\)/);
+    // Le soglie si possono cambiare, e sotto i 1.000 semi il controllo non scatta (i conti sarebbero a caso).
+    expect(verifyGenerator(sample, { seeds: 1000, levels: [1], minDistinct: 5000 }).warnings).toHaveLength(1);
+    expect(verifyGenerator(few, { seeds: 900, levels: [1] }).warnings.filter((warning) => warning.startsWith("Livello"))).toEqual([]);
   });
 
   it("gli altri tipi di risposta si verificano allo stesso modo", () => {

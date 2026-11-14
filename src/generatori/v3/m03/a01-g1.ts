@@ -115,6 +115,15 @@ function twoByTwo(grid: Grid): string {
   return `${signed(a)} \\cdot ${signed(d)} - ${signed(b)} \\cdot ${signed(c)}`;
 }
 
+/** Un determinante di ordine 3 sviluppato lungo la sua linea con più zeri: gli addendi «segno · elemento · minore di ordine 2». */
+function threeByThree(grid: Grid): string {
+  const parts = expansion(grid, bestLine(grid))
+    .filter((term) => term.entry !== 0)
+    .map((term) => `${term.sign > 0 ? "+" : "-"} ${signed(term.entry)} \\cdot ${signed(laplace(term.minor))}`);
+  // Una linea di soli zeri: il determinante è nullo e non c'è niente da sommare.
+  return parts.length === 0 ? "0" : parts.join(" ").replace(/^\+ /, "");
+}
+
 function solutionSteps(grid: Grid, det: number): SolutionStep[] {
   if (grid.length === 2) {
     return [
@@ -129,20 +138,20 @@ function solutionSteps(grid: Grid, det: number): SolutionStep[] {
     {
       text:
         `Sviluppa con la regola di Laplace lungo ${name}${grid.length === 4 ? ", che ha più zeri: gli elementi nulli non danno addendi" : ""}. ` +
-        "Ogni elemento va moltiplicato per il determinante della matrice che resta togliendo la sua riga e la sua colonna, con il segno $(-1)^{i+j}$: più se riga e colonna hanno somma pari, meno se dispari.",
+        "Ogni elemento va moltiplicato per il determinante della matrice che resta togliendo la sua riga e la sua colonna, con il segno $(-1)^{i+j}$: più se riga e colonna hanno somma pari, meno se dispari." +
+        (grid.length === 4 ? " I minori di ordine 3 si calcolano allo stesso modo, ognuno lungo la sua riga o colonna con più zeri: qui sotto ogni addendo è un elemento per il suo minore di ordine 2, con il segno." : ""),
     },
   ];
   const parts: string[] = [];
   for (const term of terms) {
     const minorValue = laplace(term.minor);
     const position = `(${term.row + 1}, ${term.col + 1})`;
-    const how = term.minor.length === 2 ? `${twoByTwo(term.minor)} = ${minorValue}` : `${minorValue}`;
+    const how = term.minor.length === 2 ? `${twoByTwo(term.minor)} = ${minorValue}` : `${threeByThree(term.minor)} = ${minorValue}`;
     steps.push({
       text: `Elemento $${term.entry}$, posto $${position}$, segno $${term.sign > 0 ? "+" : "-"}$. Il suo minore vale:\n\n$$${barred(term.minor)} = ${how}$$`,
     });
     parts.push(`${term.sign > 0 ? "+" : "-"} ${signed(term.entry)} \\cdot ${signed(minorValue)}`);
   }
-  if (grid.length === 4) steps.push({ text: "I minori di ordine 3 si calcolano allo stesso modo, sviluppando lungo una loro riga." });
   steps.push({ text: `Somma gli addendi con i loro segni:\n\n$$\\det A = ${parts.join(" ").replace(/^\+ /, "")} = ${det}$$` });
   return steps;
 }

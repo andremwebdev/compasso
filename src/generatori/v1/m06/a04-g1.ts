@@ -12,10 +12,11 @@
 // comune a numeratore e denominatore, due frazioni, numeratore costante).
 
 import { defineGenerator, type ExerciseDraft, type GeneratorContext, type SolutionStep } from "../../../esercizi";
-import { upolyToExpr } from "../../../motore/algebra/expand";
+import { exprToUPoly, upolyToExpr } from "../../../motore/algebra/expand";
+import { simplify } from "../../../motore/algebra/simplify";
 import { upMul, upoly, type UPoly } from "../../../motore/algebra/upoly";
 import { signTable, signTableToLatex, solutionFromSigns, type SignFactor, type SignRelation } from "../../../motore/display";
-import { div, neg, num, relation, sub, toLatex, type Expr, type Relation } from "../../../motore/expr";
+import { div, neg, num, pow, relation, sub, sym, toLatex, type Expr, type Relation } from "../../../motore/expr";
 import { Rational } from "../../../motore/numbers/rational";
 import { Rng } from "../../../motore/random/rng";
 import {
@@ -131,7 +132,10 @@ function buildLevel3(rng: Rng_): Model {
       // Uno zero doppio: il fattore al quadrato non cambia segno, ma il suo zero conta (punto isolato o buco).
       const [a, b] = distinctIntegers(rng, 2, 4) as [number, number];
       const rel = rng.pick([">=", "<=", ">=", "<=", ">", "<"] as const);
-      return rng.bool() ? plain(fromRoots(a, a), linear(b), rel) : plain(linear(b), fromRoots(a, a), rel);
+      const model = rng.bool() ? plain(fromRoots(a, a), linear(b), rel) : plain(linear(b), fromRoots(a, a), rel);
+      // Con < o > per certi numeri restano solo due errori possibili (gli altri danno la stessa risposta):
+      // lì si aggiunge l'uguale, che porta con sé l'errore sugli zeri del denominatore.
+      return isStrict(rel) && wrongAnswers(model, solve(model.rows, model.rel)).length < 3 ? { ...model, rel: otherStrictness(rel) } : model;
     }
     case "noZeros": {
       // Un fattore che non si annulla mai (x² + c): è sempre positivo e non entra tra gli zeri.
@@ -237,6 +241,14 @@ function wrongAnswers(model: Model, correct: RealSet) {
   // (con ≤ o ≥) includendo anche i punti in cui la frazione non esiste.
   const forgottenCondition = model.cancelled ? solve(model.cancelled, rel) : isStrict(rel) ? null : solve(asNumerator(rows), rel);
 
+  // Un fattore di primo grado con il coefficiente di x negativo (−x + 2 > 0) studiato senza invertire
+  // il verso (x > 2 invece di x < 2): il segno di quella riga è rovesciato.
+  const falling = rows.findIndex((row) => {
+    const polynomial = exprToUPoly(row.expr);
+    return polynomial !== null && polynomial.length === 2 && (polynomial[1] as Rational).sign() < 0;
+  });
+  const notFlipped = falling < 0 ? null : solve(rows.map((row, index) => (index === falling ? { ...row, expr: neg(row.expr) } : row)), rel);
+
   // Sbaglia il segno di un trinomio con due zeri: positivo «dentro» e negativo «fuori» (o il contrario).
   const quadratic = rows.findIndex((row) => signTable([{ expr: row.expr }]).points.length === 2);
   const swappedQuadratic = quadratic < 0 ? null : solve(rows.map((row, index) => (index === quadratic ? { ...row, expr: neg(row.expr) } : row)), rel);
@@ -246,6 +258,7 @@ function wrongAnswers(model: Model, correct: RealSet) {
 
   return distinctWrongSets(correct, [
     { error: "DISEQ.SEGNO_DENOMINATORE", value: onlyNumerator },
+    notFlipped && { error: "DISEQ.VERSO_NON_INVERTITO", value: notFlipped },
     { error: "DISEQ.UNIONE_INTERSEZIONE", value: systemIsUsable ? asSystem : asUnion },
     { error: "DISEQ.ESTREMI", value: wrongEndpoints },
     forgottenCondition && { error: "COND.DENOMINATORE", value: forgottenCondition },
@@ -288,7 +301,23 @@ function describeRow(row: Row, alone: boolean): string {
   }
   const zeros = `si annulla per ${listPoints(table.points)}`;
   if (isEmptySet(positive)) return `Segno del ${name}: ${expr} ${zeros} e altrove è negativo.`;
-  return `Segno del ${name}: ${expr} ${zeros}; è positivo per $${setToInequalityLatex(positive)}$.`;
+  return `Segno del ${name}: ${expr} ${zeros}; è positivo per $${setToInequalityLatex(positive)}$.${quadraticNote(row, table.points)}`;
+}
+
+/** Per un polinomio di secondo grado: perché ha quel segno (fuori dagli zeri, oppure un quadrato che non cambia segno). */
+function quadraticNote(row: Row, zeros: readonly Expr[]): string {
+  const polynomial = exprToUPoly(row.expr);
+  if (polynomial === null || polynomial.length !== 3) return "";
+  const opens = (polynomial[2] as Rational).sign() > 0;
+  if (zeros.length === 2) {
+    return opens
+      ? " Il coefficiente di $x^{2}$ è positivo: il trinomio è positivo fuori dai due zeri e negativo in mezzo."
+      : " Il coefficiente di $x^{2}$ è negativo: il trinomio è positivo tra i due zeri e negativo fuori.";
+  }
+  const [zero] = zeros;
+  if (zeros.length !== 1 || !zero || !opens) return "";
+  const square = pow(simplify(sub(sym("x"), zero)), 2);
+  return ` È un quadrato, $${toLatex(square)}$: non cambia segno, ma il suo zero conta.`;
 }
 
 function solutionSteps(model: Model, correct: RealSet): SolutionStep[] {
@@ -327,9 +356,12 @@ function solutionSteps(model: Model, correct: RealSet): SolutionStep[] {
       text: "Attenzione: uno stesso valore di $x$ annulla sia il numeratore sia il denominatore. Lì la frazione non esiste, anche se semplificando il fattore comune sembrerebbe di sì.",
     });
   }
+  const numeratorZeros = signTable(asNumerator(rows.filter((row) => row.role === "numerator"))).points;
   const endpoints = isStrict(rel)
     ? "Con il segno stretto nessuno zero è incluso."
-    : "Gli zeri del numeratore sono inclusi (lì la frazione vale $0$); quelli del denominatore mai.";
+    : numeratorZeros.length === 0
+      ? "Il numeratore non si annulla mai, quindi la frazione non vale mai $0$: l'uguale non aggiunge soluzioni. Gli zeri del denominatore restano esclusi."
+      : "Gli zeri del numeratore sono inclusi (lì la frazione vale $0$); quelli del denominatore mai.";
   steps.push({
     text: stepText({
       text: `La disequazione chiede dove la frazione è ${REL_WORDS[rel]}: leggi gli intervalli dall'ultima riga. ${endpoints}`,
@@ -412,7 +444,7 @@ export default defineGenerator({
   lesson: "V1.M06.L04",
   title: "Disequazioni fratte",
   levels: [1, 2, 3],
-  errors: ["DISEQ.SEGNO_DENOMINATORE", "DISEQ.UNIONE_INTERSEZIONE", "DISEQ.ESTREMI", "COND.DENOMINATORE", "CALC.MENO_PARENTESI", "DISEQ.SECONDO_GRADO"],
+  errors: ["DISEQ.SEGNO_DENOMINATORE", "DISEQ.VERSO_NON_INVERTITO", "DISEQ.UNIONE_INTERSEZIONE", "DISEQ.ESTREMI", "COND.DENOMINATORE", "CALC.MENO_PARENTESI", "DISEQ.SECONDO_GRADO"],
   limits: { maxInteger: 20, maxDenominator: 6 },
   generate: ({ level, rng }) => draftOf(buildModel(level, rng)),
   verify: (exercise) => {
