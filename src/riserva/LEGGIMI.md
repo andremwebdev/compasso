@@ -14,3 +14,4 @@ I codici dei teoremi sono assegnati (`STATO.md`, «Codici assegnati»): non si r
 | Teorema | File | Strada della dimostrazione | Usa (da collegare con `[[…]]`) |
 | --- | --- | --- | --- |
 | `V2.M05.T01` | `v2/m05/t01.md` — teorema degli zeri | bisezione | successioni monotone e limitate, limite di una differenza, continuità per successioni, permanenza del segno per le successioni (V2.M03, V2.M05) |
+| `V2.M05.T02` | `v2/m05/t02.md` — teorema di Weierstrass | successione che tende all'estremo superiore, poi Bolzano-Weierstrass | estremo superiore e sue proprietà (V2.M01), teorema del confronto, Bolzano-Weierstrass, limite delle sottosuccessioni, unicità del limite (V2.M03), continuità per successioni (V2.M05) |
