@@ -440,6 +440,11 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | AN.TAYLOR\_ORDINE | Sviluppo troncato troppo presto | L'ordine va scelto per non perdere il termine dominante | V2.M08 |
 | AN.COSTANTE\_INTEGRAZIONE | Costante di integrazione dimenticata | Un integrale indefinito è una famiglia di funzioni: + c | V2.M09 |
 | AN.TERMINE\_GENERALE | Termine generale → 0 preso come prova di convergenza | È necessario, non sufficiente: la serie armonica diverge | V2.M11 |
+| AN.CONFRONTO\_INFINITI | Confronto tra infiniti sbagliato | Gradi diversi danno 0 o ∞, gradi uguali il rapporto dei coefficienti; l'esponenziale batte la potenza | V2.M03 |
+| AN.FATTORE\_LIMITATO | Fattore oscillante trattato male | (−1)ⁿ/n tende a 0, ma (−1)ⁿ·n/(n+1) non ha limite | V2.M03 |
+| AN.LIMITE\_NOTEVOLE | Limite notevole applicato senza adattarlo | sin(3x)/x tende a 3, non a 1; (1+2/n)ⁿ tende a e², non a e | V2.M04 |
+| AN.SEGNO\_INFINITO | Segno dell'infinito non studiato | 1/(x−2) tende a −∞ da sinistra e a +∞ da destra: per x → 2 il limite non esiste | V2.M04 |
+| AN.TAYLOR\_SVILUPPO | Sviluppo notevole scritto male | sin x = x − x³/6 + o(x³): al denominatore 3!, non 3; in f(ax) si sostituisce ax in ogni potenza | V2.M08 |
 | ALIN.PRODOTTO\_COMMUTATIVO | Prodotto di matrici trattato come commutativo | In generale AB ≠ BA | V3.M02 |
 | ALIN.RANGO\_DIMENSIONE | Rango confuso con dimensione o numero di colonne | Il rango è la dimensione dello spazio generato dalle colonne | V3.M02 |
 | ALIN.GAUSS\_TERMINE\_NOTO | Operazione sulle righe non applicata ai termini noti | Ogni operazione di Gauss vale per tutta la riga, termine noto compreso | V3.M02 |

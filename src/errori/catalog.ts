@@ -520,6 +520,46 @@ export const errorCatalog = [
     example: tex`$a_n = \dfrac1n$ tende a $0$, ma la serie armonica $\displaystyle\sum_{n=1}^{\infty}\dfrac1n$ diverge a $+\infty$.`,
     reference: "V2.M11",
   },
+  {
+    code: "AN.CONFRONTO_INFINITI",
+    name: "Confronto tra infiniti sbagliato",
+    category: "AN",
+    explanation: tex`In un rapporto di infiniti decide chi cresce più in fretta. Tra polinomi conta il grado: grado maggiore sopra, limite infinito; grado maggiore sotto, limite $0$; gradi uguali, rapporto dei coefficienti dei termini di grado massimo. Un esponenziale $a^n$ con $a>1$ cresce più di qualunque potenza di $n$. La regola dei gradi vale solo quando la variabile tende all'infinito.`,
+    example: tex`$\displaystyle\lim_{n\to+\infty}\dfrac{3n^2+1}{n^3+2} = 0$, perché il grado del denominatore è maggiore: non vale $3$ (rapporto dei coefficienti) né $+\infty$. Invece $\displaystyle\lim_{n\to+\infty}\dfrac{3n^2+1}{2n^2+5} = \dfrac32$.`,
+    reference: "V2.M03",
+  },
+  {
+    code: "AN.FATTORE_LIMITATO",
+    name: "Fattore oscillante trattato male",
+    category: "AN",
+    explanation: tex`Un fattore che oscilla, come $(-1)^n$, $\sin n$ o $\cos n$, non ha limite ma è limitato. Se moltiplica una quantità che tende a $0$, il prodotto tende a $0$ (teorema del confronto). Se moltiplica una quantità che tende a un numero diverso da $0$, il limite non esiste. Non si può né ignorare il fattore né concludere subito «non esiste».`,
+    example: tex`$\displaystyle\lim_{n\to+\infty}\dfrac{(-1)^n}{n} = 0$, perché $-\dfrac1n\le\dfrac{(-1)^n}{n}\le\dfrac1n$. Invece $\displaystyle\lim_{n\to+\infty}(-1)^n\,\dfrac{n}{n+1}$ non esiste: i termini di posto pari tendono a $1$, quelli di posto dispari a $-1$.`,
+    reference: "V2.M03",
+  },
+  {
+    code: "AN.LIMITE_NOTEVOLE",
+    name: "Limite notevole applicato senza adattarlo",
+    category: "AN",
+    explanation: tex`Un limite notevole vale solo nella forma in cui è scritto. In $\dfrac{\sin t}{t}\to1$ l'argomento del seno e il denominatore sono la stessa quantità $t$, che tende a $0$; in $\left(1+\dfrac1t\right)^t\to e$ la stessa $t$ compare nella frazione e all'esponente, e tende all'infinito. Se la forma è diversa, prima la si riconduce a quella giusta.`,
+    example: tex`$\displaystyle\lim_{x\to0}\dfrac{\sin3x}{x} = \lim_{x\to0}3\cdot\dfrac{\sin3x}{3x} = 3$, non $1$. $\displaystyle\lim_{n\to+\infty}\left(1+\dfrac2n\right)^n = e^2$, non $e$.`,
+    reference: "V2.M04",
+  },
+  {
+    code: "AN.SEGNO_INFINITO",
+    name: "Segno dell'infinito non studiato",
+    category: "AN",
+    explanation: tex`Quando un limite è infinito il segno va determinato. Se il denominatore tende a $0$, conta il suo segno vicino al punto, da destra e da sinistra: se i due limiti laterali sono diversi, il limite non esiste. Quando la variabile tende a $\pm\infty$ il segno viene dai termini dominanti: dai loro coefficienti e, per $x\to-\infty$, dalla parità degli esponenti.`,
+    example: tex`$\displaystyle\lim_{x\to2^-}\dfrac{1}{x-2} = -\infty$ e $\displaystyle\lim_{x\to2^+}\dfrac{1}{x-2} = +\infty$: il limite per $x\to2$ non esiste, e non vale $+\infty$. $\displaystyle\lim_{n\to+\infty}\dfrac{1-n^2}{n+3} = -\infty$, non $+\infty$.`,
+    reference: "V2.M04",
+  },
+  {
+    code: "AN.TAYLOR_SVILUPPO",
+    name: "Sviluppo notevole scritto male",
+    category: "AN",
+    explanation: tex`Gli sviluppi notevoli vanno ricordati con i coefficienti giusti: in $e^t$, $\sin t$ e $\cos t$ il termine di grado $k$ ha al denominatore $k!$ (non $k$); in $\ln(1+t)$ al denominatore c'è $k$ (non $k!$); i segni di $\sin t$, $\cos t$ e $\ln(1+t)$ si alternano. Se l'argomento è $at$, si sostituisce $at$ in ogni potenza: $(at)^k = a^kt^k$.`,
+    example: tex`$\sin x = x-\dfrac{x^3}{6}+o(x^3)$, non $x-\dfrac{x^3}{3}$. $\cos x = 1-\dfrac{x^2}{2}+o(x^2)$, non $1+\dfrac{x^2}{2}$. $\sin2x = 2x-\dfrac{(2x)^3}{6}+o(x^3) = 2x-\dfrac{4x^3}{3}+o(x^3)$, non $2x-\dfrac{2x^3}{6}$.`,
+    reference: "V2.M08",
+  },
 
   // ───────────────────────────── ALIN: algebra lineare ─────────────────────────────
   {

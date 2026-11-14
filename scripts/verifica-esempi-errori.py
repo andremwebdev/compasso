@@ -717,6 +717,46 @@ def _():
     assert Matrix([[p, q], [0, u]]).det() == p * u
 
 
+@check("AN.CONFRONTO_INFINITI")
+def _():
+    assert limit((3 * n**2 + 1) / (n**3 + 2), n, oo) == 0
+    assert limit((3 * n**2 + 1) / (2 * n**2 + 5), n, oo) == Rational(3, 2)
+    assert limit(n**5 / 2**n, n, oo) == 0  # l'esponenziale batte la potenza
+
+
+@check("AN.FATTORE_LIMITATO")
+def _():
+    m = symbols("m", positive=True, integer=True)
+    assert limit(1 / n, n, oo) == 0  # i due carabinieri ±1/n
+    even = (n / (n + 1)).subs(n, 2 * m)
+    odd = -(n / (n + 1)).subs(n, 2 * m + 1)
+    assert limit(even, m, oo) == 1 and limit(odd, m, oo) == -1
+
+
+@check("AN.LIMITE_NOTEVOLE")
+def _():
+    assert limit(sin(3 * x) / x, x, 0) == 3
+    assert limit(sin(x) / x, x, 0) == 1
+    assert limit((1 + 2 / n) ** n, n, oo) == E**2
+    assert limit((1 + 1 / n) ** n, n, oo) == E
+
+
+@check("AN.SEGNO_INFINITO")
+def _():
+    assert limit(1 / (x - 2), x, 2, "-") == -oo
+    assert limit(1 / (x - 2), x, 2, "+") == oo
+    assert limit((1 - n**2) / (n + 3), n, oo) == -oo
+
+
+@check("AN.TAYLOR_SVILUPPO")
+def _():
+    assert series(sin(x), x, 0, 4).removeO() == x - x**3 / 6
+    assert series(cos(x), x, 0, 3).removeO() == 1 - x**2 / 2
+    assert series(sin(2 * x), x, 0, 4).removeO() == 2 * x - Rational(4, 3) * x**3
+    assert series(log(1 + x), x, 0, 4).removeO() == x - x**2 / 2 + x**3 / 3
+    assert series(exp(x), x, 0, 4).removeO() == 1 + x + x**2 / 2 + x**3 / 6
+
+
 def catalog_codes():
     source = (Path(__file__).resolve().parent.parent / "src" / "errori" / "catalog.ts").read_text(encoding="utf-8")
     return re.findall(r'^\s+code: "([A-Z]+\.[A-Z0-9_]+)"', source, flags=re.MULTILINE)

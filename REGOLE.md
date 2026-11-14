@@ -264,7 +264,7 @@ Gli **avvisi** (`report.warnings`) non bocciano da soli, ma un generatore finito
 
 ## Come replicare un generatore
 
-I generatori di riferimento sono cinque, scritti nella sessione 3. Coprono i tipi di risposta più usati: ogni generatore nuovo parte da uno di loro.
+I generatori di riferimento sono sei: cinque scritti nella sessione 3, quello dei limiti nella sessione E1. Coprono i tipi di risposta più usati: ogni generatore nuovo parte da uno di loro.
 
 | Se la risposta è… | Copia | Che cosa mostra |
 | --- | --- | --- |
@@ -273,14 +273,14 @@ I generatori di riferimento sono cinque, scritti nella sessione 3. Coprono i tip
 | un'espressione in qualunque forma equivalente (derivate, primitive, semplificazioni) | `src/generatori/v2/m06/a03-g1.ts` — derivate | modello a pezzi (`Part`), regola applicata per esteso, errori = la regola applicata male, doppia verifica (simbolica e numerica) |
 | un numero esatto (determinanti, valori, limiti finiti, probabilità) | `src/generatori/v3/m03/a01-g1.ts` — determinante | estrazione ripetuta finché i numeri sono puliti e gli errori danno risultati tutti diversi, verifica con un altro algoritmo |
 | una matrice o un vettore (sistemi, prodotti, inverse) | `src/generatori/v3/m02/a01-g1.ts` — sistemi con Gauss | costruzione `L·U` perché i conti restino interi, passaggi registrati dal motore, verifica `A·x = b` |
+| il valore di un limite (numero, `+∞`, `−∞`, «non esiste») | `src/generatori/v2/m03/a01-g1.ts` — limiti di successioni | un modello per forma di esercizio e un «piano» (`planOf`) che dà espressione, limite, errori e passaggi; risposte sbagliate con `distinctWrongLimits`; verifica con la prova numerica `confirmsLimit` (`src/generatori/comuni/limits.ts`): valori vicino al punto, posti pari e dispari |
 
-Per vero o falso, scelta multipla scritta a mano, limiti e riordini non c'è ancora un riferimento: il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella). Indicazioni per quei tipi:
+Per vero o falso, scelta multipla scritta a mano e riordini non c'è ancora un riferimento: il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella). Indicazioni per quei tipi:
 
-- **`limit`**: si parte dal riferimento «numero esatto»; le risposte sbagliate tipiche sono `+∞` al posto di `−∞`, «non esiste» al posto di un valore, il valore della funzione nel punto al posto del limite.
 - **`choice`** scritta a mano: solo quando la risposta non è un oggetto matematico (una proprietà, un metodo da scegliere). Ogni opzione sbagliata ha il suo codice di errore, come le risposte sbagliate previste.
 - **`truefalse`**: un'affermazione costruita all'indietro, vera o falsa con la stessa probabilità; l'affermazione falsa è quella che nasce da un errore tipico, e il codice di chi risponde il contrario va nel campo `error` della risposta. Due soli esiti: niente scelta multipla.
 
-**La struttura, uguale in tutti e cinque.** Un file ha sempre queste parti, in quest'ordine:
+**La struttura, uguale in tutti.** Un file ha sempre queste parti, in quest'ordine:
 
 1. **Commento in cima**: che cosa allena, come è costruito all'indietro, che cosa cambia tra i tre livelli.
 2. **Il modello** (`interface Model`): i pochi dati che definiscono un esercizio (gli zeri, i fattori, i pezzi della funzione, la matrice). Tutto il resto si ricava da lì.
@@ -526,7 +526,7 @@ Le visualizzazioni sono undici, con codici fissi (specifica, sezione 11): non se
 
 ## Catalogo degli errori
 
-Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie, dalla specifica, sezione 5, più quelle aggiunte con i generatori (7 nella sessione 3: oggi sono 72).
+Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie, dalla specifica, sezione 5, più quelle aggiunte con i generatori (7 nella sessione 3, 5 nella sessione E1 per limiti e Taylor: oggi sono 77).
 
 - **Prima di aggiungere un errore, controllare che non esista già**: cercare per nome e per descrizione, non solo per codice. Due voci per lo stesso errore spezzano i dati di Andrea.
 - Un codice ha la forma `CATEGORIA.NOME` (maiuscole, cifre e trattino basso). La categoria deve essere una delle dodici di `errorCategories`.

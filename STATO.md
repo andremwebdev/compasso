@@ -12,7 +12,7 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
 - **Cinque generatori di riferimento** (rivisti in 4b, controllati con sympy dal testo mostrato): `V1.M06.A04.g1` disequazioni fratte, `V1.M04.A07.g1` scomposizione, `V2.M06.A03.g1` derivate, `V3.M03.A01.g1` determinante, `V3.M02.A01.g1` sistemi con Gauss.
 - **Lezione di riferimento** `V1.M06.L04` «Disequazioni fratte».
 - **Fetta verticale nell'app**: lezione a tratti con domande lampo, schermata di esercizio completa, tastiera matematica (Base, Insiemi, Funzioni), dati in IndexedDB con versione (`DATA_VERSION = 1`) e ripieghi, esercizi per generatore e livello.
-- **Catalogo errori**: 72 voci in 12 categorie, allineato alla tabella della specifica e verificato con sympy.
+- **Catalogo errori**: 77 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor: `AN.CONFRONTO_INFINITI`, `AN.FATTORE_LIMITATO`, `AN.LIMITE_NOTEVOLE`, `AN.SEGNO_INFINITO`, `AN.TAYLOR_SVILUPPO`), allineato alla tabella della specifica e verificato con sympy.
 - **Regole** (sessione 4c): `REGOLE.md` completo per generatori, lezioni, dimostrazioni, visualizzazioni, catalogo, con le trappole emerse dalle revisioni.
 - **Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
 - **Test**: 991 in 35 file, verdi in locale e su GitHub.
@@ -73,6 +73,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V1.M06.D02`, `V1.M06.D03` | Definizioni «Disequazione fratta» (`disequazione-fratta`), «Regola dei segni per una frazione» (`segno-di-una-frazione`) |
 | `V1.M06.F01`, `V1.M06.F02` | Flashcard della lezione V1.M06.L04 |
 | `V1.M04.L07`, `V1.M04.A07` | Lezione (da scrivere) e abilità: scomposizione — generatore `V1.M04.A07.g1` |
+| `V2.M03.A01`, `V2.M03.L02` | Abilità: limiti di successioni — generatore `V2.M03.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M03.L02` «Calcolo dei limiti di successioni» (da scrivere) |
 | `V2.M06.L03`, `V2.M06.A03` | Lezione (da scrivere) e abilità: regole di derivazione — generatore `V2.M06.A03.g1` |
 | `V3.M02.L01`, `V3.M02.A01` | Lezione (da scrivere) e abilità: metodo di Gauss — generatore `V3.M02.A01.g1` |
 | `V3.M03.L01`, `V3.M03.A01` | Lezione (da scrivere) e abilità: determinante — generatore `V3.M03.A01.g1` |
