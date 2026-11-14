@@ -1,6 +1,6 @@
 # STATO
 
-Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione 4a (revisione del motore).
+Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione 4b (revisione di generatori, lezione e app).
 
 ## Fatto
 
@@ -70,9 +70,17 @@ Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione
 - Fuori dal motore solo `SET_ENDINGS` in `src/app/risposta/preview.ts` (quattro chiusure in più, per restare allineati al parser).
 - **Test**: 976 in 33 file. I 45.000 esercizi dei cinque generatori (3 livelli, semi 1-3000) sono identici, byte per byte, a prima della revisione.
 
+**Sessione 4b — revisione di generatori, lezione e app**
+
+- Cinque generatori, lezione `V1.M06.L04` e fetta verticale riletti e provati (metodo, tabella delle 23 correzioni e numeri in `docs/REVISIONE.md`, seconda parte). **Nessuna risposta giusta sbagliata**: 26.718 esercizi diversi rifatti con sympy a partire dal testo mostrato, zero problemi.
+- **Generatori**: varietà della scomposizione (livello 3 da 78 a 193 esercizi diversi; `x⁴ − 1` non esce più una volta su quindici); errore «verso non invertito» nelle disequazioni fratte e almeno tre risposte sbagliate in ogni esercizio dei livelli 2 e 3; passaggi completi (segno dei trinomi, sostituzione all'indietro in Gauss, minori di ordine 3); niente sistemi 2×2 banali. La verifica automatica ora avvisa sulla poca varietà; semi congelati per tutti i generatori.
+- **Lezione**: definizione precisa, zero doppio e polinomio senza zeri spiegati (gli esercizi di livello 3 li usano), passo 1 nel terzo esempio, `∨` spiegato. 19 minuti.
+- **App**: l'anteprima non dà più per sbagliato un pezzo di risposta giusta (`-4 <`, `[2`); i motivi del parser con le formule si disegnano; le distrazioni restano errori; la soluzione si apre da sola quando l'errore non è riconosciuto; «Esercizio simile» non ripete; piccoli difetti di tastiera, salvataggio e a capo.
+- `REGOLE.md`: abitudini nuove in «Come replicare un generatore» (varietà, passaggi completi, una riga uno schermo, semi congelati). **Test**: 985 in 34 file.
+
 ## In corso
 
-Niente. La sessione 4a è completa e caricata su GitHub (ramo `main`), controllo verde.
+Niente. La sessione 4b è completa e caricata su GitHub (ramo `main`), controllo verde.
 
 ## Codici assegnati (la scaletta futura deve rispettarli)
 
@@ -167,7 +175,7 @@ Decisioni prese seguendo la sezione 0 della specifica, dove il testo non decide.
 47. **Livello Funzioni della tastiera** aggiunto già ora (serve alle derivate), oltre a Base e Insiemi chiesti.
 48. **Esercizi dopo la lezione**: cinque, ai livelli 1, 1, 2, 2, 3. La difficoltà automatica arriva con la padronanza (fase 8).
 49. **Glossario**: confermato che si ricava dalle lezioni (`src/app/lezione/glossary.ts`); la cartella `src/glossario/` resta vuota e si può togliere.
-50. **Padronanza**: non c'è ancora una formula; `skillSummaries` dà solo conteggi per abilità (le domande lampo non contano, le distrazioni non pesano).
+50. **Padronanza**: non c'è ancora una formula; `skillSummaries` dà solo conteggi per abilità (le domande lampo non contano; dalla sessione 4b le distrazioni contano come errori, come dice la specifica, con un conteggio a parte).
 51. **Formule dei testi degli esercizi ingrandite** dal foglio di stile, perché le frazioni in riga erano piccole; in alternativa i generatori potrebbero scrivere la disequazione a centro pagina.
 
 *Sessione 4a (revisione del motore)*
@@ -179,7 +187,18 @@ Decisioni prese seguendo la sezione 0 della specifica, dove il testo non decide.
 56. **Vincoli di forma più severi**: `simplifiedRadicals` rifiuta `√2·√3` (vuole `√6`) e `(√2)³`; `rationalized` rifiuta la frazione sotto radice; `reducedFraction` vede l'intero comune tra i radicali.
 57. **Limite di lunghezza delle risposte scritte**: 1.000 caratteri per un'espressione, 2.000 per un insieme.
 
+*Sessione 4b (revisione di generatori, lezione e app)*
+
+58. **Esercizi cambiati per alcuni semi**: scomposizione livelli 2 e 3, derivate livello 2 (una forma), Gauss livello 1 (i sistemi con uno zero), disequazioni fratte livello 3 (solo il verso, nel 4% dei casi). Numeri in `docs/REVISIONE.md`, «Esercizi cambiati». Un vecchio tentativo su quei semi, riaperto, mostrerebbe l'esercizio nuovo. Alternativa scartata: tenere gli esercizi vecchi e la poca varietà.
+59. **Soglie di varietà** nella verifica automatica: almeno 100 esercizi diversi per livello, nessun esercizio oltre il 4% dei semi. Sono avvisi, ma i test dei generatori pretendono zero avvisi.
+60. **Zero doppio con verso stretto**: quando restano solo due errori possibili la disequazione prende l'uguale (≤ o ≥), per avere sempre tre risposte sbagliate.
+61. **«Esercizio simile» e «Avanti»** scartano i semi che ridanno un testo già uscito nella serie in corso (fino a 12 tentativi).
+62. **Campo vuoto di un insieme**: l'anteprima mostra come si scrive (intervalli oppure disuguaglianze). La risposta sbagliata non riconosciuta apre da sola la soluzione passo passo.
+63. **Campi di risposta**: 200 caratteri al massimo.
+
 ## Domande aperte
+
+- **Errore tipico nuovo?** «Zero doppio trattato come uno zero semplice» (`(x − 3)²` studiato come `x − 3`): è l'errore naturale di una forma del livello 3 delle disequazioni fratte, ma nel catalogo non c'è (e `DISEQ.SECONDO_GRADO` parla d'altro). Aggiungerlo cambia il catalogo e la tabella della specifica: decide Andrea.
 
 - **IndexedDB nella versione PC**: in Chromium funziona anche nel file aperto con doppio clic (provato). Da provare in Safari e Firefox; il ripiego su localStorage e poi sulla memoria esiste ed è testato.
 - **Parentesi degli intervalli**: `(1; 3)` oppure `]1; 3[` nella scrittura dell'app? Oggi `(1; 3)`; in lettura valgono entrambe (decisione 1 della sessione 2).
@@ -203,6 +222,17 @@ Della sessione 4a (punti fragili rimasti, spiegati in `docs/REVISIONE.md`, «Che
 - `x = 1 e 2` si legge come ∅ (lettura rigorosa di «e»); `sin x/2` resta `(sin x)/2`.
 - Risposta `matrix`: le caselle si leggono senza numeri complessi (serve un campo `complex` quando V3 li userà).
 - L'unione tra soluzioni periodiche e un punto isolato dà un messaggio che parla di «intervallo».
+
+Della sessione 4b (dettagli in `docs/REVISIONE.md`, seconda parte, «Che cosa resta»):
+
+- Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno.
+- Al livello 1 scomposizione, Gauss e qualche derivata hanno due sole risposte sbagliate: niente scelta multipla per quegli esercizi.
+- Nei passaggi della scomposizione di un quadrato di binomio il motore scrive `(x + 1)(x + 1)` prima di `(x + 1)²` (`src/motore/steps/factor.ts`).
+- `∀x ∈ ℝ` e `∄x ∈ ℝ` sono mostrati ma non si possono scrivere: si usano `ℝ` e `∅`.
+- La lezione V1.M06.L04 non ha ancora la visualizzazione `VIS.disequazioni-grafico` (non esiste).
+- Il livello Funzioni della tastiera non ha le cifre.
+- Un tentativo fatto prima che l'archivio dei dati sia aperto (pochi millisecondi all'avvio) non viene salvato.
+- La prova con sympy sugli esercizi non è nel repository né in CI: va rifatta a mano per un generatore nuovo.
 
 Della sessione 3:
 

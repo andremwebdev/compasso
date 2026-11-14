@@ -5,6 +5,10 @@ import { renderMath } from "../testo/render";
 import { MathKeyboard } from "./MathKeyboard";
 import { RichText } from "./RichText";
 
+/** Come si scrive un insieme di soluzioni: le due scritture che il parser legge (con «;» tra gli estremi e ∨ per «oppure»). */
+const setHelp = (variable: string): string =>
+  `Scrivi gli intervalli, come $(-\\infty; 2) \\cup [3; +\\infty)$, oppure le disuguaglianze, come $${variable} < 2 \\lor ${variable} \\ge 3$.`;
+
 /** Nessuna risposta dell'app è così lunga; il parser legge fino a 1.000 caratteri, qui ci si ferma molto prima. */
 const MAX_LENGTH = 200;
 
@@ -84,10 +88,10 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
           </>
         ))}
       </div>
-      {single && <PreviewLine preview={preview} />}
+      {single && <PreviewLine preview={preview} field={field} />}
       {problem && (
         <p class="answer-problem" role="alert">
-          <RichText text={problem} inline />
+          <RichText text={problem} inline untrusted />
         </p>
       )}
       {children}
@@ -97,17 +101,24 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
 }
 
 /** L'anteprima: quello che l'app ha capito del testo scritto, disegnato come formula. */
-function PreviewLine({ preview }: { preview: Preview }) {
+function PreviewLine({ preview, field }: { preview: Preview; field: FieldKind }) {
   switch (preview.kind) {
     case "empty":
-      return <p class="preview preview-empty">Qui vedrai la risposta mentre la scrivi.</p>;
+      // Un insieme di soluzioni si può scrivere in due modi: a campo vuoto conviene dirlo.
+      return field.kind === "set" ? (
+        <p class="preview preview-empty">
+          <RichText text={setHelp(field.variable)} inline />
+        </p>
+      ) : (
+        <p class="preview preview-empty">Qui vedrai la risposta mentre la scrivi.</p>
+      );
     case "typing":
       return <p class="preview preview-empty">Continua a scrivere…</p>;
     case "error":
       // I motivi del parser contengono formule tra $…$ («scrivi $\\lor$ oppure $\\land$»): vanno disegnate.
       return (
         <p class="preview preview-error">
-          <RichText text={preview.message} inline />
+          <RichText text={preview.message} inline untrusted />
         </p>
       );
     case "ok":

@@ -2,7 +2,9 @@
 // Le formule e i rimandi si tolgono prima di passare il testo a marked, lasciando dei segnaposto:
 // così la libreria Markdown non tocca il LaTeX (dove _ e * hanno un altro significato). Poi i
 // segnaposto vengono sostituiti con il disegno di KaTeX e con i termini toccabili.
-// Entra qui solo testo dell'app (lezioni, generatori, catalogo errori): mai testo scritto da Andrea.
+// Di norma entra qui solo testo dell'app (lezioni, generatori, catalogo errori). I motivi del parser
+// possono citare un pezzo di quello che ha scritto Andrea («Carattere non riconosciuto: «<»»): quelli
+// passano con l'opzione `untrusted`, che toglie ogni significato HTML al testo fuori dalle formule.
 
 import katex from "katex";
 import { marked } from "marked";
@@ -24,7 +26,7 @@ const SHORT_FORMULA = 16;
  * L'HTML di un testo ricco. Con `inline` il risultato non ha paragrafi (per titoli, opzioni, etichette).
  * I rimandi [[…]] diventano pulsanti con l'attributo data-ref: chi mostra il testo decide che cosa aprono.
  */
-export function renderRichText(text: string, options: { readonly inline?: boolean } = {}): string {
+export function renderRichText(text: string, options: { readonly inline?: boolean; readonly untrusted?: boolean } = {}): string {
   const pieces: string[] = [];
   // Le formule brevi in riga: la punteggiatura che le segue non deve andare a capo da sola.
   const short = new Set<number>();
@@ -38,7 +40,7 @@ export function renderRichText(text: string, options: { readonly inline?: boolea
     .map((segment) => {
       switch (segment.kind) {
         case "text":
-          return segment.text;
+          return options.untrusted ? escapeHtml(segment.text) : segment.text;
         case "math":
           if (segment.latex.length <= SHORT_FORMULA && !(segment.display && !options.inline)) short.add(pieces.length);
           return hold(renderMath(segment.latex, segment.display && !options.inline), segment.display && !options.inline);

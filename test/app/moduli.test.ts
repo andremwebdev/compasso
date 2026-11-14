@@ -207,9 +207,14 @@ describe("mentre Andrea scrive, l'anteprima non dà per sbagliato un pezzo di ri
     const preview = previewText({ kind: "set", variable: "x" }, "x < 1; x > 2");
     if (preview.kind !== "error") throw new Error("mi aspettavo un motivo");
     expect(preview.message).toContain("$\\lor$");
-    const html = renderRichText(preview.message, { inline: true });
+    const html = renderRichText(preview.message, { inline: true, untrusted: true });
     expect(html).toContain("katex");
     expect(html).not.toContain("$");
+    // Un motivo può citare quello che ha scritto Andrea: fuori dalle formule non deve diventare HTML.
+    const quoted = renderRichText("Carattere non riconosciuto: «<img src=x onerror=alert(1)>». Usa $<$.", { inline: true, untrusted: true });
+    expect(quoted).not.toContain("<img");
+    expect(quoted).toContain("&lt;img");
+    expect(quoted).toContain("katex");
   });
 });
 

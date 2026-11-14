@@ -248,7 +248,7 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
           )}
           {(options || answer.kind === "truefalse") && problem && (
             <p class="answer-problem" role="alert">
-              <RichText text={problem} inline />
+              <RichText text={problem} inline untrusted />
             </p>
           )}
 
@@ -351,7 +351,7 @@ function Verdict({ evaluation }: { evaluation: Evaluation }) {
           <p class="verdict-title">
             <span aria-hidden="true">✗</span> Sbagliata
           </p>
-          {evaluation.message && <RichText text={evaluation.message} />}
+          {evaluation.message && <RichText text={evaluation.message} untrusted />}
           {entry ? (
             <>
               <p class="verdict-error">Errore riconosciuto: {entry.name}</p>

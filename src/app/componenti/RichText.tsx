@@ -6,12 +6,14 @@ interface RichTextProps {
   text: string;
   /** Se vero il testo sta in riga, senza paragrafi (titoli, opzioni, etichette). */
   inline?: boolean;
+  /** Il testo può contenere pezzi scritti da Andrea (i motivi del parser): niente HTML fuori dalle formule. */
+  untrusted?: boolean;
   class?: string;
 }
 
 /** Mostra un testo ricco dell'app. Le formule si disegnano quando il testo compare, non prima. */
-export function RichText({ text, inline = false, class: className }: RichTextProps) {
-  const html = useMemo(() => renderRichText(text, { inline }), [text, inline]);
+export function RichText({ text, inline = false, untrusted = false, class: className }: RichTextProps) {
+  const html = useMemo(() => renderRichText(text, { inline, untrusted }), [text, inline, untrusted]);
   const Tag = inline ? "span" : "div";
   return <Tag class={className ? `rich ${className}` : "rich"} dangerouslySetInnerHTML={{ __html: html }} />;
 }

@@ -99,3 +99,80 @@ Niente di aperto tra i difetti trovati: tutti corretti e coperti da test. Restan
 **Dati e progressi**
 
 - Nessun formato cambiato. Gli esercizi sono identici a prima: i 45.000 esercizi dei cinque generatori (3 livelli, semi da 1 a 3000) generati prima e dopo la revisione coincidono byte per byte (testo, risposta, risposte sbagliate previste, passaggi, indizi). I tentativi salvati restano validi.
+
+---
+
+# Revisione di generatori, lezione e app (sessione 4b)
+
+Sessione 4b, 14 novembre 2026. Rivisti i cinque generatori di riferimento, la lezione `V1.M06.L04` e la fetta verticale (`src/esercizi`, `src/app`, `src/dati`), più i punti da incrociare scritti qui sopra dalla sessione 4a.
+
+## Metodo
+
+1. **Lettura a occhio** di tutto il codice e di una ventina di esercizi per livello e per generatore, con risposte sbagliate, passaggi e indizi.
+2. **Verifica indipendente con un altro sistema di calcolo (sympy), partendo dal testo che vede Andrea.** Uno script legge il LaTeX dell'esercizio (non il modello interno), rifà il conto con sympy e lo confronta con la risposta del generatore: disequazione risolta per due strade, polinomio scomposto e fattori irriducibili, derivata, sistema lineare, determinante. Per le disequazioni fratte rifà da capo anche le risposte sbagliate (moltiplicare per il denominatore, estremi, sistema o unione, condizione dimenticata, verso non invertito), per controllare che siano davvero il risultato dell'errore dichiarato. Dopo le correzioni: **26.718 esercizi diversi** (tutti quelli che escono dai semi 1-3000 dei cinque generatori), **zero problemi**. `verify` dei generatori ricostruisce il modello dal seme: questa prova copre anche il caso «il testo mostrato non è il modello».
+3. **Conteggi**: esercizi diversi per livello, quante volte esce il più frequente, quante risposte sbagliate ha ogni esercizio, quali codici di errore escono.
+4. **App provata in un telefono simulato** (Chrome senza finestra, 414×896): lezione dall'inizio alla fine, esercizi scritti, messaggi, soluzioni passo passo; nessun errore in console, nessuno scorrimento orizzontale della pagina.
+5. **Anteprima**: le risposte delle disequazioni fratte (30.000 testi: intervalli con e senza spazi, disuguaglianze) scritte un carattere alla volta, controllando che nessun pezzo sia dato per sbagliato.
+
+## Che cosa è risultato solido
+
+- **Nessuna risposta giusta sbagliata**, in nessun generatore, prima e dopo le correzioni. Nessuna risposta sbagliata prevista equivalente alla giusta o a un'altra.
+- Le risposte sbagliate delle disequazioni fratte sono davvero quello che si ottiene con l'errore dichiarato (rifatte con sympy).
+- Determinismo, tempi, limiti di pulizia, KaTeX: confermati dalla verifica automatica.
+- La matematica della lezione: esempi, tabelle dei segni e controlli numerici sono giusti.
+- Valutazione (`evaluate.ts`), scelta multipla (`choices.ts`), dati (`store.ts`, `migrate.ts`): letti, nessun difetto.
+
+## Correzioni
+
+| # | Dove | Che cosa non andava | Che cosa cambia |
+|---|---|---|---|
+| 1 | Scomposizione, livelli 2 e 3 | **Poca varietà.** Le forme con pochi esercizi possibili pesavano quanto le altre: al livello 2 un esercizio su quindici era `x⁴ − 1`; al livello 3 gli esercizi diversi erano 78 in tutto. | Pesi sulle forme; cubi e quarte potenze anche con un coefficiente (`8x³ + 27`, `16x⁴ − 81`); due forme nuove al livello 3 (radice doppia, trinomio in `x²` con una somma di quadrati); radici fino a 5. Livello 3: da 78 a 193 esercizi; l'esercizio più frequente scende dal 6,8% al 2,4% (livello 2). |
+| 2 | Scomposizione, risposte sbagliate | Fattore ripetuto scritto due volte: `(x + 3)(x + 3)²`, `(x + 3)(x + 3)(x − 3)`. | `product` unisce i fattori uguali in una potenza. |
+| 3 | Disequazioni fratte, livelli 2 e 3 | Mancava l'errore più tipico delle forme con `−x`: studiare `−x + 2 > 0` come `x > 2`. | Risposta sbagliata `DISEQ.VERSO_NON_INVERTITO` quando un fattore di primo grado ha il coefficiente di x negativo (un terzo degli esercizi del livello 2). |
+| 4 | Disequazioni fratte, livello 3 | Con uno zero doppio e il verso stretto restavano due sole risposte sbagliate (4% degli esercizi): niente scelta multipla. Il test accettava «quasi tutti». | In quei casi la disequazione prende l'uguale. Ora ogni esercizio dei livelli 2 e 3 ha almeno tre risposte sbagliate, e il test lo pretende per tutti. |
+| 5 | Disequazioni fratte, passaggi | Il segno di un trinomio era dato senza motivo; con il numeratore costante si leggeva «gli zeri del numeratore sono inclusi». | I passaggi dicono perché (positivo fuori dai due zeri; un quadrato non cambia segno ma il suo zero conta; il numeratore non si annulla mai). |
+| 6 | Derivate, livello 2 | La forma `xⁿ · ln x` aveva quattro esercizi e un nono delle estrazioni (3,2% l'uno). | `xⁿ` per una funzione elementare qualsiasi (16 esercizi). |
+| 7 | Gauss, livello 1 | Sistemi 2×2 con un coefficiente nullo (`−x = −2`): una incognita era già data. | Niente zeri nei sistemi 2×2. |
+| 8 | Gauss, passaggi | «Risolvi dal basso verso l'alto: prima z, poi y, poi x», senza conti: proprio dove nasce `CALC.SEGNO_TRASPORTO`. | Un passaggio per incognita, con la sostituzione e il trasporto scritti. |
+| 9 | Determinante 4×4, passaggi | I minori di ordine 3 comparivano solo con il risultato («si calcolano allo stesso modo»). | Ogni minore è sviluppato per esteso, su una riga a parte perché stia nello schermo. |
+| 10 | Verifica automatica | La poca varietà non era vista (avviso solo sotto i 10 esercizi). | Avviso se un livello ha meno di 100 esercizi diversi o se uno stesso esercizio esce in più del 4% dei semi (da 1.000 semi in su). |
+| 11 | Test dei generatori | Solo le derivate avevano i semi congelati. | `test/generatori/semi-congelati.test.ts`: due semi per livello per tutti; fallisce se un generatore in elenco non ha le sue righe. |
+| 12 | Lezione, definizione | «L'incognita in almeno un denominatore… si può sempre scrivere N(x)/D(x) con N e D polinomi»: vero solo tra polinomi e frazioni di polinomi. | La definizione lo dice. |
+| 13 | Lezione, secondo grado | «Quel pezzo ha due zeri»: non sempre. Zero doppio e nessuno zero non erano spiegati, ma gli esercizi di livello 3 alla fine della lezione li usano; lo stesso per la tabella con una riga per fattore (due frazioni). | Riformulato; aggiunto un tratto breve su `x² + 4`, `(x − 3)²` e sui prodotti. Durata da 18 a 19 minuti. |
+| 14 | Lezione, dettagli | Nel terzo esempio mancava il passo 1; `∨` usato senza dire come si legge. | Aggiunti. |
+| 15 | Anteprima (`SET_ENDINGS`) | Scrivendo `-4 < x < -3`, `[2; +∞)` o `(-4; -5/2)` un pezzo di risposta giusta era dato per sbagliato, in rosso (a `-4 <`, a `[2`, a `(-4; -5`). | Cinque chiusure in più, e un test che scrive le risposte un carattere alla volta. |
+| 16 | Anteprima e messaggi | I motivi del parser con le formule (`$\lor$`) si vedevano con i dollari. | Disegnati come testo ricco; il testo citato da quello che scrive Andrea non può diventare HTML (opzione `untrusted`). |
+| 17 | Riassunto per abilità | Le distrazioni sparivano dal conto dei tentativi. La specifica (sezioni 3, 5, 9) dice che restano errori per la padronanza. | Contano come errori, con un conteggio a parte; etichetta del pulsante corretta. Il test che fissava il comportamento vecchio è stato cambiato per questo motivo. |
+| 18 | Schermata di esercizio | Risposta sbagliata senza errore tipico riconosciuto: la specifica dice «mostra la soluzione», l'app diceva di andarla ad aprire. | La soluzione si apre da sola. |
+| 19 | «Esercizio simile», «Avanti» | Un seme nuovo poteva ridare lo stesso esercizio appena fatto. | `freshSeed` scarta i testi già usciti nella serie. |
+| 20 | Tastiera | «Cancella» dopo `2x(` portava via anche la x. | Solo i nomi di funzione se ne vanno con la parentesi. |
+| 21 | Campi di risposta | Nessun limite di lunghezza; un salvataggio non riuscito restava in silenzio. | 200 caratteri al massimo; il problema di salvataggio si vede nell'app. |
+| 22 | Testo ricco | Il punto dopo una formula poteva andare a capo da solo («vale 0» / «.»). | La punteggiatura resta attaccata alle formule brevi. |
+| 23 | Campo vuoto degli insiemi | Nessuna indicazione su come si scrive una soluzione. | A campo vuoto l'anteprima mostra le due scritture (intervalli, disuguaglianze). |
+
+## Esercizi cambiati
+
+Le correzioni 1, 4, 6 e 7 cambiano l'esercizio di alcuni semi (generatore, livello, seme → testo). Su 3.000 semi per livello: scomposizione livello 2: 1.116, livello 3: 2.787; disequazioni fratte livello 3: 121 (solo il verso, da stretto a largo); derivate livello 2: 238; Gauss livello 1: 228. Tutti gli altri testi sono identici. L'app è in uso da pochi giorni e il registro salva solo generatore, livello e seme: un vecchio tentativo su uno di questi semi, riaperto, mostrerebbe l'esercizio nuovo. Risposte sbagliate e passaggi sono cambiati anche dove il testo è lo stesso (è il loro scopo).
+
+## Che cosa resta
+
+1. **Varietà delle derivate**: gli esercizi diversi sono molti (500-1.000 per livello), ma una trentina di «classici» (`x² sin x`, `e^{sin x}`, `x/e^{3x}`) escono circa il 2% delle volte l'uno. Sotto la soglia, e `freshSeed` evita le ripetizioni nella stessa serie; se dà fastidio si allargano le forme `product` del livello 1 e `powerOverChain` del livello 3.
+2. **Livello 1 con due sole risposte sbagliate**: scomposizione, Gauss e qualche derivata. Va bene per la regola (tre dal livello 2), ma quegli esercizi non possono diventare scelta multipla. Aggiungere un terzo errore credibile richiede voci nuove nel catalogo.
+3. **Errore tipico non in catalogo**: «zero doppio trattato come uno zero semplice» (`(x − 3)²` studiato come `x − 3`). È l'errore naturale della forma con lo zero doppio; `DISEQ.SECONDO_GRADO` parla d'altro e non è stato usato. Da decidere se aggiungerlo (va anche nella specifica).
+4. **`verify` e il testo**: `verify` controlla la risposta contro il modello ricostruito dal seme, non contro il testo mostrato. Se `draftOf` scrivesse un testo diverso dal modello, solo una prova come quella con sympy lo vedrebbe. Lo script non è nel repository (usa sympy, fuori da CI): per un generatore nuovo conviene rifarla.
+5. **Passaggi del motore**: nella scomposizione di un quadrato di binomio il passaggio scrive `(x + 1)(x + 1)` subito dopo aver citato `(A + B)²` (`src/motore/steps/factor.ts`). Non toccato: è motore.
+6. **`∀x ∈ ℝ` e `∄x ∈ ℝ`**: l'app li mostra tra le scritture della soluzione, il parser non li legge e la tastiera non ha i tasti. Si scrivono `ℝ` e `∅`.
+7. **Lezione senza visualizzazione**: `VIS.disequazioni-grafico` è prevista per il modulo ma non esiste ancora; va aggiunta alla lezione quando c'è.
+8. **Tastiera, livello Funzioni**: non ha le cifre, quindi per `3cos(2x)` si cambia livello due volte. È materia della tastiera completa (fase 4).
+9. **Avvio**: un tentativo fatto nei pochi millisecondi prima che l'archivio sia aperto resta in memoria e non viene salvato.
+
+## Punti da incrociare: esito
+
+**Generatori** (dall'elenco della sessione 4a): i cinque generatori superano i vincoli di forma più severi; nessuno usa `upFactor`, `sym("π")`, `sym("ℯ")`, `sym("ⅈ")`; gli altri punti riguardano moduli futuri (equazioni, V1.M09, matrici complesse, insiemi periodici) e restano validi.
+
+**App**: `SET_ENDINGS` era davvero disallineato (correzione 15) e ora ha il suo test; la tastiera inserisce le funzioni con la parentesi e ha `;` e `∨` sul livello Insiemi (già così); i messaggi con le formule si disegnano (correzione 16); nessun campo arriva ai limiti del parser (correzione 21).
+
+**Dati e progressi**: nessun formato cambiato, `DATA_VERSION` resta 1. `SkillSummary` ha un campo in più (`distractions`) ma è un riassunto ricavato, non un dato salvato.
+
+**Per chi copia questi generatori** (in breve; le regole sono in `REGOLE.md`, «Come replicare un generatore»): conta gli esercizi diversi e dai meno peso alle forme povere; ogni errore tipico della forma deve avere la sua risposta sbagliata (se c'è `−x`, c'è il verso non invertito); nei passaggi ci sono tutti i conti; un'estrazione nuova va dentro il ramo della sua forma, così gli altri semi non cambiano; aggiungi le righe ai semi congelati.
+
