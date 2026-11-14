@@ -12,6 +12,25 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 4. Fare **solo** il compito della sessione indicata nel messaggio. Il resto è di altre sessioni.
 5. Non chiedere decisioni che la specifica già prende. Per le altre, seguire la sezione 0 e annotarle in `STATO.md`, nella parte «Decisioni da rivedere».
 
+**Che cosa leggere, per compito.** Non serve leggere tutto il repository: per ogni compito bastano queste parti.
+
+| Compito | In questo file | Altro da leggere | File da tenere aperto |
+| --- | --- | --- | --- |
+| Generatore nuovo | «Il motore in breve», «Come aggiungere un generatore», «Come replicare un generatore» | specifica 4 («Generatori») e 7; `docs/ARCHITETTURA.md` solo per la parte del motore che usi | il generatore di riferimento della tabella |
+| Lezione nuova | «Come scrivere una lezione» | specifica 3 («Teoria») e 4 | `src/contenuti/v1/m06/l04.md` |
+| Dimostrazione | «Come scrivere una dimostrazione» | specifica 4 («Dimostrazioni interattive») | la lezione che contiene il teorema |
+| Visualizzazione | «Come aggiungere una visualizzazione» | specifica 11 | — |
+| Errore tipico nuovo | «Catalogo degli errori» | specifica 5 | `src/errori/catalog.ts` |
+| Interfaccia | «L'app in breve», «Note tecniche» | specifica 3, 7 e 10 | il componente da cambiare |
+
+**Come si lavora in una sessione**
+
+- Un compito per sessione, quello del messaggio. Un difetto trovato fuori dal compito si annota in `STATO.md` («Problemi noti»), non si corregge.
+- Salvare su GitHub (commit e push sul ramo `main`) **dopo ogni parte completata**: la capacità può finire a metà, e il lavoro non caricato è perso.
+- I test si eseguono in modo silenzioso, così l'output mostra solo quello che fallisce: `npm test -- --reporter=dot --silent`. Un solo file: `npx vitest run test/generatori/v1/m06/a04-g1.test.ts --reporter=dot`.
+- Se un test fallisce, si legge il messaggio del rapporto (dice controllo, livello e seme) prima di cambiare qualcosa. Mai cambiare un test per farlo passare (vedi «Divieti»).
+- Alla fine: `STATO.md` aggiornato in forma breve (fatto, problemi, prossimo passo) e controllo su GitHub verde (vedi «Quando un lavoro è finito»).
+
 ## Lingua
 
 - Nel codice: nomi (variabili, funzioni, tipi, file) in **inglese**.
@@ -99,7 +118,23 @@ checkForm(p, "factored");                           // { ok: false, reason: "…
 - `equivalent(a, b)`: uguali ovunque sono entrambe definite. `checkForm(expr, vincolo)`: guarda solo com'è scritta.
 - Vincoli di forma disponibili: `expanded`, `factored`, `reducedFraction`, `rationalized`, `simplifiedRadicals`, `algebraicForm`, `trigonometricForm`, `exponentialForm`. Cosa controlla ciascuno: `docs/ARCHITETTURA.md`, sezione 8. Sono severi (`√(1/2)` non è razionalizzata, `2√2/2` non è ridotta, `√2·√3` non è un radicale semplificato): se la risposta giusta del generatore non li rispetta, la verifica lo dice.
 - Non creare mai `sym("π")`, `sym("ℯ")`, `sym("ⅈ")`: le costanti sono `pi`, `e`, `I`.
-- Punti fragili del motore e cose da sapere prima di scrivere un generatore: `docs/REVISIONE.md` (sessione 4a).
+- Punti fragili del motore e cose da sapere prima di scrivere un generatore: `docs/REVISIONE.md` (sessione 4a). I più importanti sono qui sotto.
+
+**Trappole del motore** (dalla revisione 4a: il motore fa così di proposito, il generatore deve tenerne conto)
+
+| Che cosa | Che cosa succede | Che cosa fare |
+| --- | --- | --- |
+| Vincoli di forma severi | `√(1/2)`, `2√2/2`, `√2·√3`, `(√2)³` violano `rationalized`, `reducedFraction`, `simplifiedRadicals` | la risposta giusta si scrive già nella forma finale (`√2/2`, `√2`, `√6`, `2√2`); la verifica automatica (controllo 4) lo segnala |
+| Ordine dei fattori | `upFactor` ordina per grado e coefficienti; `factorPolynomial` per radice crescente | per mostrare fattori si usa `factorPolynomial`, oppure si ordinano a mano |
+| `log` e `ln` | `log x` senza base è in base 10; `ln` è il naturale | nei testi del Volume 2 scrivere sempre `ln` (decisione aperta in `STATO.md`) |
+| `i` | è l'unità immaginaria solo con l'opzione `complex` della risposta; altrove è una lettera | negli esercizi sui complessi dichiarare `complex`; le risposte `matrix` non la leggono ancora |
+| `e` | è sempre il numero di Nepero | mai usare `e` come nome di variabile o parametro |
+| `1/2x` | vale `(1/2)·x`; `sin x/2` vale `(sin x)/2`, ma `sin π/3` vale `sin(π/3)` | nei testi scrivere le frazioni con `\dfrac` e gli argomenti tra parentesi |
+| Insiemi periodici | l'unione tra una famiglia periodica e un punto o un intervallo non si rappresenta; la forma canonica può spezzare un intervallo a cavallo dello zero | costruire le equazioni goniometriche con soluzioni tutte periodiche; per mostrare la soluzione scrivere la base a mano |
+| Insiemi scritti da Andrea | `[−∞; 2]` e `{1,2}` sono testi non validi (non errori); `x = 1 e 2` vale ∅; `x = 3; x = 5` e `x_1 = 2 ∨ x_2 = 3` valgono «oppure» | negli indizi delle equazioni dire come si scrivono più soluzioni (`x = 3 ∨ x = 5`) |
+| Confronto numerico | per funzioni goniometriche, esponenziali e logaritmi l'equivalenza si decide in punti casuali | evitare risposte con forti cancellazioni (`(1 − cos x)/x²`): scegliere una forma più stabile |
+| Polinomi di grado alto | l'irriducibilità è garantita solo fino al grado 5 | nei generatori di scomposizione restare entro il grado 5 |
+| Parser | non legge fattoriale, gradi (`30°`), numeri periodici, notazione `1E5` | se un modulo li richiede, si annota in `STATO.md` e il parser si estende in una sessione dedicata |
 
 Il resto del motore, per cartella (ogni cartella ha un `index.ts` da cui importare, salvo `algebra` e `calculus` che si importano per file):
 
@@ -138,6 +173,12 @@ const steps = scomposto.steps.map((step) => ({ text: stepText(step) }));   // pa
 ## Come aggiungere un generatore
 
 Lo schema è fisso (`src/esercizi/schema.ts`) e la verifica automatica esiste (`src/esercizi/verify.ts`). **Un generatore nuovo non si scrive da zero: si copia quello di riferimento più vicino** e lo si adatta, seguendo «Come replicare un generatore» qui sotto.
+
+**Prima di cominciare**
+
+- Il codice dell'abilità e della lezione vengono dalla **scaletta del modulo** (elenco di lezioni e abilità, fase 5). Se la scaletta del modulo non c'è, si scrive prima quella; i codici già assegnati sono in `STATO.md` e non si cambiano.
+- Il **tipo di risposta** deve essere uno che l'app sa già mostrare e valutare: `number`, `expression`, `set`, `limit`, `matrix`, `choice`, `truefalse`. `ordering` esiste nello schema ma la schermata di esercizio non lo mostra ancora: non usarlo finché non c'è.
+- Si scrivono **a parole** i tre livelli e, per ogni forma di esercizio, gli errori tipici che può produrre (almeno tre dal livello 2). Se non se ne trovano tre credibili, la forma non va bene così.
 
 **Dove**: `src/generatori/<volume>/<modulo>/<abilità>-<variante>.ts`, in minuscolo: il generatore `V1.M06.A04.g1` sta in `src/generatori/v1/m06/a04-g1.ts`. Il suo test in `test/generatori/v1/m06/a04-g1.test.ts`.
 
@@ -232,7 +273,11 @@ I generatori di riferimento sono cinque, scritti nella sessione 3. Coprono i tip
 | un numero esatto (determinanti, valori, limiti finiti, probabilità) | `src/generatori/v3/m03/a01-g1.ts` — determinante | estrazione ripetuta finché i numeri sono puliti e gli errori danno risultati tutti diversi, verifica con un altro algoritmo |
 | una matrice o un vettore (sistemi, prodotti, inverse) | `src/generatori/v3/m02/a01-g1.ts` — sistemi con Gauss | costruzione `L·U` perché i conti restino interi, passaggi registrati dal motore, verifica `A·x = b` |
 
-Per vero o falso, scelta multipla scritta a mano, limiti e riordini non c'è ancora un riferimento: il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella).
+Per vero o falso, scelta multipla scritta a mano, limiti e riordini non c'è ancora un riferimento: il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella). Indicazioni per quei tipi:
+
+- **`limit`**: si parte dal riferimento «numero esatto»; le risposte sbagliate tipiche sono `+∞` al posto di `−∞`, «non esiste» al posto di un valore, il valore della funzione nel punto al posto del limite.
+- **`choice`** scritta a mano: solo quando la risposta non è un oggetto matematico (una proprietà, un metodo da scegliere). Ogni opzione sbagliata ha il suo codice di errore, come le risposte sbagliate previste.
+- **`truefalse`**: un'affermazione costruita all'indietro, vera o falsa con la stessa probabilità; l'affermazione falsa è quella che nasce da un errore tipico, e il codice di chi risponde il contrario va nel campo `error` della risposta. Due soli esiti: niente scelta multipla.
 
 **La struttura, uguale in tutti e cinque.** Un file ha sempre queste parti, in quest'ordine:
 
@@ -268,6 +313,11 @@ Per vero o falso, scelta multipla scritta a mano, limiti e riordini non c'è anc
 - **Passaggi completi.** La soluzione mostra ogni conto in cui si può sbagliare: niente «si calcola allo stesso modo» o «risolvi dal basso verso l'alto» senza i numeri. Se un errore tipico del generatore nasce in un passaggio (il segno nel trasporto, il segno di un trinomio), quel passaggio deve esserci, scritto per esteso.
 - **Una riga, uno schermo.** Una formula a centro pagina più larga di un telefono scorre di lato e il risultato resta fuori vista: una matrice e il suo conto, o una catena di tre uguaglianze, si spezzano in due formule.
 - **Stesso fattore, una potenza.** Nelle risposte costruite a pezzi (anche in quelle sbagliate) un fattore ripetuto si scrive come potenza: `(x + 3)²(x − 3)`, non `(x + 3)(x + 3)(x − 3)`.
+- **Ogni forma, i suoi errori.** Ogni errore tipico che una forma di esercizio rende possibile deve avere la sua risposta sbagliata. Se compare `−x`, c'è il verso non invertito (`DISEQ.VERSO_NON_INVERTITO`); se c'è un denominatore, la condizione dimenticata; se c'è un trasporto, il segno. La revisione 4b ha trovato proprio questo buco nelle disequazioni fratte.
+- **Tre risposte sbagliate per ogni seme, non «quasi sempre».** Dal livello 2 il test lo controlla su tutti i semi provati. Se per certi numeri restano due sole risposte, si cambia la costruzione in quei casi (nelle fratte: lo zero doppio con verso stretto prende l'uguale).
+- **Il testo è quello che conta.** `verify` ricostruisce il modello dal seme, quindi non vede un testo scritto male da `draftOf` (un segno perso, un numero sbagliato nel LaTeX). Dopo aver letto gli esercizi a occhio, rifai il conto **a partire dal testo mostrato** per qualche centinaio di semi, con uno script sympy fuori dal repository (`pip install sympy`): legge il LaTeX del testo, risolve, confronta con la risposta. È la prova che ha controllato i 26.718 esercizi della revisione 4b; annota in `STATO.md` che l'hai fatta.
+- **Risposte di tipo insieme con scritture nuove.** Se Andrea deve scrivere soluzioni di forma nuova (punti isolati, periodi, `e`, `ln 2`), aggiungi alcune risposte giuste del generatore al test di `test/app/moduli.test.ts` che le scrive un carattere alla volta: se l'anteprima dà per sbagliato un pezzo di risposta giusta, si aggiunge una chiusura a `SET_ENDINGS` (`src/app/risposta/preview.ts`).
+- **Tempi su GitHub.** Un test che gira su centinaia di semi ha il suo tempo massimo (`}, 30_000);`). Senza, passa in locale e fallisce su GitHub: è successo nella sessione 4b.
 - **Strumenti comuni.** `src/generatori/comuni/` contiene quello che serve a più generatori (`rationalAt` per il valore esatto in un punto, `distinctWrong…`). Una funzione che serve a un secondo generatore si sposta lì; una funzione di matematica vera va nel motore, in una sessione dedicata, non dentro un generatore.
 
 ## Come scrivere una lezione
@@ -284,6 +334,22 @@ La sintassi è fissa; la legge e la controlla `src/contenuti/formato/` (`parseLe
 - L'app mostra la lezione **a tratti: ogni tratto finisce con una domanda lampo**, e il tratto seguente si apre dopo la risposta. Quindi le domande vanno messe ogni due o tre blocchi, subito dopo l'idea che controllano; quello che sta dopo l'ultima domanda è la chiusura (riepilogo).
 - Domande lampo di due tipi: scritte a mano per controllare un'idea (con il codice di errore sulle opzioni sbagliate tipiche), prese dal generatore per provare il metodo (livello 1 a metà lezione, livello 2 verso la fine).
 - Frasi brevi, dando del tu, senza punti esclamativi né complimenti. Il rigore non si abbassa: le condizioni si scrivono sempre.
+
+**Prima di scrivere una lezione**
+
+- La lezione è nella scaletta del modulo, con codice, prerequisiti e abilità. I prerequisiti si scrivono solo se quelle lezioni **esistono già** (la verifica rifiuta un codice che non c'è): quelli che mancano si annotano in `STATO.md` e si aggiungono quando arrivano.
+- Ogni abilità in `abilita` deve avere **già** il suo generatore `…g1`, con `lesson` uguale al codice della lezione (il test lo pretende). Quindi: prima il generatore, poi la lezione; oppure la lezione con `abilita: []` e l'abilità aggiunta quando il generatore c'è.
+- Ogni lezione ha almeno una definizione, un esempio svolto, una domanda lampo, un riquadro attenzione e il riepilogo (`test/contenuti/lezioni.test.ts` lo controlla).
+- Si guardano gli esercizi di livello 3 dei generatori della lezione: ogni caso che usano (zero doppio, polinomio senza zeri, parametro) deve essere spiegato nella lezione. Andrea li fa alla fine.
+
+**Difetti trovati nella lezione di riferimento** (revisione 4b), da non ripetere:
+
+- **Definizioni vere alla lettera.** «Si può sempre scrivere come $N/D$» era falso per una disequazione qualsiasi: la definizione deve dire le ipotesi («tra polinomi e frazioni di polinomi»). Una frase che vale «di solito» non va in un riquadro.
+- **Niente «ha due zeri» quando non è sempre così.** Ogni affermazione generale si controlla sui casi limite: discriminante nullo o negativo, coefficiente negativo, denominatore costante.
+- **Ogni esempio svolto ha tutti i passi del metodo**, con lo stesso nome («Passo 1», «Passo 2»…), anche quando un passo è banale.
+- **Ogni simbolo si spiega alla prima comparsa** (`∨` si legge «oppure»), anche se sembra ovvio.
+- **Durata ricalcolata** dopo ogni aggiunta: tra 10 e 20 minuti. Se si sfora, la lezione va divisa in due.
+- **Controlla ogni numero**: gli esempi e le domande lampo scritte a mano si rifanno a parte (a mano o con sympy). Un esempio sbagliato insegna l'errore.
 
 **Per aggiungere una lezione**: il file `.md` al suo posto, una riga in `src/contenuti/index.ts`, e `npm test` (il test `test/contenuti/lezioni.test.ts` esegue la verifica dei contenuti su tutte le lezioni vere, prova ogni formula con KaTeX e controlla che l'elenco sia completo). Le abilità dichiarate in `abilita` devono avere il loro generatore `…g1`, che rimanda a quella lezione.
 
@@ -403,6 +469,59 @@ Solo se il segno del denominatore è noto: se è negativo il verso si inverte.
 
 **Controllo**: `parseLesson(testo)` restituisce l'elenco dei problemi di una lezione. I controlli tra file li fa `verifyContents(file, catalogo)` (in `src/contenuti/formato/`): posto del file (`v1/m06/l04.md` per `V1.M06.L04`), codici unici, prerequisiti che esistono e non fanno giri, rimandi a glossario, lezioni, definizioni, teoremi, errori, generatori (con il livello chiesto) e visualizzazioni, ogni termine definito in una sola lezione. Una lezione entra nell'app solo se `verifyContents` non trova problemi; un termine usato fuori dalla catena dei prerequisiti è un avviso da guardare. Il test che la esegue su tutte le lezioni vere nasce con la prima lezione (sessione 3).
 
+## Come scrivere una dimostrazione
+
+La sintassi è in «Come scrivere una lezione» (blocco `dimostrazione`, esempio di Lagrange). Qui c'è come farla **bene**, perché dalla stessa sorgente l'app ricava la dimostrazione statica e tre esercizi (specifica, sezione 4): **riordina**, **trova lo sbagliato**, **completa**. Oggi l'app mostra solo la versione statica; le tre modalità arrivano con le fasi 4 e 6, e devono funzionare sulle dimostrazioni già scritte senza riscriverle.
+
+**Dove e quando**
+
+- Dentro la lezione del teorema, subito dopo il blocco `teorema`, con `di=` uguale al suo `id` (la verifica lo controlla).
+- Si dimostrano i teoremi principali dei Volumi 2 e 3 e, nel Volume 1, solo dove il ragionamento è parte del programma (per assurdo, induzione, Pitagora). Un teorema senza dimostrazione si enuncia comunque completo.
+- Una dimostrazione usa solo definizioni e teoremi delle lezioni che sono tra i prerequisiti (o della lezione stessa), citati con `[[V2.M06.T02]]` nella giustificazione.
+- La dimostrazione si **confronta con un libro di testo** universitario (specifica, sezione 13, fase 6) e la fonte si annota in `STATO.md`. Una dimostrazione inventata da capo non entra.
+
+**I passaggi**
+
+- Da 4 a 10 passaggi. Ogni passaggio è **una sola mossa logica** (una definizione applicata, un teorema usato, un conto), con il risultato scritto per intero: mai «analogamente» o «si ottiene facilmente».
+- `::perche` dice **che cosa** giustifica il passaggio (l'ipotesi, il teorema, la definizione), in una frase. Ogni ipotesi del teorema deve essere usata in almeno un passaggio, e la giustificazione lo dice («perché $f$ è continua in $[a, b]$»).
+- **Riordina funziona solo se l'ordine giusto è uno.** Due passaggi che si possono scambiare (due fatti indipendenti) si uniscono in un passaggio solo, oppure il secondo si segna `{fisso}`. Altrimenti Andrea riordina bene e risulta sbagliato.
+- `{fisso}` anche per i passaggi che non ha senso spostare: di solito il primo («Poni…», «Supponi per assurdo…») e l'ultimo («Quindi…»). Non più di un terzo dei passaggi.
+
+**Le versioni sbagliate** (`::sbagliato` e `::motivo`, almeno due passaggi, al più due versioni per passaggio)
+
+- Ogni versione sbagliata è un **errore che uno studente fa davvero**: implicazione rovesciata, ipotesi dimenticata, `f` scambiata con `f'`, `<` al posto di `≤`, quantificatori scambiati («esiste» per «per ogni»), conclusione presa per ipotesi, caso limite dimenticato. Niente frasi assurde che si scartano senza pensare.
+- Deve essere **falsa nel contesto**, non solo diversa: una strada alternativa ma corretta non è una versione sbagliata (in «trova lo sbagliato» Andrea non avrebbe niente da trovare).
+- Deve **somigliare** alla giusta (stessa lunghezza, stessa forma), perché in «completa» si sceglie tra giusta e sbagliate: se si riconosce dall'aspetto, l'esercizio non allena niente.
+- Le versioni sbagliate dello stesso passaggio sono diverse tra loro, e nessuna coincide con un altro passaggio della dimostrazione.
+- `::motivo` dice in una o due frasi **perché** è sbagliata, nominando l'ipotesi o la regola violata, e se possibile mostra il controesempio.
+
+**Controllo prima di salvare**: `npm test` (la verifica controlla struttura, teorema, numero di versioni sbagliate e ogni formula con KaTeX); poi si legge la dimostrazione tre volte, come la vedrebbe Andrea nelle tre modalità: mescolata (c'è un solo ordine giusto?), con un passaggio sostituito (si capisce che è sbagliato?), con un passaggio nascosto (le opzioni sono credibili?).
+
+## Come aggiungere una visualizzazione
+
+Le visualizzazioni sono undici, con codici fissi (specifica, sezione 11): non se ne aggiungono altre senza una decisione di Andrea (`STATO.md`, «Domande aperte»). Oggi non ne esiste nessuna: il blocco `visualizzazione` di una lezione mostra un segnaposto (`src/app/schermate/LessonView.tsx`) e la verifica dei contenuti riceve un elenco vuoto (`visualizations: []` in `test/contenuti/lezioni.test.ts`). La **prima** visualizzazione costruisce anche l'impalcatura descritta qui; le successive la copiano, come i generatori.
+
+**Prima di scrivere codice**: la scheda della visualizzazione in `docs/VISUALIZZAZIONI.md` (una sezione per codice): che cosa si manipola, che cosa si vede, i parametri iniziali che una lezione può passare (nome, significato, valore predefinito, valori ammessi), che cosa deve far capire (dalla tabella della specifica), le lezioni che la usano. La specifica rimanda proprio a questo momento la scheda di ogni visualizzazione (sezione 14).
+
+**Dove**
+
+- `src/visualizzazioni/<nome>.tsx` (il codice senza `VIS.`: `VIS.disequazioni-grafico` → `disequazioni-grafico.tsx`) per il componente; la matematica (campionamento, coordinate, trasformazioni) in un file `.ts` accanto, senza Preact, così si prova da sola.
+- `src/visualizzazioni/index.ts`: l'elenco `codice → componente e parametri`, come `src/generatori/index.ts`. Da qui la verifica dei contenuti riceve i codici esistenti (al posto di `visualizations: []`) e `LessonView` sceglie il componente.
+- Test in `test/visualizzazioni/<nome>.test.ts`.
+
+**Regole**
+
+- **Solo 2D, in SVG**, con Preact: nessuna libreria nuova di grafici, nessun file caricato da internet. Tutto offline.
+- **Tocco prima di tutto**: punti trascinabili con un'area di tocco di almeno 44 px, eventi `pointer` (non solo `mouse`), cursori `<input type="range">` per i numeri. Larghezza da 320 px in su senza scorrimento orizzontale.
+- **Fluida su iPhone XR**: al più qualche centinaio di punti per curva, aggiornamento dentro `requestAnimationFrame` durante il trascinamento.
+- **I parametri della lezione sono testo**: si leggono con `parseExpression` (che non lancia mai) e si controllano. Un parametro sbagliato mostra un messaggio in italiano nel riquadro, non rompe la lezione. Il test della visualizzazione legge **tutti** i parametri usati nelle lezioni vere.
+- **Grafici**: i valori si calcolano con `evaluate` (qui la virgola mobile va bene). Dove la funzione non è definita o salta (asintoto verticale, `(x − 1)/(x + 2)` in `x = −2`) la curva si interrompe: mai un segmento verticale che unisce i due rami. Gli zeri e i punti notevoli mostrati vengono dal motore (`realZeros` e `signTable` da `motore/display`), esatti.
+- **Numeri mostrati**: con la virgola decimale e, se approssimati, con `≈`. Le formule con KaTeX, ottenute da `toLatex`.
+- **Temi**: colori solo dalle variabili CSS dell'app, così funzionano il tema chiaro e quello scuro.
+- **Si usa anche senza trascinare**: ogni grandezza che si trascina ha anche un cursore o un valore scritto.
+
+**Test**: la parte matematica (coordinate, campionamento, interruzione agli asintoti, valori mostrati) con casi singoli; il componente si disegna in jsdom con i parametri predefiniti e con quelli di ogni lezione che lo usa; la verifica dei contenuti con il codice nell'elenco. Poi una prova a occhio nel telefono simulato, nei due temi.
+
 ## Catalogo degli errori
 
 Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie, dalla specifica, sezione 5, più quelle aggiunte con i generatori (7 nella sessione 3: oggi sono 72).
@@ -414,6 +533,10 @@ Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie
 - Ogni esempio nuovo va **verificato** (in `scripts/verifica-esempi-errori.py` si aggiunge un controllo con `@check("CODICE")`; lo script controlla anche che nessuna voce resti senza controllo).
 - Il test `test/errori.test.ts` confronta il catalogo con la tabella di `docs/SPECIFICA.md`: se si aggiunge una voce al catalogo, si aggiunge anche alla tabella della specifica (e viceversa).
 - `NON_CLASSIFICATO` non è una voce: è lo stato di una risposta sbagliata che non corrisponde a nessun errore.
+- Il codice che parla di **un altro errore** non si usa, nemmeno se somiglia: Andrea leggerebbe la spiegazione sbagliata. La revisione 4b ha lasciato fuori «zero doppio trattato come zero semplice» proprio perché `DISEQ.SECONDO_GRADO` parla d'altro (è una domanda aperta in `STATO.md`).
+- La tabella degli errori della specifica ha una seconda copia nel Progetto di Claude («Compasso — Specifica»): se la sessione può scriverci, la aggiorna; altrimenti lo annota in `STATO.md` perché Andrea la aggiorni.
+
+**Per aggiungere una voce, in ordine**: la voce in `src/errori/catalog.ts`; la riga nella tabella di `docs/SPECIFICA.md`, sezione 5; il controllo `@check("CODICE")` in `scripts/verifica-esempi-errori.py`, eseguito; `npm test`; il numero di voci aggiornato qui sopra e in `STATO.md`.
 
 ## Quando un lavoro è finito
 
@@ -425,6 +548,8 @@ Un lavoro è finito solo se **tutte e tre** le cose sono vere:
 
 Senza tutte e tre, il lavoro non è finito.
 
+Per guardare il controllo su GitHub: `gh run list --repo andremwebdev/compasso --limit 3` (il primo deve essere `completed success` sull'ultimo commit) e, se è rosso, `gh run view <numero> --log-failed`. Su GitHub i test vanno circa tre volte più piano che in locale: un test che in locale impiega più di un secondo e mezzo ha bisogno di un tempo massimo esplicito.
+
 Il lavoro si salva su GitHub (commit e push) dopo ogni parte completata, non solo alla fine: la capacità di una sessione può finire a metà. Modifiche piccole, descrizioni chiare, ramo principale.
 
 ## Divieti
@@ -433,6 +558,9 @@ Il lavoro si salva su GitHub (commit e push) dopo ogni parte completata, non sol
 - **Mai cambiare il formato dei dati salvati** senza conversione e test.
 - **Mai modificare il motore** mentre si lavora su un generatore: se il motore ha un limite, si annota in `STATO.md`.
 - **Mai indebolire o saltare un test** per farlo passare: se un test è sbagliato lo si corregge dicendo perché, se il codice è sbagliato si corregge il codice.
+- **Mai cambiare gli esercizi di un generatore già pubblicato senza deciderlo**: se cambia una riga dei semi congelati, il motivo va in `STATO.md` («Decisioni da rivedere»).
+- **Mai chiudere una sessione con il controllo su GitHub rosso.**
+- **Nessuna dipendenza nuova** (`npm install`) senza un motivo scritto in `STATO.md`: ogni libreria pesa sul telefono e deve funzionare offline.
 - **Nessuna richiesta di rete esterna e nessun tracciamento**: niente analisi d'uso, niente caratteri o librerie caricati da internet. Tutto è incorporato o salvato sul dispositivo (i test della build lo controllano per la versione PC).
 
 ## Note tecniche dell'impalcatura
