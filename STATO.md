@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: fine della sessione 4c (regole e piano per i modelli successivi). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: fine della sessione 4d (dimostrazioni di riserva). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -14,7 +14,8 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
 - **Fetta verticale nell'app**: lezione a tratti con domande lampo, schermata di esercizio completa, tastiera matematica (Base, Insiemi, Funzioni), dati in IndexedDB con versione (`DATA_VERSION = 1`) e ripieghi, esercizi per generatore e livello.
 - **Catalogo errori**: 72 voci in 12 categorie, allineato alla tabella della specifica e verificato con sympy.
 - **Regole** (sessione 4c): `REGOLE.md` completo per generatori, lezioni, dimostrazioni, visualizzazioni, catalogo, con le trappole emerse dalle revisioni.
-- **Test**: 985 in 34 file, verdi in locale e su GitHub.
+- **Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
+- **Test**: 991 in 35 file, verdi in locale e su GitHub.
 
 ## In corso
 
@@ -54,7 +55,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 1. **Decidere prima**: `log` o `ln` per il naturale nel Volume 2 (decisione 5).
 2. **Lezioni dei generatori già esistenti**: `V2.M06.L03` (regole di derivazione), `V3.M02.L01` (Gauss), `V3.M03.L01` (determinante).
 3. ⚙ **Motore**: nodi per successioni e somme (prima di V2.M03 e V2.M11), grafici statici (prima di V2.M07), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
-4. **Scaletta, generatori, lezioni con dimostrazioni** (confrontate con un libro di testo), modulo per modulo, alternando i due binari; le sei visualizzazioni nei loro moduli (V2.M04, M06, M08, M09; V3.M05, M06).
+4. **Scaletta, generatori, lezioni con dimostrazioni** (confrontate con un libro di testo; per V2.M05 e V2.M06 cinque sono già in `src/riserva/`: incollarle, cancellare il file di riserva, collegare con `[[…]]` i risultati usati), modulo per modulo, alternando i due binari; le sei visualizzazioni nei loro moduli (V2.M04, M06, M08, M09; V3.M05, M06).
    - Fase finita quando: come il Volume 1, più dimostrazioni interattive per i teoremi principali.
 
 **Fase 7 — sezione Test**: prima la composizione della simulazione TOL e il numero di opzioni (da tarare sulla Demo TOL, specifica sezione 14), poi simulazione a tempo, mini-test di modulo, storico, analisi della penalità.
@@ -75,6 +76,8 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V2.M06.L03`, `V2.M06.A03` | Lezione (da scrivere) e abilità: regole di derivazione — generatore `V2.M06.A03.g1` |
 | `V3.M02.L01`, `V3.M02.A01` | Lezione (da scrivere) e abilità: metodo di Gauss — generatore `V3.M02.A01.g1` |
 | `V3.M03.L01`, `V3.M03.A01` | Lezione (da scrivere) e abilità: determinante — generatore `V3.M03.A01.g1` |
+| `V2.M05.T01`, `V2.M05.T02` | Teorema degli zeri, teorema di Weierstrass (in `src/riserva/v2/m05/`) |
+| `V2.M06.T01`, `V2.M06.T02`, `V2.M06.T03` | Teoremi di Fermat, Rolle, Lagrange (in `src/riserva/v2/m06/`); `T03` per Lagrange è quello degli esempi della specifica |
 
 Liberi per la scaletta di V1.M06: `L01`-`L03` (primo grado, secondo grado, segno di un prodotto), `D01`, `A01`-`A03`. Quando esistono, `V1.M06.L04` prende i prerequisiti `V1.M06.L03` e `V1.M04.L07` (oggi `[]`, perché la verifica rifiuta lezioni che non ci sono), e i termini che oggi spiega a parole (zero di un polinomio, condizione di esistenza, tabella dei segni) diventano rimandi `[[…]]`.
 
@@ -95,6 +98,8 @@ Generatori e lezione:
 - Al livello 1 scomposizione, Gauss e qualche derivata hanno due sole risposte sbagliate: niente scelta multipla per quegli esercizi.
 - Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno (sotto la soglia).
 - La lezione V1.M06.L04 non ha ancora la visualizzazione `VIS.disequazioni-grafico`.
+- Le cinque dimostrazioni di riserva seguono le strade classiche dei manuali di Analisi 1 (zeri per bisezione; Weierstrass con una successione che tende all'estremo superiore e Bolzano-Weierstrass; Fermat con il segno del rapporto incrementale; Rolle da Weierstrass e Fermat; Lagrange con la funzione ausiliaria), ma sono state scritte **senza un libro aperto**: il confronto con il libro di testo chiesto da `REGOLE.md` resta da fare quando entrano nelle lezioni.
+- Nelle dimostrazioni di riserva i risultati dei moduli non ancora scritti (successioni monotone, Bolzano-Weierstrass, permanenza del segno, continuità per successioni…) sono citati a parole: diventano rimandi `[[…]]` quando le lezioni esistono (elenco in `src/riserva/LEGGIMI.md`). Il teorema dei valori intermedi (V2.M05) e quello di Cauchy (V2.M06) non sono in riserva.
 - La prova con sympy dal testo mostrato non è nel repository né in CI: va rifatta a mano per ogni generatore nuovo (`REGOLE.md`).
 
 App:
@@ -186,3 +191,11 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 45. `ALG.SOMMA_QUADRATI` limitato a `x² + 9` (`x⁴ + 4` si scompone): la specifica andrebbe precisata (0).
 46. Cartelle in più: `src/esercizi/`, `src/codici.ts`, `src/contenuti/formato/`, `motore/complex/`, `motore/steps/`, `motore/display/` (1, 2).
 47. Rimandati: grafici statici e nodi per successioni e somme (2); sono nel piano, fase 6.
+
+*Dimostrazioni di riserva*
+
+48. Cartella nuova `src/riserva/<volume>/<modulo>/tNN.md`: un file per teorema, con solo i blocchi `teorema` e `dimostrazione`; fuori da `src/contenuti/` perché lì ogni file deve essere una lezione. Il test le verifica dentro una lezione di prova (codici `L99`, `L98`…) (4d).
+49. Codici dei teoremi assegnati prima della scaletta: `V2.M05.T01`-`T02`, `V2.M06.T01`-`T03` (4d).
+50. Teorema degli zeri dimostrato per bisezione (non con l'estremo superiore): richiede le successioni di V2.M03, che nel programma vengono prima (4d).
+51. Enunciati su un intervallo `[a; b]` con `a < b`; Fermat su un intervallo aperto `(a; b)`; il caso del minimo ricondotto al massimo passando a `−f`, scritto per esteso nell'ultimo passaggio (4d).
+52. Nella modalità «riordina» l'ultimo passaggio non è sempre fisso: dove l'ordine è già obbligato, si sono segnati fissi i passaggi che altrimenti si potrebbero scambiare (i due lati in Fermat, le due proprietà di `g` in Lagrange), restando entro un terzo (4d).

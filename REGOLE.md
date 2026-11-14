@@ -18,7 +18,7 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | --- | --- | --- | --- |
 | Generatore nuovo | «Il motore in breve», «Come aggiungere un generatore», «Come replicare un generatore» | specifica 4 («Generatori») e 7; `docs/ARCHITETTURA.md` solo per la parte del motore che usi | il generatore di riferimento della tabella |
 | Lezione nuova | «Come scrivere una lezione» | specifica 3 («Teoria») e 4 | `src/contenuti/v1/m06/l04.md` |
-| Dimostrazione | «Come scrivere una dimostrazione» | specifica 4 («Dimostrazioni interattive») | la lezione che contiene il teorema |
+| Dimostrazione | «Come scrivere una dimostrazione» | specifica 4 («Dimostrazioni interattive»); `src/riserva/LEGGIMI.md` (teoremi già dimostrati) | la lezione che contiene il teorema |
 | Visualizzazione | «Come aggiungere una visualizzazione» | specifica 11 | — |
 | Errore tipico nuovo | «Catalogo degli errori» | specifica 5 | `src/errori/catalog.ts` |
 | Interfaccia | «L'app in breve», «Note tecniche» | specifica 3, 7 e 10 | il componente da cambiare |
@@ -59,6 +59,7 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | `src/esercizi/` | schema dei generatori, creazione dell'esercizio, valutazione delle risposte | `motore`, `errori`, `codici` |
 | `src/generatori/` | un file per generatore, `index.ts` con l'elenco, `comuni/` con gli strumenti condivisi | `esercizi`, `motore`, `errori`, `codici` |
 | `src/contenuti/` | lezioni in Markdown (`v1/m06/l04.md`), `index.ts` con l'elenco; in `formato/` il codice che le legge e le controlla | `codici`, `errori` |
+| `src/riserva/` | teoremi con dimostrazione già scritti, in attesa della lezione (`LEGGIMI.md` dice come usarli); non entra nell'app | — |
 | `src/dati/` | progressi, ripasso, registro, backup | `codici`, `errori`, `esercizi` (solo tipi) |
 | `src/app/` | interfaccia | tutto |
 
@@ -478,6 +479,7 @@ La sintassi è in «Come scrivere una lezione» (blocco `dimostrazione`, esempio
 - Dentro la lezione del teorema, subito dopo il blocco `teorema`, con `di=` uguale al suo `id` (la verifica lo controlla).
 - Si dimostrano i teoremi principali dei Volumi 2 e 3 e, nel Volume 1, solo dove il ragionamento è parte del programma (per assurdo, induzione, Pitagora). Un teorema senza dimostrazione si enuncia comunque completo.
 - Una dimostrazione usa solo definizioni e teoremi delle lezioni che sono tra i prerequisiti (o della lezione stessa), citati con `[[V2.M06.T02]]` nella giustificazione.
+- **Prima di scrivere una dimostrazione, guardare la riserva**: `src/riserva/<volume>/<modulo>/tNN.md` contiene teoremi già enunciati e dimostrati (sessione 4d: zeri, Weierstrass, Fermat, Rolle, Lagrange). Il file si incolla nella lezione così com'è e poi **si cancella**, insieme alla sua riga in `src/riserva/LEGGIMI.md`: il test `test/contenuti/riserva.test.ts` verifica i file di riserva insieme alle lezioni vere e fallisce se un teorema sta in due posti. Una dimostrazione nuova scritta prima della sua lezione va lì, con lo stesso formato (solo il blocco `teorema` e il blocco `dimostrazione`).
 - La dimostrazione si **confronta con un libro di testo** universitario (specifica, sezione 13, fase 6) e la fonte si annota in `STATO.md`. Una dimostrazione inventata da capo non entra.
 
 **I passaggi**
