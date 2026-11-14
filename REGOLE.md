@@ -527,7 +527,7 @@ Le visualizzazioni sono undici, con codici fissi (specifica, sezione 11): non se
 
 ## Catalogo degli errori
 
-Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie, dalla specifica, sezione 5, più quelle aggiunte con i generatori (7 nella sessione 3, 5 nella sessione E1 per limiti e Taylor: oggi sono 77).
+Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie, dalla specifica, sezione 5, più quelle aggiunte con i generatori (7 nella sessione 3, 5 nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali: oggi sono 95).
 
 - **Prima di aggiungere un errore, controllare che non esista già**: cercare per nome e per descrizione, non solo per codice. Due voci per lo stesso errore spezzano i dati di Andrea.
 - Un codice ha la forma `CATEGORIA.NOME` (maiuscole, cifre e trattino basso). La categoria deve essere una delle dodici di `errorCategories`.

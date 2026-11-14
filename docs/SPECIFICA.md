@@ -445,6 +445,24 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | AN.LIMITE\_NOTEVOLE | Limite notevole applicato senza adattarlo | sin(3x)/x tende a 3, non a 1; (1+2/n)ⁿ tende a e², non a e | V2.M04 |
 | AN.SEGNO\_INFINITO | Segno dell'infinito non studiato | 1/(x−2) tende a −∞ da sinistra e a +∞ da destra: per x → 2 il limite non esiste | V2.M04 |
 | AN.TAYLOR\_SVILUPPO | Sviluppo notevole scritto male | sin x = x − x³/6 + o(x³): al denominatore 3!, non 3; in f(ax) si sostituisce ax in ogni potenza | V2.M08 |
+| AN.PRIMITIVA\_ELEMENTARE | Primitiva immediata sbagliata | ∫xⁿ dx = xⁿ⁺¹/(n+1): l'esponente aumenta e si divide; ∫sin x dx = −cos x | V2.M09 |
+| AN.SOSTITUZIONE\_FATTORE | Sostituzione senza il fattore della derivata interna | ∫cos 3x dx = (sin 3x)/3 + c: con t = 3x è dx = dt/3 | V2.M09 |
+| AN.INTEGRAZIONE\_PARTI | Integrazione per parti applicata male | ∫f·g′ dx = f·g − ∫f′·g dx: davanti al secondo integrale c'è il meno, e dentro ci sono f′ e g | V2.M09 |
+| AN.INTEGRALE\_PRODOTTO | Integrale del prodotto come prodotto degli integrali | ∫f·g dx non è ∫f dx · ∫g dx: servono le parti o una sostituzione | V2.M09 |
+| AN.FRATTI\_SEMPLICI | Funzione razionale integrata senza scomporla bene | 1/((x−1)(x+2)) si scompone in A/(x−1) + B/(x+2); ∫dx/(x²+a²) = (1/a)·arctan(x/a) + c | V2.M09 |
+| AN.ESTREMI\_INTEGRALE | Estremi dell'integrale definito usati male | ∫ₐᵇ f(x) dx = F(b) − F(a): prima l'estremo superiore, e F(a) non si dimentica; con una sostituzione cambiano anche gli estremi | V2.M09 |
+| AN.SOGLIA\_CONVERGENZA | Serie o integrale di riferimento ricordato male | ∑1/nᵖ e ∫₁^∞ dx/xᵖ convergono solo per p > 1; ∫₀¹ dx/xᵖ solo per p < 1; ∑qⁿ solo per \|q\| < 1 | V2.M10 |
+| AN.IMPROPRIO\_SINGOLARITA | Integrale improprio calcolato come un integrale normale | Se la funzione è illimitata nell'intervallo, F(b) − F(a) non vale: ∫₋₁¹ dx/x² diverge, non vale −2 | V2.M10 |
+| AN.CRITERIO\_INCONCLUDENTE | Rapporto o radice con limite 1 preso come risposta | Se il limite del rapporto (o della radice) vale 1 il criterio non decide: ∑1/n diverge, ∑1/n² converge | V2.M11 |
+| AN.CONFRONTO\_VERSO | Criterio del confronto usato nel verso sbagliato | Con 0 ≤ aₙ ≤ bₙ: se ∑bₙ converge, converge ∑aₙ; se ∑aₙ diverge, diverge ∑bₙ. Non il contrario | V2.M11 |
+| AN.LEIBNIZ\_IPOTESI | Criterio di Leibniz senza controllare le ipotesi | Il segno alterno non basta: in ∑(−1)ⁿaₙ serve aₙ decrescente e tendente a 0 | V2.M11 |
+| AN.CONVERGENZA\_ASSOLUTA | Convergenza semplice e assoluta confuse | La convergenza assoluta implica quella semplice, non viceversa: ∑(−1)ⁿ/n converge ma non assolutamente | V2.M11 |
+| AN.EDO\_COSTANTE | Costante arbitraria dimenticata o messa nel posto sbagliato | y′ = 2xy ha soluzioni y = c·e^(x²), non e^(x²) + c; l'integrale generale di un'equazione di ordine n ha n costanti | V2.M12 |
+| AN.EDO\_SEPARAZIONE | Variabili non separate prima di integrare | In y′ = f(x)·g(y) si scrive dy/g(y) = f(x) dx e solo dopo si integra, ogni membro nella sua variabile | V2.M12 |
+| AN.EDO\_FATTORE\_INTEGRANTE | Formula delle equazioni lineari del primo ordine applicata male | y′ + a(x)·y = f(x): y = e^(−A(x))·(∫f(x)·e^(A(x)) dx + c), con A primitiva di a | V2.M12 |
+| AN.EDO\_CARATTERISTICA | Equazione caratteristica risolta o usata male | y″ + ay′ + by = 0 → λ² + aλ + b = 0; radice doppia: (c₁ + c₂x)·e^(λx); radici α ± iβ: e^(αx)·(c₁cos βx + c₂sin βx) | V2.M12 |
+| AN.EDO\_PARTICOLARE | Soluzione particolare dimenticata o cercata nella forma sbagliata | Equazione completa: integrale generale dell'omogenea più una soluzione particolare; in caso di risonanza serve un fattore x | V2.M12 |
+| AN.CAUCHY\_CONDIZIONI | Condizioni iniziali non imposte o imposte male | Nel problema di Cauchy le costanti si ricavano sostituendo le condizioni iniziali nell'integrale generale completo | V2.M12 |
 | ALIN.PRODOTTO\_COMMUTATIVO | Prodotto di matrici trattato come commutativo | In generale AB ≠ BA | V3.M02 |
 | ALIN.RANGO\_DIMENSIONE | Rango confuso con dimensione o numero di colonne | Il rango è la dimensione dello spazio generato dalle colonne | V3.M02 |
 | ALIN.GAUSS\_TERMINE\_NOTO | Operazione sulle righe non applicata ai termini noti | Ogni operazione di Gauss vale per tutta la riga, termine noto compreso | V3.M02 |

@@ -757,6 +757,179 @@ def _():
     assert series(exp(x), x, 0, 4).removeO() == 1 + x + x**2 / 2 + x**3 / 6
 
 
+@check("AN.PRIMITIVA_ELEMENTARE")
+def _():
+    assert integrate(x**3, x) == x**4 / 4
+    assert diff(x**3, x) == 3 * x**2 and diff(x**4, x) != x**3
+    assert integrate(sin(x), x) == -cos(x) and integrate(cos(x), x) == sin(x)
+    # ln|x| è una primitiva di 1/x anche per x < 0: controllo in punti dei due segni.
+    for value in (Rational(-7, 2), Rational(-1, 3), Rational(2, 5), Integer(4)):
+        assert simplify(diff(log(Abs(x)), x).subs(x, value) - 1 / value) == 0
+
+
+@check("AN.SOSTITUZIONE_FATTORE")
+def _():
+    assert integrate(cos(3 * x), x) == sin(3 * x) / 3
+    assert diff(sin(3 * x) / 3, x) == cos(3 * x)
+    assert diff(sin(3 * x), x) != cos(3 * x) and diff(3 * sin(3 * x), x) != cos(3 * x)
+
+
+@check("AN.INTEGRAZIONE_PARTI")
+def _():
+    assert simplify(integrate(x * exp(x), x) - (x * exp(x) - exp(x))) == 0
+    assert simplify(diff(x * exp(x) - exp(x), x) - x * exp(x)) == 0
+    assert simplify(diff(x * exp(x) + exp(x), x) - (x * exp(x) + 2 * exp(x))) == 0
+
+
+@check("AN.INTEGRALE_PRODOTTO")
+def _():
+    assert simplify(diff(x * sin(x) + cos(x), x) - x * cos(x)) == 0
+    wrong = integrate(x, x) * integrate(cos(x), x)
+    assert wrong == x**2 / 2 * sin(x)
+    assert simplify(diff(wrong, x) - (x * sin(x) + x**2 / 2 * cos(x))) == 0
+    assert simplify(diff(wrong, x) - x * cos(x)) != 0
+
+
+@check("AN.FRATTI_SEMPLICI")
+def _():
+    f = 1 / ((x - 1) * (x + 2))
+    assert simplify(f - Rational(1, 3) * (1 / (x - 1) - 1 / (x + 2))) == 0
+    good = diff(Rational(1, 3) * (log(Abs(x - 1)) - log(Abs(x + 2))), x)
+    bad = diff(log(Abs((x - 1) * (x + 2))), x)
+    for value in (Integer(-5), Rational(-1, 2), Rational(1, 3), Rational(7, 2)):
+        assert simplify(good.subs(x, value) - f.subs(x, value)) == 0
+        assert simplify(bad.subs(x, value) - f.subs(x, value)) != 0
+    assert simplify(diff(atan(x / 2) / 2, x) - 1 / (x**2 + 4)) == 0
+    assert simplify(diff(atan(x / 2), x) - 1 / (x**2 + 4)) != 0
+    assert simplify(diff(atan(x / a) / a, x) - 1 / (x**2 + a**2)) == 0
+
+
+@check("AN.ESTREMI_INTEGRALE")
+def _():
+    assert integrate(2 * x, (x, 1, 2)) == 4 - 1 == 3
+    assert integrate(sin(x), (x, 0, pi)) == 2
+    F = -cos(x)
+    assert F.subs(x, pi) == 1 and F.subs(x, 0) == -1
+
+
+@check("AN.SOGLIA_CONVERGENZA")
+def _():
+    assert Sum(1 / sqrt(n), (n, 1, oo)).is_convergent() is S.false
+    assert integrate(1 / sqrt(x), (x, 0, 1)) == 2
+    assert integrate(1 / x**2, (x, 1, oo)) == 1
+    assert integrate(1 / x**2, (x, 0, 1)) == oo
+    assert integrate(1 / x, (x, 1, oo)) == oo and integrate(1 / x, (x, 0, 1)) == oo
+    assert Sum(1 / n, (n, 1, oo)).is_convergent() is S.false
+    assert Sum(1 / n**2, (n, 1, oo)).is_convergent() is S.true
+    assert Sum(Rational(1, 2) ** n, (n, 0, oo)).is_convergent() is S.true
+    assert Sum(Rational(3, 2) ** n, (n, 0, oo)).is_convergent() is S.false
+
+
+@check("AN.IMPROPRIO_SINGOLARITA")
+def _():
+    F = -1 / x
+    assert F.subs(x, 1) - F.subs(x, -1) == -2
+    assert integrate(1 / x**2, (x, 0, 1)) == oo
+
+
+@check("AN.CRITERIO_INCONCLUDENTE")
+def _():
+    assert limit((1 / (n + 1)) / (1 / n), n, oo) == 1
+    assert limit((1 / (n + 1) ** 2) / (1 / n**2), n, oo) == 1
+    assert Sum(1 / n, (n, 1, oo)).is_convergent() is S.false
+    assert Sum(1 / n**2, (n, 1, oo)).is_convergent() is S.true
+
+
+@check("AN.CONFRONTO_VERSO")
+def _():
+    for k in range(1, 50):
+        assert Rational(1, k**2) <= Rational(1, k)
+        assert Rational(1, k**2 + 1) <= Rational(1, k**2)
+    assert Sum(1 / n, (n, 1, oo)).is_convergent() is S.false
+    assert Sum(1 / n**2, (n, 1, oo)).is_convergent() is S.true
+    assert Sum(1 / (n**2 + 1), (n, 1, oo)).is_convergent() is S.true
+
+
+@check("AN.LEIBNIZ_IPOTESI")
+def _():
+    assert limit(n / (n + 1), n, oo) == 1
+    assert Sum((-1) ** n * n / (n + 1), (n, 1, oo)).is_convergent() is S.false
+    assert Sum((-1) ** n / n, (n, 1, oo)).is_convergent() is S.true
+    assert limit(1 / n, n, oo) == 0 and simplify(1 / n - 1 / (n + 1)).is_positive
+
+
+@check("AN.CONVERGENZA_ASSOLUTA")
+def _():
+    assert Sum((-1) ** n / n, (n, 1, oo)).is_convergent() is S.true
+    assert Sum((-1) ** n / n, (n, 1, oo)).is_absolutely_convergent() is S.false
+    assert Sum((-1) ** n / n**2, (n, 1, oo)).is_absolutely_convergent() is S.true
+
+
+@check("AN.EDO_COSTANTE")
+def _():
+    good = c * exp(x**2)
+    assert simplify(diff(good, x) - 2 * x * good) == 0
+    bad = exp(x**2) + c
+    assert simplify(diff(bad, x) - 2 * x * exp(x**2)) == 0
+    assert simplify(2 * x * bad - (2 * x * exp(x**2) + 2 * c * x)) == 0
+    assert simplify(diff(bad, x) - 2 * x * bad) != 0
+
+
+@check("AN.EDO_SEPARAZIONE")
+def _():
+    good = c * exp(x**2)
+    assert simplify(diff(good, x) - 2 * x * good) == 0
+    bad = x**2 + c
+    assert diff(bad, x) == 2 * x and expand(2 * x * bad) == 2 * x**3 + 2 * c * x
+    assert simplify(diff(bad, x) - 2 * x * bad) != 0
+
+
+@check("AN.EDO_FATTORE_INTEGRANTE")
+def _():
+    good = 2 + c * exp(-2 * x)
+    assert simplify(diff(good, x) + 2 * good - 4) == 0
+    assert simplify(exp(-2 * x) * (integrate(4 * exp(2 * x), x) + c) - good) == 0
+    bad = exp(2 * x) * (integrate(4 * exp(-2 * x), x) + c)
+    assert simplify(bad - (-2 + c * exp(2 * x))) == 0
+    assert simplify(diff(bad, x) + 2 * bad - (4 * c * exp(2 * x) - 4)) == 0
+
+
+@check("AN.EDO_CARATTERISTICA")
+def _():
+    lam = symbols("lam")
+    assert solve(lam**2 - 4 * lam + 4, lam) == [2]
+    good = (a + b * x) * exp(2 * x)
+    assert simplify(diff(good, x, 2) - 4 * diff(good, x) + 4 * good) == 0
+    assert simplify(a * exp(2 * x) + b * exp(2 * x) - (a + b) * exp(2 * x)) == 0
+    assert set(solve(lam**2 + 4, lam)) == {2 * I, -2 * I}
+    osc = a * cos(2 * x) + b * sin(2 * x)
+    assert simplify(diff(osc, x, 2) + 4 * osc) == 0
+    wrong = a * exp(2 * x) + b * exp(-2 * x)
+    assert simplify(diff(wrong, x, 2) + 4 * wrong) != 0
+
+
+@check("AN.EDO_PARTICOLARE")
+def _():
+    hom = a * exp(x) + b * exp(-x)
+    assert simplify(diff(hom, x, 2) - hom) == 0
+    A = symbols("A")
+    assert solve(simplify((diff(A * exp(2 * x), x, 2) - A * exp(2 * x)) / exp(2 * x)) - 1, A) == [Rational(1, 3)]
+    y1 = hom + exp(2 * x) / 3
+    assert simplify(diff(y1, x, 2) - y1 - exp(2 * x)) == 0
+    assert simplify(diff(A * exp(x), x, 2) - A * exp(x)) == 0
+    yp = x * exp(x) / 2
+    assert simplify(diff(yp, x, 2) - yp - exp(x)) == 0
+
+
+@check("AN.CAUCHY_CONDIZIONI")
+def _():
+    good = 3 * exp(2 * x)
+    assert simplify(diff(good, x) - 2 * good) == 0 and good.subs(x, 0) == 3
+    bad = exp(2 * x) + 2
+    assert bad.subs(x, 0) == 3
+    assert diff(bad, x) == 2 * exp(2 * x) and expand(2 * bad) == 2 * exp(2 * x) + 4
+
+
 def catalog_codes():
     source = (Path(__file__).resolve().parent.parent / "src" / "errori" / "catalog.ts").read_text(encoding="utf-8")
     return re.findall(r'^\s+code: "([A-Z]+\.[A-Z0-9_]+)"', source, flags=re.MULTILINE)
