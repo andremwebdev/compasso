@@ -242,6 +242,11 @@ p {
 
 /* ───────────── formule ───────────── */
 
+/* Una formula breve con la punteggiatura che la segue: il punto non va a capo da solo. */
+.math-tail {
+  white-space: nowrap;
+}
+
 .formula .katex {
   font-size: 1.15em;
 }

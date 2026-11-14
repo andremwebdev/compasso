@@ -17,12 +17,17 @@ export function renderMath(latex: string, display = false): string {
   return display ? `<div class="formula formula-display">${html}</div>` : `<span class="formula">${html}</span>`;
 }
 
+/** Fin qui una formula in riga è «breve» (conta il sorgente LaTeX): $0$, $x = 3$, $x \\ne -1$. */
+const SHORT_FORMULA = 16;
+
 /**
  * L'HTML di un testo ricco. Con `inline` il risultato non ha paragrafi (per titoli, opzioni, etichette).
  * I rimandi [[…]] diventano pulsanti con l'attributo data-ref: chi mostra il testo decide che cosa aprono.
  */
 export function renderRichText(text: string, options: { readonly inline?: boolean } = {}): string {
   const pieces: string[] = [];
+  // Le formule brevi in riga: la punteggiatura che le segue non deve andare a capo da sola.
+  const short = new Set<number>();
   const hold = (html: string, display: boolean): string => {
     pieces.push(html);
     const token = `@@${display ? "D" : "M"}${pieces.length - 1}@@`;
@@ -35,6 +40,7 @@ export function renderRichText(text: string, options: { readonly inline?: boolea
         case "text":
           return segment.text;
         case "math":
+          if (segment.latex.length <= SHORT_FORMULA && !(segment.display && !options.inline)) short.add(pieces.length);
           return hold(renderMath(segment.latex, segment.display && !options.inline), segment.display && !options.inline);
         case "ref":
           return hold(`<button type="button" class="ref" data-ref="${escapeHtml(segment.target)}">${escapeHtml(segment.label ?? segment.target.replaceAll("-", " "))}</button>`, false);
@@ -44,5 +50,8 @@ export function renderRichText(text: string, options: { readonly inline?: boolea
   const html = options.inline ? (marked.parseInline(source, { async: false }) as string) : (marked.parse(source, { async: false }) as string);
   return html
     .replace(/<p>@@D(\d+)@@<\/p>/g, (_, index: string) => pieces[Number(index)] ?? "")
+    // «…la frazione vale 0.»: il punto resta attaccato alla formula. Solo per le formule brevi: una lunga
+    // deve poter andare a capo al suo interno, altrimenti la riga esce dallo schermo del telefono.
+    .replace(/@@M(\d+)@@([.,;:!?»)]+)/g, (whole: string, index: string, tail: string) => (short.has(Number(index)) ? `<span class="math-tail">${pieces[Number(index)] ?? ""}${tail}</span>` : whole))
     .replace(/@@[DM](\d+)@@/g, (_, index: string) => pieces[Number(index)] ?? "");
 }

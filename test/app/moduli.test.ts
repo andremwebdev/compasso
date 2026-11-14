@@ -35,6 +35,14 @@ describe("testo ricco", () => {
     expect(html).toContain('data-ref="segno-di-una-frazione">la regola dei segni</button>');
   });
 
+  it("la punteggiatura resta attaccata a una formula breve, non a una lunga", () => {
+    const html = renderRichText("in $x = 3$ la frazione vale $0$.", { inline: true });
+    expect(html).toMatch(/<span class="math-tail"><span class="formula.*<\/span>\.<\/span>$/);
+    expect(html.match(/math-tail/g)).toHaveLength(1);
+    // Una formula lunga deve poter andare a capo al suo interno: niente blocco unico.
+    expect(renderRichText("Vale $x^{2} - 5x + 6 = (x - 2)(x - 3)$.", { inline: true })).not.toContain("math-tail");
+  });
+
   it("in riga non produce paragrafi; un dollaro vero resta un dollaro", () => {
     expect(renderRichText("Costa 5 \\$ e $x$.", { inline: true })).not.toContain("<p>");
     expect(renderRichText("Costa 5 \\$.", { inline: true })).toContain("5 $");
