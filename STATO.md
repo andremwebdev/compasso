@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: fine della sessione 4d (dimostrazioni di riserva). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: fine della sessione extra E1 (generatori difficili di Analisi, parte 1: limiti di successioni, limiti di funzioni, Taylor). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -10,12 +10,24 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
 - **Motore** (sessioni 1-2, rivisto in 4a): numeri esatti, espressioni, LaTeX all'italiana, parser tollerante, equivalenza, vincoli di forma, `simplify`/`expand`, polinomi, derivate, matrici, complessi, insiemi di soluzioni, tabelle dei segni e di variazione, passaggi delle procedure. Architettura in `docs/ARCHITETTURA.md`.
 - **Esercizi**: schema dei generatori, valutazione con riconoscimento degli errori, scelta multipla automatica, verifica automatica (nove controlli più avvisi di varietà) e verifica dei contenuti.
 - **Cinque generatori di riferimento** (rivisti in 4b, controllati con sympy dal testo mostrato): `V1.M06.A04.g1` disequazioni fratte, `V1.M04.A07.g1` scomposizione, `V2.M06.A03.g1` derivate, `V3.M03.A01.g1` determinante, `V3.M02.A01.g1` sistemi con Gauss.
+- **Tre generatori di Analisi** (sessione E1), tutti con risposta di tipo limite (numero, `+∞`, `−∞`, «non esiste»), tre livelli, verifica automatica senza problemi né avvisi, 750 esercizi ciascuno ricalcolati con sympy **dal testo mostrato**: `V2.M03.A01.g1` limiti di successioni (è il generatore di riferimento per le risposte di tipo limite), `V2.M04.A01.g1` limiti notevoli e forme indeterminate, `V2.M08.A01.g1` sviluppi di Taylor nei limiti (controllato anche con de l'Hôpital dal testo, nel suo test). Strumenti comuni nuovi in `src/generatori/comuni/`: `limits.ts` (scrittura del limite, `distinctWrongLimits`, prova numerica `confirmsLimit`) e `terms.ts` (polinomi scritti termine per termine).
 - **Lezione di riferimento** `V1.M06.L04` «Disequazioni fratte».
 - **Fetta verticale nell'app**: lezione a tratti con domande lampo, schermata di esercizio completa, tastiera matematica (Base, Insiemi, Funzioni), dati in IndexedDB con versione (`DATA_VERSION = 1`) e ripieghi, esercizi per generatore e livello.
 - **Catalogo errori**: 77 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor: `AN.CONFRONTO_INFINITI`, `AN.FATTORE_LIMITATO`, `AN.LIMITE_NOTEVOLE`, `AN.SEGNO_INFINITO`, `AN.TAYLOR_SVILUPPO`), allineato alla tabella della specifica e verificato con sympy.
 - **Regole** (sessione 4c): `REGOLE.md` completo per generatori, lezioni, dimostrazioni, visualizzazioni, catalogo, con le trappole emerse dalle revisioni.
-- **Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
-- **Test**: 991 in 35 file, verdi in locale e su GitHub.
+- **Generatori di Analisi (sessione E1)*
+
+53. Codici di abilità `V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01` assegnati prima della scaletta; lezioni di riferimento proposte `V2.M03.L02`, `V2.M04.L03`, `V2.M08.L03` (E1).
+54. Cinque errori tipici nuovi: `AN.CONFRONTO_INFINITI`, `AN.FATTORE_LIMITATO`, `AN.LIMITE_NOTEVOLE`, `AN.SEGNO_INFINITO`, `AN.TAYLOR_SVILUPPO`. L'ultimo è volutamente largo (fattoriale, segni, denominatori dimenticati, sostituzione di `ax` fatta a metà): se nel diario servirà distinguerli, va diviso (E1).
+55. `AN.CONFRONTO_INFINITI` copre anche «la regola dei gradi usata in un punto finito»; `AN.SEGNO_INFINITO` copre sia il segno sbagliato sia `±∞` al posto di «non esiste» (e viceversa) (E1).
+56. Verifica indipendente dei limiti = prova numerica vicino al punto (destra e sinistra, posti pari e dispari), non un calcolo simbolico: il motore non calcola limiti (specifica, sezione 6) (E1).
+57. Il testo dei limiti chiede sempre «un numero in forma esatta, oppure +∞, −∞ o "non esiste"», anche quando la risposta è per forza un numero (Taylor): non suggerisce il tipo di risposta (E1).
+58. Limite notevole `(1 + 1/t)^t → e` usato anche per `t → −∞` (con le basi negative), dichiarato nei passaggi: la lezione dovrà dimostrarlo o enunciarlo (E1).
+59. Taylor: limiti di pulizia più larghi (interi e denominatori fino a 60) perché i coefficienti `1/24`, `1/48` sono propri dell'argomento; un errore di sviluppo che lascia termini non cancellati non diventa una risposta sbagliata prevista (chi se ne accorge si ferma) (E1).
+60. `sin(−x)` e `cos(−x)` non compaiono; argomenti negativi solo per esponenziale e logaritmo. `arctan t / t → 1` è trattato come limite notevole dal livello 2 (E1).
+
+*Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
+- **Test**: 1.012 in 38 file, verdi in locale e su GitHub.
 
 ## In corso
 
@@ -54,7 +66,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 
 1. **Decidere prima**: `log` o `ln` per il naturale nel Volume 2 (decisione 5).
 2. **Lezioni dei generatori già esistenti**: `V2.M06.L03` (regole di derivazione), `V3.M02.L01` (Gauss), `V3.M03.L01` (determinante).
-3. ⚙ **Motore**: nodi per successioni e somme (prima di V2.M03 e V2.M11), grafici statici (prima di V2.M07), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
+3. ⚙ **Motore**: nodi per successioni e somme (prima delle lezioni di V2.M03 e di V2.M11; i generatori di limiti della sessione E1 non ne hanno avuto bisogno), fattoriale e radice n-esima, grafici statici (prima di V2.M07), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
 4. **Scaletta, generatori, lezioni con dimostrazioni** (confrontate con un libro di testo; per V2.M05 e V2.M06 cinque sono già in `src/riserva/`: incollarle, cancellare il file di riserva, collegare con `[[…]]` i risultati usati), modulo per modulo, alternando i due binari; le sei visualizzazioni nei loro moduli (V2.M04, M06, M08, M09; V3.M05, M06).
    - Fase finita quando: come il Volume 1, più dimostrazioni interattive per i teoremi principali.
 
@@ -76,10 +88,13 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V2.M03.A01`, `V2.M03.L02` | Abilità: limiti di successioni — generatore `V2.M03.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M03.L02` «Calcolo dei limiti di successioni» (da scrivere) |
 | `V2.M04.A01`, `V2.M04.L03` | Abilità: limiti notevoli e forme indeterminate — generatore `V2.M04.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M04.L03` «Limiti notevoli e forme indeterminate» (da scrivere) |
 | `V2.M06.L03`, `V2.M06.A03` | Lezione (da scrivere) e abilità: regole di derivazione — generatore `V2.M06.A03.g1` |
+| `V2.M08.A01`, `V2.M08.L03` | Abilità: sviluppi di Taylor nei limiti — generatore `V2.M08.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M08.L03` «Sviluppi di Taylor nel calcolo dei limiti» (da scrivere) |
 | `V3.M02.L01`, `V3.M02.A01` | Lezione (da scrivere) e abilità: metodo di Gauss — generatore `V3.M02.A01.g1` |
 | `V3.M03.L01`, `V3.M03.A01` | Lezione (da scrivere) e abilità: determinante — generatore `V3.M03.A01.g1` |
 | `V2.M05.T01`, `V2.M05.T02` | Teorema degli zeri, teorema di Weierstrass (in `src/riserva/v2/m05/`) |
 | `V2.M06.T01`, `V2.M06.T02`, `V2.M06.T03` | Teoremi di Fermat, Rolle, Lagrange (in `src/riserva/v2/m06/`); `T03` per Lagrange è quello degli esempi della specifica |
+
+Per i tre generatori della sessione E1 i codici di **abilità** (`V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01`) sono fissi; le **lezioni** indicate sono il campo `lesson` dei generatori (dove porta «Torna alla lezione»): la scaletta può mantenerle oppure spostare il rimando a un'altra lezione, purché quella lezione spieghi tutti i casi del livello 3 (numero `e` e fattori oscillanti per le successioni; limiti laterali per le funzioni; prodotti di sviluppi per Taylor). Le altre abilità di quei moduli partono da `A02`.
 
 Liberi per la scaletta di V1.M06: `L01`-`L03` (primo grado, secondo grado, segno di un prodotto), `D01`, `A01`-`A03`. Quando esistono, `V1.M06.L04` prende i prerequisiti `V1.M06.L03` e `V1.M04.L07` (oggi `[]`, perché la verifica rifiuta lezioni che non ci sono), e i termini che oggi spiega a parole (zero di un polinomio, condizione di esistenza, tabella dei segni) diventano rimandi `[[…]]`.
 
@@ -96,6 +111,11 @@ Motore (fatto così di proposito; dettagli in `docs/REVISIONE.md` e in `REGOLE.m
 - Passaggi della scomposizione di un quadrato di binomio: `(x + 1)(x + 1)` prima di `(x + 1)²` (`src/motore/steps/factor.ts`).
 
 Generatori e lezione:
+
+- **«non esiste» non si può scrivere con la tastiera matematica** (non c'è il tasto; `∞` è solo nel livello Insiemi). Sul telefono i tre generatori di limiti si possono fare bene solo come scelta multipla (hanno sempre almeno tre risposte sbagliate previste). Da aggiungere con il livello Analisi della tastiera (fase 4, punto 4): tasti `+∞`, `−∞`, «non esiste», `e`, e la lettera `n` non serve (le risposte sono numeri).
+- I limiti di successioni sono scritti come espressioni nella lettera `n`: per questi esercizi i nodi «successione» del motore (fase 6, punto 3) non servono; mancano ancora fattoriale e radice n-esima, quindi niente `n!` né `ⁿ√n` (criterio del rapporto, formula di Stirling).
+- Nei limiti di funzioni non ci sono forme con il valore assoluto o con `√(x²) = |x|` per `x → −∞`: nel catalogo manca un errore tipico adatto (vedi «Domande aperte»).
+- La prova numerica delle verifiche (`confirmsLimit`) lavora in virgola mobile, con tolleranza del 2 per mille: basta a distinguere la risposta giusta da quelle sbagliate, ma non è una dimostrazione. La garanzia vera è il ricalcolo con sympy dal testo, fatto a mano (script fuori dal repository, come per gli altri generatori).
 
 - Al livello 1 scomposizione, Gauss e qualche derivata hanno due sole risposte sbagliate: niente scelta multipla per quegli esercizi.
 - Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno (sotto la soglia).
@@ -120,6 +140,9 @@ Altro:
 - Alcuni commit passati hanno il controllo rosso (corretti dai successivi): conta solo l'ultimo stato del ramo.
 
 ## Domande aperte (decide Andrea)
+
+- **Errore tipico nuovo** «√(x²) = x anche per x negativo» (serve per `√(x² + ax) + x` con `x → −∞` e per i limiti con il valore assoluto): aggiungerlo permetterebbe quelle forme in `V2.M04.A01.g1`.
+- **Copia della specifica nel Progetto di Claude**: la tabella degli errori ha cinque righe nuove (sessione E1); se la copia del Progetto non risulta aggiornata, va ricaricato `docs/SPECIFICA.md`.
 
 - **Errore tipico nuovo** «zero doppio trattato come zero semplice» (`(x − 3)²` studiato come `x − 3`): aggiungerlo cambia catalogo e tabella della specifica.
 - **Parentesi degli intervalli**: `(1; 3)` (oggi) oppure `]1; 3[` nella scrittura dell'app? In lettura valgono entrambe.
