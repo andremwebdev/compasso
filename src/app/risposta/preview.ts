@@ -45,8 +45,8 @@ export function fieldKindOf(answer: AnswerSpec): FieldKind | null {
   }
 }
 
-/** Modi plausibili di finire un insieme scritto a metà: «(-∞» → «(-∞; 0)», «x <» → «x < 0», «… ∪» → «… ∪ (0; 1)». */
-const SET_ENDINGS = ["0", ")", "]", "}", "0)", "; 0)", "0; 1)", " (0; 1)", " x > 0", " > 0", "∞)", "0}"] as const;
+/** Modi plausibili di finire un insieme scritto a metà: «(-∞» → «(-∞; 0)», «x <» → «x < 0», «… ∪» → «… ∪ (0; 1)», «{1,5» → «{1,5; 0}», «x = 3; x» → «x = 3; x = 0». */
+const SET_ENDINGS = ["0", ")", "]", "}", "0)", "; 0)", "0; 1)", " (0; 1)", " x > 0", " > 0", "∞)", "0}", "; 0}", "5; 0}", " = 0", "1 = 0"] as const;
 
 /** L'anteprima del testo scritto in un campo. Non lancia mai. */
 export function previewText(field: FieldKind, text: string): Preview {

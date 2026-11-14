@@ -74,6 +74,15 @@ describe("anteprima della risposta", () => {
     for (const partial of ["x", "[1; ", "(-∞", "(-∞;", "(-∞; -2) ∪", "x <", "x < -2 ∨", "[", "{1; 2", "-2 < x <", "[1; +∞"]) {
       expect(previewText(set, partial), partial).toEqual({ kind: "typing" });
     }
+    // Revisione 4a: le scritture che il parser ora legge (più soluzioni con «;», incognita con l'indice,
+    // decimali tra graffe) non devono dare errore a metà strada.
+    for (const partial of ["{1,", "{1,5", "{1,5;", "x = 3;", "x = 3; x", "x = 3; x =", "x_", "x_1", "x_1 =", "x ≤ e ∨"]) {
+      expect(previewText(set, partial), partial).toEqual({ kind: "typing" });
+    }
+    // Una quadra dalla parte dell'infinito è un errore da correggere subito, con il motivo giusto.
+    for (const wrong of ["[-∞", "[-∞; 2", "[-∞; 2]", "(2; +∞]"]) {
+      expect(previewText(set, wrong), wrong).toMatchObject({ kind: "error", message: expect.stringContaining("infinito") });
+    }
     // Un testo che nessuna chiusura può salvare resta un errore, con il motivo.
     expect(previewText(set, "(1; 3) ∪ ∪").kind).toBe("error");
     expect(previewText(set, "x + ) 2").kind).toBe("error");

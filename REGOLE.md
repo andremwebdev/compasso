@@ -97,7 +97,9 @@ checkForm(p, "factored");                           // { ok: false, reason: "…
 - `frac(6, 8)` è il numero 3/4 (ridotto); `div(6, 8)` è la frazione scritta 6/8. `decimal("1,50")` è 3/2 mostrato come 1,50.
 - `a − b` si costruisce con `sub(a, b)`; l'opposto con `neg(a)`.
 - `equivalent(a, b)`: uguali ovunque sono entrambe definite. `checkForm(expr, vincolo)`: guarda solo com'è scritta.
-- Vincoli di forma disponibili: `expanded`, `factored`, `reducedFraction`, `rationalized`, `simplifiedRadicals`, `algebraicForm`, `trigonometricForm`, `exponentialForm`.
+- Vincoli di forma disponibili: `expanded`, `factored`, `reducedFraction`, `rationalized`, `simplifiedRadicals`, `algebraicForm`, `trigonometricForm`, `exponentialForm`. Cosa controlla ciascuno: `docs/ARCHITETTURA.md`, sezione 8. Sono severi (`√(1/2)` non è razionalizzata, `2√2/2` non è ridotta, `√2·√3` non è un radicale semplificato): se la risposta giusta del generatore non li rispetta, la verifica lo dice.
+- Non creare mai `sym("π")`, `sym("ℯ")`, `sym("ⅈ")`: le costanti sono `pi`, `e`, `I`.
+- Punti fragili del motore e cose da sapere prima di scrivere un generatore: `docs/REVISIONE.md` (sessione 4a).
 
 Il resto del motore, per cartella (ogni cartella ha un `index.ts` da cui importare, salvo `algebra` e `calculus` che si importano per file):
 

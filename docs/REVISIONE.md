@@ -1,8 +1,8 @@
 # Revisione del motore (sessione 4a)
 
-Revisione critica di `src/motore` e dei suoi test, fatta come la farebbe un revisore esterno: lettura di tutto il codice, più prove a tappeto contro modelli indipendenti (valutazione numerica, forza bruta, conti rifatti in un altro modo). Questo documento si aggiorna mentre il lavoro procede.
+Revisione critica di `src/motore` e dei suoi test, fatta come la farebbe un revisore esterno: lettura di tutto il codice, più prove a tappeto contro modelli indipendenti (valutazione numerica, forza bruta, conti rifatti in un altro modo). Dice che cosa è stato controllato, che cosa è stato corretto, che cosa resta di fragile e che cosa devono sapere le altre parti (generatori, app).
 
-Stato: **in corso** — fatte le parti 1 (numeri, espressioni, LaTeX, parser), 2 (algebra, equivalenza, forma, derivate, passaggi) e 3 (insiemi, matrici, complessi, tabelle); restano i documenti.
+Stato: **finita**. Il motore è stato rivisto per intero, le correzioni hanno i loro test, il controllo su GitHub è verde.
 
 ## Come è stata fatta
 
@@ -16,6 +16,7 @@ Stato: **in corso** — fatte le parti 1 (numeri, espressioni, LaTeX, parser), 2
    - parser: 200.000 testi casuali, testi enormi, parentesi annidate a migliaia;
    - ogni LaTeX prodotto, disegnato con KaTeX rigoroso.
 3. Ogni difetto trovato è diventato prima un test che fallisce, poi la correzione (i test nuovi sono nei file del modulo, in blocchi `revisione 4a: …`).
+4. Alla fine: tipi, build e tutti i 976 test verdi, e il confronto degli esercizi generati prima e dopo.
 
 ## Che cosa è risultato solido
 
@@ -59,10 +60,42 @@ Operazioni, forma canonica, confronto, matrici, complessi, tabelle e passaggi ha
 | 18 | `∀x ∈ ℝ` e `∄x ∈ ℝ` valevano solo con la lettera x. | Valgono con l'incognita dell'esercizio. |
 | 19 | `parseSolutionSet` poteva lanciare con testi enormi (stessa causa della correzione 2). | Limite di lunghezza e nessuna eccezione verso l'esterno. |
 
+**Fuori dal motore, una riga sola.** Le correzioni 14, 15 e 17 cambiano che cosa è «scritto a metà»: in `src/app/risposta/preview.ts` l'elenco `SET_ENDINGS` ha quattro chiusure in più (`{1,5` → `{1,5; 0}`, `x = 3; x` → `x = 3; x = 0`, `x_` → `x_1 = 0`), così l'anteprima non mostra un errore mentre Andrea sta ancora scrivendo. La quadra sull'infinito invece è segnalata subito, già a `[−∞`, con il motivo giusto.
+
 ## Che cosa resta
 
-(da completare a fine revisione)
+Niente di aperto tra i difetti trovati: tutti corretti e coperti da test. Restano questi punti fragili, noti e non corretti di proposito (cambiarli è una decisione, non una riparazione):
+
+1. **Confronto numerico vicino alle cancellazioni.** Quando la forma normale non basta (funzioni goniometriche, esponenziali, logaritmi), `equivalent` valuta in punti casuali con tolleranza relativa 10⁻⁸. Due scritture equivalenti che perdono cifre in modo diverso (`(1 − cos x)/x²` contro `sin²x/(x²(1 + cos x))` per x molto piccolo) possono risultare diverse se capita un punto sfortunato: probabilità per coppia stimata sotto 1 su 1.000, e il punto dipende solo dalle due espressioni, quindi il caso è riproducibile. Nelle 240.000 coppie provate non è mai successo. Il falso positivo richiederebbe 12 punti concordi su due funzioni diverse: non realistico.
+2. **Irriducibilità in più variabili** (`form` · `factored`): si decide restringendo il polinomio a rette casuali (fino a 8). Un polinomio irriducibile potrebbe in teoria risultare «ancora da scomporre» se tutte le rette danno una restrizione riducibile: stimato sotto 1 su un milione per polinomio, mai visto. Oltre il grado 5 in una variabile l'irriducibilità non è garantita (limite già noto).
+3. **Il parser degli insiemi non completa i testi a metà** (problema noto dalla sessione 3): l'app prova delle chiusure. Va bene finché `SET_ENDINGS` segue le scritture accettate dal parser; la soluzione pulita resta nel parser.
+4. **`x = 1 e 2`** si legge `x = 1 ∧ x = 2`, cioè ∅: è la lettura rigorosa, e l'anteprima lo mostra, ma in italiano parlato «le soluzioni sono 1 e 2» vuol dire «oppure». Lasciato così.
+5. **`sin x/2`** resta `(sin x)/2` (solo con π la divisione entra nell'argomento). L'anteprima lo mostra; la tastiera dovrebbe inserire sempre `sin(`.
+6. **Forma canonica degli insiemi periodici**: un intervallo a cavallo dello zero esce spezzato in due (`[0; π/3] ∪ (5π/6; 2π)` più il periodo). Giusto, brutto da mostrare.
+7. **Nomi che coincidono con le chiavi interne**: `sym("π")`, `sym("ℯ")`, `sym("ⅈ")` verrebbero confusi con le costanti nella forma normale. Il parser non li produce mai; un generatore non deve crearli (usare `pi`, `e`, `I`).
+8. **`simplifiedRadicals` guarda solo i radicandi numerici**: `√(4x)`, `√2 + √2` (termini simili: li vede `expanded`) non sono segnalati. `expanded` non considera simili `x√2` e `x` né `πx` e `x`.
+9. **`factored` su una somma irriducibile**: `x(x+1) + 2` (cioè `x² + x + 2`, irriducibile) passa il vincolo. Non riguarda gli esercizi «scomponi», dove il polinomio è riducibile.
 
 ## Punti da incrociare con le altre parti
 
-(da completare a fine revisione)
+**Generatori**
+
+- I vincoli di forma sono più severi (correzioni 6, 7, 9): una risposta giusta scritta come `√(1/2)`, `2√2/2`, `√2·√3` o `(√2)³` ora viola `rationalized`, `reducedFraction`, `simplifiedRadicals`. La verifica automatica (punto 4) lo segnala; i cinque generatori esistenti non sono toccati (passano tutti).
+- L'ordine dei fattori di `upFactor` è cambiato per i fattori di primo grado (ora per termine noto crescente). `factorPolynomial` aveva già il suo ordine e non cambia; gli esercizi congelati nei test sono identici. Chi usa `upFactor` direttamente per mostrare qualcosa deve ordinare da sé.
+- Risposte di tipo insieme: Andrea ora può scrivere `x = 3; x = 5`, `x_1 = 2 ∨ x_2 = 3`, `3; 5`. Per le equazioni (V1.M05) conviene dirlo negli indizi o nel testo d'aiuto della tastiera. `[−∞; 2]` e `{1,2}` non arrivano più alla valutazione: sono testi non validi.
+- Disequazioni con e (V1.M09): `x ≤ e ∨ x ≥ e²` ora si legge. Vale la pena un generatore di prova con estremi `e`, `e²`, `ln 2` quando si fa il modulo.
+- Unione tra soluzioni periodiche e punti isolati (`x = 0 ∨ x = π/2 + kπ`) resta non rappresentabile: il messaggio parla di «intervallo» anche quando è un punto. Le equazioni goniometriche vanno costruite con soluzioni tutte periodiche.
+- Matrici con elementi complessi: `src/esercizi/evaluate.ts` legge le caselle senza l'opzione `complex`, quindi `i` in una casella è una lettera. Quando V3 userà matrici complesse serve un campo `complex` anche nella risposta `matrix`.
+- Per mostrare un insieme periodico ottenuto da `setUnion`/`setComplement`, il generatore scriva la base a mano (punto 6 sopra).
+- Niente `sym("π")`, `sym("ℯ")`, `sym("ⅈ")` (punto 7 sopra).
+
+**App**
+
+- `SET_ENDINGS` in `preview.ts` va tenuto allineato al parser degli insiemi (punto 3 sopra).
+- La tastiera dovrebbe inserire le funzioni con la parentesi (`sin(`), e sul livello Insiemi avere `;` e `∨` in evidenza: sono le due scritture su cui il parser non indovina.
+- I messaggi nuovi del parser contengono formule tra `$…$` (`$\lor$`, `$\left\{1; 2\right\}$`): l'anteprima deve disegnarli come gli altri motivi.
+- Oltre 1.000 caratteri (espressioni) o 2.000 (insiemi) il testo è rifiutato con «Il testo è troppo lungo.»: nessun campo dell'app dovrebbe arrivarci.
+
+**Dati e progressi**
+
+- Nessun formato cambiato. Gli esercizi sono identici a prima: i 45.000 esercizi dei cinque generatori (3 livelli, semi da 1 a 3000) generati prima e dopo la revisione coincidono byte per byte (testo, risposta, risposte sbagliate previste, passaggi, indizi). I tentativi salvati restano validi.

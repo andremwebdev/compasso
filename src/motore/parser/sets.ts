@@ -48,6 +48,7 @@ const ALL: RealSet = { kind: "realset", pieces: [{ lower: "-inf", upper: "+inf",
 
 const EMPTY_WORDS = new Set(["∅", "{}", "vuoto", "insiemevuoto", "nessunasoluzione", "impossibile", "mai", "∄x∈ℝ", "∄x∈r", "∄x"]);
 const ALL_WORDS = new Set(["ℝ", "r", "tuttiireali", "sempre", "∀x∈ℝ", "∀x∈r", "∀x", "ognix"]);
+const CLOSED_INFINITY = "L'infinito non è un numero e non può essere incluso: dalla sua parte la parentesi è sempre aperta.";
 const PLUS_INFINITY = /^\+?(∞|inf|infinito|oo)$/i;
 const MINUS_INFINITY = /^-(∞|inf|infinito|oo)$/i;
 const RELATION = /(<=|>=|=<|=>|!=|≠|≤|≥|<|>|=)/;
@@ -155,7 +156,7 @@ class SetReader {
     const lowerClosed = text.startsWith("[");
     const upperClosed = text.endsWith("]");
     if ((lowerClosed && typeof lower.value === "string") || (upperClosed && typeof upper.value === "string")) {
-      throw new SetFailure("L'infinito non è un numero e non può essere incluso: dalla sua parte la parentesi è sempre aperta.", offset);
+      throw new SetFailure(CLOSED_INFINITY, offset);
     }
     if (this.complete) {
       const order = compareEndpoints(lower.value, upper.value);
@@ -274,6 +275,8 @@ class SetReader {
       const isNumberInParentheses = body.startsWith("(") && body.endsWith(")") && !body.includes(";") && !/,(?!\d)|(?<!\d),/.test(body);
       if (!isNumberInParentheses) return this.interval(body, start);
     }
+    // Una quadra che include l'infinito è sbagliata già mentre si scrive: lo si dice subito, senza aspettare la chiusura.
+    if (/^\[\s*[-+]?\s*(∞|inf|infinito|oo)/i.test(body)) throw new SetFailure(CLOSED_INFINITY, start);
     if (/^[[\]]/.test(body) || /[[\]]$/.test(body)) throw new SetFailure("L'intervallo non è completo: servono due estremi e due parentesi.", start);
     // Un numero da solo è la soluzione x = numero.
     const bound = this.bound(body, start);

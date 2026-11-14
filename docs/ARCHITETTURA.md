@@ -60,7 +60,7 @@ Dipendenze ammesse, dall'alto verso il basso: `app` → `esercizi`, `contenuti/f
 | `Rational` | `numbers/rational.ts` | frazioni, **sempre ridotte**, denominatore positivo | legge e scrive i decimali con la virgola (`parseDecimal`, `toDecimalString`) |
 | `Surd` | `numbers/surd.ts` | combinazioni razionali di radici quadrate: 3+2√5, √2/2, √2+√3 | è un **campo**: somma, prodotto, reciproco (razionalizzazione automatica) e segno sono esatti; la scrittura è unica |
 
-**Perché `Surd`.** I numeri del tipo «razionale + radici quadrate» sono chiusi rispetto alle quattro operazioni e hanno una forma normale unica: due numeri sono uguali se e solo se hanno gli stessi termini. Sono i coefficienti della forma normale (sezione 6), così `1/(1+√2)` e `√2−1` risultano uguali senza valutazioni approssimate. Il segno si decide in virgola mobile quando è netto e con 40 cifre esatte quando c'è cancellazione.
+**Perché `Surd`.** I numeri del tipo «razionale + radici quadrate» sono chiusi rispetto alle quattro operazioni e hanno una forma normale unica: due numeri sono uguali se e solo se hanno gli stessi termini. Sono i coefficienti della forma normale (sezione 6), così `1/(1+√2)` e `√2−1` risultano uguali senza valutazioni approssimate. Il segno si decide in virgola mobile quando è netto; quando c'è cancellazione, con radici intere esatte, raddoppiando le cifre finché il totale supera l'errore massimo possibile (il segno è dimostrato, non stimato).
 
 **π ed e** non sono numeri del motore: sono simboli (`const`), trattati come indeterminate. Lo stesso vale per le **radici di indice superiore** (∛2) e per le radici di espressioni: sono «atomi» con una regola di riduzione (sezione 6).
 
@@ -108,7 +108,7 @@ Due nodi nuovi in `Expr`, da aggiungere quando servono: `sum { index, from, to, 
 
 ## 5. Lettura di quello che scrive Andrea ✅
 
-`parser/tokenize.ts` spezza il testo, `parser/parse.ts` costruisce l'albero (discesa ricorsiva). `parseExpression` e `parseRelation` non lanciano mai errori: restituiscono `{ ok: true, value, complete }` oppure `{ ok: false, error: { message, position } }`, con il messaggio in italiano.
+`parser/tokenize.ts` spezza il testo, `parser/parse.ts` costruisce l'albero (discesa ricorsiva). `parseExpression` e `parseRelation` non lanciano mai errori (nemmeno con testi enormi o migliaia di parentesi annidate: oltre 1.000 caratteri il testo è rifiutato, e nessuna eccezione esce verso l'esterno): restituiscono `{ ok: true, value, complete }` oppure `{ ok: false, error: { message, position } }`, con il messaggio in italiano.
 
 Regole fissate (la tastiera matematica della fase 4 deve produrre testo che le rispetta):
 
@@ -120,7 +120,7 @@ Regole fissate (la tastiera matematica della fase 4 deve produrre testo che le r
 | `/` `:` `÷` | quoziente | `1/2x` vale `(1/2)·x`: prodotti e divisioni da sinistra a destra |
 | `^` `**` `x²` `x⁻¹` | potenza | `−x^2` vale `−(x²)`; `2^3^2` vale `2^(3^2)` |
 | `√2` `sqrt(2)` `sqrt2` `∛x` `root(3; x)` | radici | `√2x` vale `√2·x` |
-| `sin x` `sin(x)` `sen x` `sin 2x` `sin^2 x` `sin²x` | funzioni | senza parentesi l'argomento è un prodotto di numeri e lettere e si ferma a `+`, `−` e alla funzione successiva |
+| `sin x` `sin(x)` `sen x` `sin 2x` `sin^2 x` `sin²x` | funzioni | senza parentesi l'argomento è un prodotto di numeri e lettere e si ferma a `+`, `−` e alla funzione successiva. Una sola eccezione: se l'argomento contiene π, la divisione per un intero resta dentro (`sin π/3` = `sin(π/3)`, `cos 2π/3`), perché `(sin π)/3` non lo scrive nessuno; senza π, `sin x/2` = `(sin x)/2` |
 | `ln x` `log x` `log_2 x` `log(2; x)` | logaritmi | `log` = base 10 |
 | `|x|` `abs(x)` | valore assoluto | |
 | `e^x` `exp(x)` `pi` `π` | costanti | `e` è sempre il numero di Nepero |
@@ -138,13 +138,14 @@ Un argomento separato da punto e virgola (`root(3; x)`) segue la convenzione ita
 
 | Scrittura | Vale |
 | --- | --- |
-| `[1; 3)` `(−∞; 2]` `]1; 3[` | intervalli; `]` e `[` «al contrario» sono parentesi aperte, all'italiana |
+| `[1; 3)` `(−∞; 2]` `]1; 3[` | intervalli; `]` e `[` «al contrario» sono parentesi aperte, all'italiana. Una quadra che include un infinito (`[−∞; 2]`) è un errore spiegato, già mentre si scrive |
 | `;` tra gli estremi | separatore; la virgola vale solo se non sta tra due cifre (`(1, 5)` è un intervallo, `(1,5)` è il numero 1,5) |
 | `∪`, `U` tra due intervalli, `∨`, `o`, `oppure` | unione |
-| `∧`, `∩`, `e` | intersezione (ha la precedenza sull'unione) |
-| `{1; 2}`, `3` | punti isolati (un numero da solo è la soluzione `x = 3`) |
-| `∅` `vuoto` `nessuna soluzione` `impossibile` · `ℝ` `R` `sempre` `∀x∈ℝ` | insieme vuoto · tutti i reali |
-| `x < 2`, `2 > x`, `1 < x ≤ 3`, `x = 3`, `x ≠ 2` | disuguaglianze nell'incognita |
+| `∧`, `∩`, `e` | intersezione (ha la precedenza sull'unione). «e» è la congiunzione solo tra due condizioni complete; dopo un segno o un'operazione, o in fondo, è il numero di Nepero: `x ≤ e ∨ x ≥ e²`, `x > e e x < 5` |
+| `x = 3; x = 5`, `x=1, x=2`, `3; 5` | fuori dalle parentesi, `;` (o virgola e spazio) tra **uguaglianze o numeri** vale «oppure»; tra disuguaglianze è un errore spiegato (unione o sistema?) |
+| `{1; 2}`, `3` | punti isolati (un numero da solo è la soluzione `x = 3`). `{1,2}` è rifiutato come ambiguo (due soluzioni o il decimale 1,2?), con il modo di scrivere i due casi |
+| `∅` `vuoto` `nessuna soluzione` `impossibile` · `ℝ` `R` `sempre` `∀x∈ℝ` | insieme vuoto · tutti i reali (`∀` e `∄` con la lettera dell'incognita dell'esercizio) |
+| `x < 2`, `2 > x`, `1 < x ≤ 3`, `x = 3`, `x ≠ 2` | disuguaglianze nell'incognita, che si può scrivere con l'indice delle soluzioni (`x_1 = 2 ∨ x_2 = 3`, `x1`, `x₂`) |
 | `x = π/6 + 2kπ`, `π/6 + 2kπ < x < 5π/6 + 2kπ`, `x = ±π/3 + 2kπ` | soluzioni periodiche: l'estremo deve essere di primo grado in `k`; `k ∈ ℤ` in fondo è facoltativo |
 | `x ∈ […]`, `S = […]` | prefissi accettati e ignorati |
 
@@ -206,13 +207,13 @@ Costo: decimi di millisecondo per le espressioni tipiche (c'è un test che lo co
 
 | Vincolo | Richiesta nel testo | Cosa controlla |
 | --- | --- | --- |
-| `expanded` | «sviluppa», «riduci a forma normale» | somma di monomi, senza prodotti di somme né potenze di somme, termini simili già sommati |
-| `factored` | «scomponi» | prodotto di fattori ciascuno **irriducibile** sui razionali e senza fattori numerici o letterali da raccogliere |
-| `reducedFraction` | «riduci ai minimi termini» | frazioni numeriche ridotte; in una frazione algebrica numeratore e denominatore senza fattori comuni |
-| `rationalized` | «razionalizza» | nessuna radice (né esponente frazionario) in un denominatore |
-| `simplifiedRadicals` | «porta fuori dal segno di radice» | sotto radice nessun fattore che sia una potenza perfetta, nessuna frazione, indice non riducibile |
+| `expanded` | «sviluppa», «riduci a forma normale» | somma di monomi, senza prodotti di somme né potenze di somme, termini simili già sommati (simili = stessa parte letterale **e stesso radicale**: `2√2 + 3√2` sì, `3 + 2√2` no) |
+| `factored` | «scomponi» | prodotto di fattori ciascuno **irriducibile** sui razionali e senza fattori numerici o letterali da raccogliere (il numero da raccogliere si vede anche tra i radicali: `2x + 2√2`); la potenza di un prodotto si guarda fattore per fattore |
+| `reducedFraction` | «riduci ai minimi termini» | frazioni numeriche ridotte; in una frazione algebrica numeratore e denominatore senza fattori comuni, compreso un intero comune davanti ai radicali (`2√2/2`, `(2 + 2√3)/4`) |
+| `rationalized` | «razionalizza» | nessuna radice (né esponente frazionario) in un denominatore, e nessuna frazione sotto radice (`√(1/2)` è ancora `1/√2`) |
+| `simplifiedRadicals` | «porta fuori dal segno di radice» | sotto radice nessun fattore che sia una potenza perfetta, nessuna frazione, indice non riducibile; nessuna potenza di una radice numerica con esponente ≥ indice (`(√2)³`), nessun prodotto di radici numeriche con lo stesso indice (`√2·√3`), niente `√0` |
 | `algebraicForm` | «scrivi in forma algebrica» | `a + bi` con `a`, `b` reali, `i` non al denominatore né sotto potenza |
-| `trigonometricForm` | «scrivi in forma trigonometrica» | `ρ(cos θ + i sin θ)` con `ρ > 0` e lo stesso `θ` |
+| `trigonometricForm` | «scrivi in forma trigonometrica» | `ρ(cos θ + i sin θ)` con `ρ > 0` e lo stesso `θ`; i due addendi in qualunque ordine |
 | `exponentialForm` | «scrivi in forma esponenziale» | `ρ·e^{iθ}` con `ρ > 0` e l'esponente della forma `iθ` |
 
 `algebraicForm` accetta una parte reale con più termini quando non si possono sommare tra loro (`1 + √2 + i` sì, `1 + 2 + i` no).
@@ -374,7 +375,7 @@ Dalle lezioni si ricavano senza riscrivere nulla: le **flashcard automatiche** (
 
 Ogni modulo ha il suo file in `test/motore/`, `test/esercizi/`, `test/contenuti/`. Oltre ai casi singoli ci sono controlli «a tappeto», con dati generati da un `Rng` a chiave fissa:
 
-- il parser (espressioni e insiemi) non lancia mai eccezioni su migliaia di testi casuali; ogni LaTeX prodotto si disegna con KaTeX in modalità rigorosa; la sequenza dell'`Rng` è congelata; il confronto resta sotto una soglia di tempo;
+- il parser (espressioni e insiemi) non lancia mai eccezioni su migliaia di testi casuali, né con testi enormi o parentesi annidate a migliaia; nel codice del motore non compaiono confronti secondo la lingua, l'ora o `Math.random`; ogni LaTeX prodotto si disegna con KaTeX in modalità rigorosa; la sequenza dell'`Rng` è congelata; il confronto resta sotto una soglia di tempo;
 - `simplify` dà un risultato equivalente e stabile su espressioni casuali; `expand` rispetta il vincolo `expanded`;
 - la derivata coincide con il rapporto incrementale (differenza centrale di ordine 4) in punti casuali;
 - matrici: `det(AB) = det A · det B`, `A·A⁻¹ = I`; ogni passaggio di Gauss registrato è l'operazione applicata alla matrice precedente; le soluzioni dei sistemi risolvono il sistema; le matrici costruite da autovalori e autovettori scelti li restituiscono;
@@ -398,4 +399,7 @@ Gli aiuti comuni sono in `test/motore/helpers.ts`.
 - `realZeros` trova gli zeri dei polinomi che si scompongono in fattori di primo e secondo grado; negli altri casi li indica il generatore.
 - Il decimale approssimato (`FORMA.DECIMALE`) si riconosce solo per risposte costanti, non per espressioni con coefficienti decimali approssimati (`0,33x`), e negli insiemi solo quando l'estremo decimale è esatto (`0,5` per `1/2`).
 - Fattoriale, gradi (`30°`), numeri periodici e notazione scientifica con `E` non sono letti dal parser: quando un modulo li richiede si aggiungono al parser, non ai generatori.
+- `parseSolutionSet` non completa da solo un insieme scritto a metà (`(1; `): per l'anteprima l'app prova delle chiusure plausibili (`SET_ENDINGS` in `src/app/risposta/preview.ts`), da tenere allineate alle scritture che il parser accetta.
+- La forma canonica di un insieme periodico spezza in due un intervallo a cavallo dello zero (`[0; π/3] ∪ (5π/6; 2π)` più il periodo): giusta, ma brutta da mostrare. I generatori scrivono la base a mano.
+- Il confronto numerico usa una tolleranza relativa di 10⁻⁸: due scritture equivalenti che perdono cifre in modo diverso vicino a una cancellazione (`(1 − cos x)/x²` per x molto piccolo) possono, raramente, risultare diverse. Vedi `docs/REVISIONE.md`.
 - Non ancora fatti, perché nessuno li usa ancora: i nodi per successioni e somme (sezione 4) e i grafici statici (sezione 13).

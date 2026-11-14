@@ -1,6 +1,6 @@
 # STATO
 
-Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione 3 (generatori di riferimento e fetta verticale).
+Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione 4a (revisione del motore).
 
 ## Fatto
 
@@ -63,9 +63,16 @@ Aggiornato alla fine di ogni sessione. Ultimo aggiornamento: fine della sessione
 - **Prove fatte**: percorso completo in un telefono simulato (Chromium con le misure di un iPhone 11, tema chiaro e scuro): lezione dall'inizio alla fine, esercizi, dati che restano dopo il ricaricamento, nessun errore in console, nessuno scorrimento orizzontale. Versione PC aperta come file in Chromium: funziona, IndexedDB compresa. **Non è stata fatta una prova su un iPhone vero**: è la prima cosa da fare.
 - **Test**: 941 test in 33 file. La prova end-to-end percorre lezione ed esercizio nelle due versioni compilate.
 
+**Sessione 4a — revisione del motore**
+
+- Tutto `src/motore` riletto e provato a tappeto contro modelli indipendenti (dettagli, metodo e numeri in `docs/REVISIONE.md`). Solidi e senza difetti: numeri, forma normale, `simplify`, `expand`, equivalenza, derivate, operazioni sugli insiemi, matrici, complessi, tabelle, passaggi.
+- **19 correzioni**, ognuna con il suo test: LaTeX rotto per `1 + (−x)y`; parser che poteva lanciare; segno «esatto» dei radicali che non lo era sempre; cinque vincoli di forma che accettavano risposte sbagliate (`√(1/2)`, `2√2/2`, `(√2)³`) o rifiutavano risposte giuste (`3 + 2√2`, `((x+1)(x−1))²`); ordine dei fattori che dipendeva dalla lingua del dispositivo; il numero e letto come congiunzione negli insiemi (`x ≤ e ∨ x ≥ e²`); `[−∞; 2]` e `{1,2}` accettati o fraintesi in silenzio.
+- Fuori dal motore solo `SET_ENDINGS` in `src/app/risposta/preview.ts` (quattro chiusure in più, per restare allineati al parser).
+- **Test**: 976 in 33 file. I 45.000 esercizi dei cinque generatori (3 livelli, semi 1-3000) sono identici, byte per byte, a prima della revisione.
+
 ## In corso
 
-Niente. Il lavoro della sessione 3 è completo e caricato su GitHub (ramo `main`). **La fase 3 (fetta verticale) è chiusa**, salvo la prova sul telefono vero.
+Niente. La sessione 4a è completa e caricata su GitHub (ramo `main`), controllo verde.
 
 ## Codici assegnati (la scaletta futura deve rispettarli)
 
@@ -163,6 +170,15 @@ Decisioni prese seguendo la sezione 0 della specifica, dove il testo non decide.
 50. **Padronanza**: non c'è ancora una formula; `skillSummaries` dà solo conteggi per abilità (le domande lampo non contano, le distrazioni non pesano).
 51. **Formule dei testi degli esercizi ingrandite** dal foglio di stile, perché le frazioni in riga erano piccole; in alternativa i generatori potrebbero scrivere la disequazione a centro pagina.
 
+*Sessione 4a (revisione del motore)*
+
+52. **`sin π/3` = `sin(π/3)`**: con π nell'argomento senza parentesi, la divisione per un intero resta dentro. Senza π resta `sin x/2` = `(sin x)/2`. Alternativa: lasciare tutto com'era e contare sulla parentesi inserita dalla tastiera.
+53. **`[−∞; 2]` è un testo non valido** (con il motivo), non una risposta sbagliata: Andrea lo corregge prima di confermare e non entra nel diario come `DISEQ.ESTREMI`. Alternativa: accettarlo come scritto e valutarlo sbagliato.
+54. **`{1,2}` è rifiutato come ambiguo** (due soluzioni o il decimale 1,2?), perché l'anteprima lo disegnava uguale nei due casi. `(1,5)` resta il numero 1,5 (decisione della sessione 2).
+55. **`;` tra più soluzioni vale «oppure» solo tra uguaglianze o numeri** (`x = 3; x = 5`); tra disuguaglianze è un errore spiegato, perché potrebbe voler dire sistema.
+56. **Vincoli di forma più severi**: `simplifiedRadicals` rifiuta `√2·√3` (vuole `√6`) e `(√2)³`; `rationalized` rifiuta la frazione sotto radice; `reducedFraction` vede l'intero comune tra i radicali.
+57. **Limite di lunghezza delle risposte scritte**: 1.000 caratteri per un'espressione, 2.000 per un insieme.
+
 ## Domande aperte
 
 - **IndexedDB nella versione PC**: in Chromium funziona anche nel file aperto con doppio clic (provato). Da provare in Safari e Firefox; il ripiego su localStorage e poi sulla memoria esiste ed è testato.
@@ -180,6 +196,13 @@ Limiti del motore (dettagli in `docs/ARCHITETTURA.md`, sezione 18):
 - Insiemi: l'unione tra soluzioni periodiche e un intervallo non è rappresentabile.
 - `FORMA.DECIMALE` per valori approssimati si riconosce solo nelle risposte costanti, non in espressioni con coefficienti decimali (`0,33x`) né negli estremi approssimati di un insieme.
 - Il parser non legge fattoriale, gradi (`30°`), numeri periodici, notazione scientifica con `E`: si aggiungono al parser quando un modulo li richiede.
+
+Della sessione 4a (punti fragili rimasti, spiegati in `docs/REVISIONE.md`, «Che cosa resta»):
+
+- Il confronto numerico può, molto raramente, dare «diverse» per due scritture equivalenti vicino a una cancellazione numerica.
+- `x = 1 e 2` si legge come ∅ (lettura rigorosa di «e»); `sin x/2` resta `(sin x)/2`.
+- Risposta `matrix`: le caselle si leggono senza numeri complessi (serve un campo `complex` quando V3 li userà).
+- L'unione tra soluzioni periodiche e un punto isolato dà un messaggio che parla di «intervallo».
 
 Della sessione 3:
 
