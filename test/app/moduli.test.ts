@@ -201,7 +201,7 @@ describe("mentre Andrea scrive, l'anteprima non dà per sbagliato un pezzo di ri
       }
     }
     expect(texts).toBeGreaterThan(1500);
-  });
+  }, 30_000);
 
   it("i motivi del parser contengono formule, e l'app le disegna", () => {
     const preview = previewText({ kind: "set", variable: "x" }, "x < 1; x > 2");

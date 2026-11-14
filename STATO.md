@@ -244,5 +244,6 @@ Della sessione 3:
 Altro:
 
 - Il commit `6f7577b` (verifica dei generatori) ha il controllo su GitHub rosso per un errore di tipo in un test, corretto dal commit successivo: l'ultimo stato del ramo è verde.
+- I commit della sessione 4b da `b2d9086` a `d1564a8` hanno il controllo su GitHub rosso o annullato per un solo motivo: un test nuovo (2.000 semi per due livelli) superava i 5 secondi sulla macchina di GitHub. Corretto dal commit successivo (meno semi, tempo massimo esplicito): l'ultimo stato del ramo è verde.
 - Icone PNG provvisorie; `README.md` contiene solo il titolo.
 - GitHub Actions avvisa che `actions/checkout@v4`, `setup-node@v4` e `upload-artifact@v4` usano Node 20, deprecato: funziona ancora, ma conviene passare alle versioni successive delle azioni quando si tocca il workflow.

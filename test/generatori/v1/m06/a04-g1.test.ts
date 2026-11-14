@@ -35,13 +35,13 @@ describe("V1.M06.A04.g1 — disequazioni fratte", () => {
 
   it("ai livelli 2 e 3 ogni esercizio ha almeno tre risposte sbagliate (servono alla scelta multipla)", () => {
     for (const level of [2, 3] as const) {
-      for (let seed = 0; seed < 2000; seed++) {
+      for (let seed = 0; seed < 1000; seed++) {
         const { answer, prompt } = generateExercise(generator, level, seed);
         if (answer.kind !== "set") throw new Error("tipo di risposta inatteso");
         expect(answer.wrong.length, `livello ${level}, seme ${seed}: ${prompt}`).toBeGreaterThanOrEqual(3);
       }
     }
-  });
+  }, 30_000);
 
   it("un fattore con il coefficiente di x negativo porta l'errore «verso non invertito»", () => {
     // (−x + 2)/(x − 4) < 0: la risposta giusta è x < 2 ∨ x > 4. Chi studia −x + 2 > 0 come x > 2 trova 2 < x < 4.
