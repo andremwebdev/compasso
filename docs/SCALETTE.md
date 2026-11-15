@@ -1217,4 +1217,366 @@ Prerequisiti: V2.M12.L03
 - Termini: soluzione-particolare, risonanza
 - Teorema V2.M12.T05 Soluzione generale = soluzione dell'omogenea associata + una soluzione particolare — dim.
 
-<!-- SEGUE: VOLUME 3 -->
+---
+
+# Volume 3, Geometria e Algebra Lineare
+
+Stesso rigore del Volume 2. I numeri complessi si richiamano da V2.M02 (unico prerequisito preso dal Volume 2, come da specifica, sezione 2).
+
+## V3.M01 Vettori geometrici
+
+Stato: proposta.
+
+#### V3.M01.L01 · Vettori e operazioni · 20 min
+Prerequisiti: V1.M12.L10, V1.M10.L03
+- Abilità V3.M01.A01: somma, differenza, prodotto per uno scalare, in componenti nel piano e nello spazio.
+- Termini: vettore-geometrico, modulo-di-un-vettore, versore, vettori-paralleli, componenti-di-un-vettore
+
+#### V3.M01.L02 · Prodotto scalare · 15 min
+Prerequisiti: V3.M01.L01, V1.M10.L13
+- Abilità V3.M01.A02: prodotto scalare, angolo tra vettori, ortogonalità, proiezione.
+- Termini: prodotto-scalare, vettori-ortogonali, proiezione-ortogonale-di-un-vettore
+- Teorema V3.M01.T01 Il prodotto scalare in componenti è la somma dei prodotti delle componenti — dim. (teorema del coseno)
+
+#### V3.M01.L03 · Prodotto vettoriale · 20 min
+Prerequisiti: V3.M01.L02
+- Abilità V3.M01.A03: prodotto vettoriale in componenti; area di un parallelogramma e di un triangolo.
+- Termini: prodotto-vettoriale, regola-della-mano-destra
+- Teorema V3.M01.T02 Il modulo del prodotto vettoriale è l'area del parallelogramma — dim.
+
+#### V3.M01.L04 · Prodotto misto · 15 min
+Prerequisiti: V3.M01.L03
+- Abilità V3.M01.A04: volume di un parallelepipedo; vettori complanari.
+- Termini: prodotto-misto, vettori-complanari
+- Teorema V3.M01.T03 Il valore assoluto del prodotto misto è il volume del parallelepipedo — dim.
+
+## V3.M02 Sistemi lineari e matrici
+
+Stato: proposta.
+
+#### V3.M02.L01 · Sistemi lineari e metodo di Gauss · 20 min
+Prerequisiti: V1.M07.L03
+- Abilità V3.M02.A01: risolvere un sistema con la riduzione a scala. **Esiste**: `V3.M02.A01.g1`.
+- Termini: matrice, matrice-dei-coefficienti, matrice-completa, operazioni-elementari-sulle-righe, matrice-a-scala, pivot
+- Teorema V3.M02.T01 Le operazioni elementari sulle righe trasformano un sistema in uno equivalente — dim.
+
+#### V3.M02.L02 · Sistemi con infinite soluzioni o impossibili · 15 min
+Prerequisiti: V3.M02.L01
+- Abilità V3.M02.A02: soluzioni in forma parametrica di un sistema a scala; riconoscere i sistemi impossibili.
+- Termini: variabile-libera
+
+#### V3.M02.L03 · Operazioni tra matrici · 15 min
+Prerequisiti: V3.M02.L01
+- Abilità V3.M02.A03: somma, prodotto per uno scalare, trasposta.
+- Termini: matrice-quadrata, matrice-nulla, matrice-identita, matrice-diagonale, matrice-triangolare, matrice-trasposta, matrice-simmetrica
+
+#### V3.M02.L04 · Prodotto righe per colonne · 20 min
+Prerequisiti: V3.M02.L03
+- Abilità V3.M02.A04: prodotto tra matrici e tra matrice e vettore.
+- Termini: prodotto-righe-per-colonne
+- Teorema V3.M02.T02 Il prodotto è associativo e distributivo, ma non commutativo — dim. (controesempio per la commutatività)
+- Teorema V3.M02.T03 (AB)ᵀ = BᵀAᵀ — dim.
+
+#### V3.M02.L05 · Rango di una matrice · 15 min
+Prerequisiti: V3.M02.L02, V3.M02.L04
+- Abilità V3.M02.A05: rango con la riduzione a scala.
+- Termini: rango
+- Teorema V3.M02.T04 Il numero di pivot non dipende dalle operazioni elementari scelte — enunciato qui, dimostrato in V3.M04.L05 (V3.M04.T05)
+
+#### V3.M02.L06 · Teorema di Rouché-Capelli · 20 min
+Prerequisiti: V3.M02.L05
+- Abilità V3.M02.A06: discutere un sistema al variare di un parametro.
+- Termini: sistema-omogeneo, sistema-compatibile
+- Teorema V3.M02.T05 Teorema di Rouché-Capelli, con il numero di parametri liberi — dim.
+
+## V3.M03 Determinanti e matrice inversa
+
+Stato: proposta.
+
+#### V3.M03.L01 · Determinante e sviluppo di Laplace · 20 min
+Prerequisiti: V3.M02.L04
+- Abilità V3.M03.A01: determinante di ordine 2, 3 e 4 (sviluppo lungo la linea con più zeri). **Esiste**: `V3.M03.A01.g1`.
+- Termini: determinante, minore, minore-complementare, complemento-algebrico
+- Teorema V3.M03.T01 Lo sviluppo di Laplace dà lo stesso valore lungo qualunque riga o colonna — enunciato (la dimostrazione chiede le permutazioni, fuori dal programma comune)
+
+#### V3.M03.L02 · Proprietà del determinante · 20 min
+Prerequisiti: V3.M03.L01
+- Abilità V3.M03.A02: determinante con le operazioni sulle righe; matrici triangolari; det(kA).
+- Teorema V3.M03.T02 Effetto delle operazioni elementari sul determinante — dim. (dallo sviluppo di Laplace)
+- Teorema V3.M03.T03 Il determinante di una matrice triangolare è il prodotto della diagonale — dim.
+- Teorema V3.M03.T04 Teorema di Binet — enunciato
+
+#### V3.M03.L03 · Matrice inversa · 20 min
+Prerequisiti: V3.M03.L02
+- Abilità V3.M03.A03: inversa di matrici 2×2 e 3×3 (con i complementi algebrici e con Gauss-Jordan).
+- Termini: matrice-invertibile, matrice-inversa
+- Teorema V3.M03.T05 Una matrice quadrata è invertibile se e solo se il determinante non è nullo — dim. (con Binet)
+- Teorema V3.M03.T06 Formula dell'inversa con i complementi algebrici — dim.
+- Teorema V3.M03.T07 (AB)⁻¹ = B⁻¹A⁻¹ — dim.
+
+#### V3.M03.L04 · Regola di Cramer · 15 min
+Prerequisiti: V3.M03.L03, V3.M02.L06
+- Abilità V3.M03.A04: risolvere un sistema con la regola di Cramer.
+- Termini: sistema-di-cramer
+- Teorema V3.M03.T08 Regola di Cramer — dim.
+
+#### V3.M03.L05 · Rango con i minori · 15 min
+Prerequisiti: V3.M03.L04
+- Abilità V3.M03.A05: rango con il metodo degli orlati, anche con un parametro.
+- Termini: minore-orlato
+- Teorema V3.M03.T09 Teorema degli orlati (di Kronecker) — enunciato
+
+## V3.M04 Spazi vettoriali
+
+Stato: proposta.
+
+#### V3.M04.L01 · Spazi vettoriali · 20 min
+Prerequisiti: V3.M02.L04, V3.M01.L01
+- Abilità V3.M04.A01: riconoscere se un insieme con due operazioni è uno spazio vettoriale.
+- Termini: spazio-vettoriale, vettore, spazio-rn
+
+#### V3.M04.L02 · Sottospazi · 15 min
+Prerequisiti: V3.M04.L01
+- Abilità V3.M04.A02: riconoscere i sottospazi (anche di polinomi e matrici).
+- Termini: sottospazio-vettoriale
+- Teorema V3.M04.T01 Criterio di sottospazio — dim.
+- Teorema V3.M04.T02 L'intersezione di due sottospazi è un sottospazio; l'unione in generale no — dim.
+
+#### V3.M04.L03 · Combinazioni lineari e generatori · 15 min
+Prerequisiti: V3.M04.L02, V3.M02.L06
+- Abilità V3.M04.A03: dire se un vettore è combinazione lineare di altri; sistemi di generatori.
+- Termini: combinazione-lineare, sottospazio-generato, sistema-di-generatori
+
+#### V3.M04.L04 · Indipendenza lineare · 20 min
+Prerequisiti: V3.M04.L03, V3.M02.L05
+- Abilità V3.M04.A04: indipendenza lineare con il rango.
+- Termini: vettori-linearmente-indipendenti, vettori-linearmente-dipendenti
+- Teorema V3.M04.T03 Dei vettori sono dipendenti se e solo se uno è combinazione lineare degli altri — dim.
+
+#### V3.M04.L05 · Basi e dimensione · 20 min
+Prerequisiti: V3.M04.L04
+- Abilità V3.M04.A05: base e dimensione di un sottospazio dato con generatori o con equazioni.
+- Termini: base-di-uno-spazio-vettoriale, base-canonica, dimensione-di-uno-spazio-vettoriale
+- Teorema V3.M04.T04 Tutte le basi di uno spazio hanno lo stesso numero di elementi — dim. (lemma dello scambio)
+- Teorema V3.M04.T05 Il rango è la dimensione dello spazio generato dalle colonne e da quello generato dalle righe — dim.
+- Teorema V3.M04.T06 Ogni insieme di vettori indipendenti si completa a una base — enunciato (dimostrazione corta, ma la si dà come esempio svolto)
+
+#### V3.M04.L06 · Coordinate · 15 min
+Prerequisiti: V3.M04.L05
+- Abilità V3.M04.A06: coordinate di un vettore rispetto a una base.
+- Termini: coordinate-rispetto-a-una-base
+- Teorema V3.M04.T07 Le coordinate rispetto a una base sono uniche — dim.
+
+#### V3.M04.L07 · Somma di sottospazi e formula di Grassmann · 20 min
+Prerequisiti: V3.M04.L05
+- Abilità V3.M04.A07: dimensione di somma e intersezione; somma diretta.
+- Termini: somma-di-sottospazi, somma-diretta
+- Teorema V3.M04.T08 Formula di Grassmann — dim.
+
+## V3.M05 Applicazioni lineari
+
+Stato: proposta.
+
+#### V3.M05.L01 · Applicazioni lineari · 15 min
+Prerequisiti: V3.M04.L06, V1.M08.L03
+- Abilità V3.M05.A01: riconoscere un'applicazione lineare.
+- Termini: applicazione-lineare
+- Teorema V3.M05.T01 Un'applicazione lineare manda lo zero nello zero — dim.
+- Teorema V3.M05.T02 Un'applicazione lineare è determinata dalle immagini di una base — dim.
+
+#### V3.M05.L02 · Matrice associata · 20 min
+Prerequisiti: V3.M05.L01
+- Abilità V3.M05.A02: matrice associata nelle basi canoniche e in basi date.
+- Termini: matrice-associata
+- Teorema V3.M05.T03 Alla composizione di applicazioni corrisponde il prodotto delle matrici — dim.
+- Visualizzazione: VIS.trasformazione-lineare
+
+#### V3.M05.L03 · Nucleo e immagine · 20 min
+Prerequisiti: V3.M05.L02
+- Abilità V3.M05.A03: basi di nucleo e immagine.
+- Termini: nucleo
+- Teorema V3.M05.T04 Nucleo e immagine sono sottospazi — dim.
+- Teorema V3.M05.T05 Un'applicazione lineare è iniettiva se e solo se il nucleo contiene solo lo zero — dim.
+
+#### V3.M05.L04 · Teorema della dimensione · 15 min
+Prerequisiti: V3.M05.L03
+- Abilità V3.M05.A04: dimensioni di nucleo e immagine; iniettività e suriettività.
+- Termini: isomorfismo
+- Teorema V3.M05.T06 Teorema della dimensione (nullità più rango) — dim.
+- Teorema V3.M05.T07 Un endomorfismo di uno spazio di dimensione finita è iniettivo se e solo se è suriettivo — dim. (dalla T06)
+
+#### V3.M05.L05 · Cambiamento di base · 20 min
+Prerequisiti: V3.M05.L04, V3.M03.L03
+- Abilità V3.M05.A05: matrice del cambiamento di base; matrice associata in una nuova base.
+- Termini: matrice-del-cambiamento-di-base, matrici-simili
+- Teorema V3.M05.T08 Matrici associate alla stessa applicazione in basi diverse sono simili: B = P⁻¹AP — dim.
+
+## V3.M06 Autovalori e diagonalizzazione
+
+Stato: proposta.
+
+#### V3.M06.L01 · Autovalori e autovettori · 20 min
+Prerequisiti: V3.M05.L05
+- Abilità V3.M06.A01: verificare se un vettore è autovettore; autovalori di matrici 2×2.
+- Termini: autovalore, autovettore, autospazio
+- Visualizzazione: VIS.autovettori
+
+#### V3.M06.L02 · Polinomio caratteristico · 20 min
+Prerequisiti: V3.M06.L01, V1.M04.L07
+- Abilità V3.M06.A02: autovalori e autospazi di matrici 3×3.
+- Termini: polinomio-caratteristico
+- Teorema V3.M06.T01 λ è autovalore se e solo se det(A − λI) = 0 — dim.
+- Teorema V3.M06.T02 Matrici simili hanno lo stesso polinomio caratteristico — dim. (con Binet)
+
+#### V3.M06.L03 · Molteplicità algebrica e geometrica · 15 min
+Prerequisiti: V3.M06.L02, V2.M02.L05
+- Abilità V3.M06.A03: molteplicità algebrica e geometrica di ogni autovalore.
+- Termini: molteplicita-algebrica, molteplicita-geometrica
+- Teorema V3.M06.T03 1 ≤ molteplicità geometrica ≤ molteplicità algebrica — dim.
+- Teorema V3.M06.T04 Autovettori di autovalori distinti sono linearmente indipendenti — dim.
+
+#### V3.M06.L04 · Diagonalizzazione · 20 min
+Prerequisiti: V3.M06.L03
+- Abilità V3.M06.A04: decidere se una matrice è diagonalizzabile e trovare P e D.
+- Termini: matrice-diagonalizzabile
+- Teorema V3.M06.T05 Criterio di diagonalizzabilità — dim.
+- Teorema V3.M06.T06 Una matrice n×n con n autovalori distinti è diagonalizzabile — dim. (corollario)
+
+#### V3.M06.L05 · Potenze di una matrice · 15 min
+Prerequisiti: V3.M06.L04
+- Abilità V3.M06.A05: calcolare Aⁿ con la diagonalizzazione.
+- Teorema V3.M06.T07 Aⁿ = P·Dⁿ·P⁻¹ — dim.
+
+## V3.M07 Prodotto scalare e ortogonalità
+
+Stato: proposta.
+
+#### V3.M07.L01 · Prodotto scalare in ℝⁿ · 15 min
+Prerequisiti: V3.M04.L05, V3.M01.L02
+- Abilità V3.M07.A01: norma, distanza, angolo e ortogonalità in ℝⁿ.
+- Termini: prodotto-scalare-euclideo, norma
+- Teorema V3.M07.T01 Disuguaglianza di Cauchy-Schwarz — dim.
+- Teorema V3.M07.T02 Disuguaglianza triangolare per la norma — dim.
+
+#### V3.M07.L02 · Basi ortonormali e proiezioni · 20 min
+Prerequisiti: V3.M07.L01
+- Abilità V3.M07.A02: proiezione ortogonale su un sottospazio; complemento ortogonale.
+- Termini: base-ortogonale, base-ortonormale, complemento-ortogonale, proiezione-su-un-sottospazio
+- Teorema V3.M07.T03 Vettori non nulli a due a due ortogonali sono indipendenti — dim.
+- Teorema V3.M07.T04 Coordinate in una base ortonormale come prodotti scalari — dim.
+
+#### V3.M07.L03 · Procedimento di Gram-Schmidt · 15 min
+Prerequisiti: V3.M07.L02
+- Abilità V3.M07.A03: base ortonormale di un sottospazio con Gram-Schmidt.
+- Teorema V3.M07.T05 Il procedimento di Gram-Schmidt produce una base ortonormale dello stesso sottospazio — dim.
+
+#### V3.M07.L04 · Matrici ortogonali · 15 min
+Prerequisiti: V3.M07.L03, V3.M03.L03
+- Abilità V3.M07.A04: riconoscere matrici ortogonali; rotazioni e simmetrie del piano.
+- Termini: matrice-ortogonale
+- Teorema V3.M07.T06 Una matrice è ortogonale se e solo se le sue colonne sono una base ortonormale, se e solo se conserva il prodotto scalare — dim.
+- Teorema V3.M07.T07 Il determinante di una matrice ortogonale vale ±1 — dim.
+
+#### V3.M07.L05 · Teorema spettrale · 20 min
+Prerequisiti: V3.M07.L04, V3.M06.L04, V2.M02.L01
+- Abilità V3.M07.A05: diagonalizzare una matrice simmetrica con una base ortonormale.
+- Termini: matrice-ortogonalmente-diagonalizzabile
+- Teorema V3.M07.T08 Gli autovalori di una matrice simmetrica reale sono reali — dim. (con i numeri complessi)
+- Teorema V3.M07.T09 Autovettori di autovalori distinti di una matrice simmetrica sono ortogonali — dim.
+- Teorema V3.M07.T10 Teorema spettrale — dim. per le matrici 2×2; enunciato nel caso generale (l'induzione sulla dimensione supera i 20 minuti)
+
+## V3.M08 Geometria analitica dello spazio
+
+Stato: proposta.
+
+#### V3.M08.L01 · Rette nello spazio · 20 min
+Prerequisiti: V3.M01.L03, V1.M12.L10
+- Abilità V3.M08.A01: equazioni parametriche e cartesiane di una retta.
+- Termini: vettore-direttore, equazioni-parametriche-della-retta
+
+#### V3.M08.L02 · Piani nello spazio · 20 min
+Prerequisiti: V3.M08.L01, V3.M02.L06
+- Abilità V3.M08.A02: equazione di un piano per tre punti o per un punto con vettore normale dato.
+- Termini: vettore-normale, equazione-cartesiana-del-piano
+- Teorema V3.M08.T01 Ogni equazione ax + by + cz = d con (a, b, c) ≠ 0 rappresenta un piano di vettore normale (a, b, c) — dim.
+
+#### V3.M08.L03 · Posizioni reciproche · 20 min
+Prerequisiti: V3.M08.L02
+- Abilità V3.M08.A03: posizioni reciproche di rette e piani (con Rouché-Capelli).
+- Termini: fascio-di-piani
+
+#### V3.M08.L04 · Distanze · 20 min
+Prerequisiti: V3.M08.L03
+- Abilità V3.M08.A04: distanza punto-piano, punto-retta, tra rette sghembe.
+- Teorema V3.M08.T02 Formula della distanza di un punto da un piano — dim.
+
+#### V3.M08.L05 · Angoli · 15 min
+Prerequisiti: V3.M08.L03
+- Abilità V3.M08.A05: angoli tra due rette, tra retta e piano, tra due piani.
+
+## V3.M09 Coniche
+
+Stato: proposta.
+
+#### V3.M09.L01 · Coniche e matrici · 20 min
+Prerequisiti: V1.M12.L09, V3.M07.L05
+- Abilità V3.M09.A01: matrice associata a una conica; coniche degeneri.
+- Termini: matrice-associata-a-una-conica, conica-degenere
+
+#### V3.M09.L02 · Classificazione delle coniche · 20 min
+Prerequisiti: V3.M09.L01
+- Abilità V3.M09.A02: classificare una conica dai determinanti (anche con un parametro).
+- Termini: invarianti-ortogonali
+- Teorema V3.M09.T01 Classificazione delle coniche con gli invarianti — dim. (dal teorema spettrale)
+
+#### V3.M09.L03 · Forma canonica · 20 min
+Prerequisiti: V3.M09.L02
+- Abilità V3.M09.A03: rotazione e traslazione fino alla forma canonica; centro e assi.
+- Termini: forma-canonica-di-una-conica, centro-di-una-conica
+
+#### V3.M09.L04 · Quadriche (varia) · 20 min
+Prerequisiti: V3.M09.L03, V3.M08.L02
+- Abilità V3.M09.A04: riconoscere una quadrica dalla forma canonica.
+- Termini: quadrica, ellissoide, iperboloide, paraboloide
+
+---
+
+# Riepilogo e note
+
+## Numeri
+
+| Volume | Moduli | Lezioni | Abilità | Termini | Teoremi (dimostrati) |
+| --- | --- | --- | --- | --- | --- |
+| V1 Fondamenta | 14 | 118 | 123 | 294 | 75 (66) |
+| V2 Analisi 1 | 12 | 66 | 68 | 123 | 97 (91) |
+| V3 Geometria e Algebra Lineare | 9 | 46 | 46 | 88 | 53 (48) |
+| **Totale** | **35** | **230** | **237** | **505** | **225 (205)** |
+
+Con una lezione nuova al giorno sono circa 230 giorni di lezioni, più ripasso ed esercizi.
+
+Controlli fatti sulla scaletta (con uno script, fuori dal repository): codici di lezione, abilità e teoremi unici; ogni prerequisito esiste, viene prima nel modulo o in un modulo precedente, e i Volumi 2 e 3 usano solo il Volume 1 (più V2.M02 per il Volume 3); termini del glossario unici e scritti con i trattini; durate tra 10 e 20 minuti; abilità e teoremi nel modulo della loro lezione.
+
+## Che cosa serve prima di scrivere certi moduli
+
+Dal motore e dall'app (punti ⚙ di `STATO.md`):
+
+- **Parser**: numeri periodici (V1.M02.L05), notazione scientifica (V1.M03.L07), gradi (V1.M10.L01), fattoriale (V1.M13.L01, V2.M11.L04).
+- **Risposta `ordering`** nella schermata di esercizio: serve alle abilità sulle dimostrazioni e sui passi di un procedimento (V1.M11.A08, V2.M01.A04) e alle dimostrazioni interattive.
+- **Grafici statici**: V1.M08 (grafici e trasformazioni), V2.M07 (studio di funzione).
+- **Nodi per successioni e somme**: V2.M01.L04 (sommatorie), V2.M03, V2.M11.
+- **Risposte `matrix` con elementi complessi**: V3.M06 (autovalori complessi), V3.M07.L05.
+- **Vettori nello spazio come risposta**: V3.M01, V3.M08 (risposta `matrix` a una colonna, che esiste già).
+
+## Scelte da confermare (anche in `STATO.md`, «Decisioni da rivedere»)
+
+1. **Rimandi spostati** di tre generatori: `V2.M09.A01.g1` → `V2.M09.L07`, `V2.M09.A02.g1` → `V2.M09.L08`, `V2.M11.A01.g1` → `V2.M11.L05` (motivi nella tabella in cima).
+2. **Prerequisito in più per V1.M06.L04**: `V1.M05.L05` (equazioni fratte), perché `condizione-di-esistenza` nasca lungo la catena dei prerequisiti.
+3. **Pitagora prima della sua dimostrazione**: V1.M10.L02 usa il teorema di Pitagora (noto dalla scuola media) per sin² + cos² = 1; la dimostrazione è in V1.M11.L04, che nell'ordine dei moduli viene dopo. Per lo stesso motivo `circonferenza`, `raggio`, `angolo`, `triangolo-rettangolo`, `cateto`, `ipotenusa` nascono nel modulo di goniometria.
+4. **Piano cartesiano in V1.M07.L04**: nasce con la lettura geometrica dei sistemi, perché serve già a funzioni (M08) e goniometria (M10), che vengono prima della geometria analitica (M12).
+5. **Equazioni irrazionali e con valore assoluto in V1.M05** risolte con la verifica delle soluzioni: le disequazioni (M06) vengono dopo; il metodo con le condizioni torna in V1.M06.L06 e L07.
+6. **Limite (1 + a/n)ⁿ → eᵃ usato in V2.M03.L02 e dimostrato in L05**: il generatore `V2.M03.A01.g1` lo usa al livello 3 e il suo rimando resta L02.
+7. **Teoremi solo enunciati** (20): nel Volume 1 sono risultati di geometria che il TOL usa senza dimostrazione (criteri di congruenza e similitudine, Talete, Cavalieri, Eulero); negli altri volumi il motivo è scritto accanto. I principali: Laplace, Binet, teorema fondamentale dell'algebra, esistenza e unicità per Cauchy, integrabilità delle continue, teorema spettrale nel caso generale.
+8. **Enti primitivi** (punto, retta, piano) senza voce di glossario.
+9. **Ogni lezione ha almeno un'abilità**; sette lezioni ne hanno due, perché allenano due esercizi diversi.
+10. **Abilità «misti» e abilità di tecnica**: in V2.M09 il generatore esistente `A01` (tutte le tecniche) è l'abilità della lezione che chiude il percorso; le lezioni delle singole tecniche hanno abilità proprie (`A06`-`A08`), da generatori più stretti.
+
