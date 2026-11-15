@@ -28,7 +28,8 @@ export function combinationLatex(terms: readonly (readonly [coefficient: number 
       continue;
     }
     const size = Math.abs(coefficient);
-    const body = `${size === 1 ? "" : size}${name}`;
+    // Il coefficiente 1 si omette davanti a una lettera, non da solo: «y − 1», non «y −».
+    const body = `${size === 1 && name !== "" ? "" : size}${name}`;
     out += out === "" ? `${coefficient < 0 ? "-" : ""}${body}` : ` ${coefficient < 0 ? "-" : "+"} ${body}`;
   }
   return out === "" ? "0" : out;

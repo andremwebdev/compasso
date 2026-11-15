@@ -149,3 +149,12 @@ describe("equazioni differenziali: la risposta si sostituisce nell'equazione", (
     expect(checkVerdict(parse("-1/x^2 + c"), num(0), separable).kind).toBe("other");
   });
 });
+
+describe("scrittura delle equazioni differenziali", () => {
+  it("il termine noto 1 non sparisce", async () => {
+    const { combinationLatex } = await import("../../src/generatori/comuni/ode");
+    expect(combinationLatex([[-1, "y"], [-1, ""]])).toBe("-y - 1");
+    expect(combinationLatex([[1, "\\lambda^{2}"], [2, "\\lambda"], [1, ""]])).toBe("\\lambda^{2} + 2\\lambda + 1");
+    expect(combinationLatex([[3, "y''"], [0, "y'"], [-1, "y"]])).toBe("3y'' - y");
+  });
+});
