@@ -149,7 +149,6 @@ Altro:
 ## Domande aperte (decide Andrea)
 
 - **Errore tipico nuovo** «√(x²) = x anche per x negativo» (serve per `√(x² + ax) + x` con `x → −∞` e per i limiti con il valore assoluto): aggiungerlo permetterebbe quelle forme in `V2.M04.A01.g1`.
-- **Copia della specifica nel Progetto di Claude**: la tabella degli errori ha 23 righe nuove (5 della sessione E1, 18 della E2) che nel Progetto mancano: va ricaricato `docs/SPECIFICA.md` (per il resto le due copie sono identiche).
 
 - **Errore tipico nuovo** «zero doppio trattato come zero semplice» (`(x − 3)²` studiato come `x − 3`): aggiungerlo cambia catalogo e tabella della specifica.
 - **Parentesi degli intervalli**: `(1; 3)` (oggi) oppure `]1; 3[` nella scrittura dell'app? In lettura valgono entrambe.
