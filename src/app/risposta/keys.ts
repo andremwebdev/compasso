@@ -54,6 +54,8 @@ export const KEYBOARD: Readonly<Record<KeyboardLevel, { readonly label: string; 
       t("ln", "ln("), t("log", "log("), t("eˣ", "e^(", "e elevato"), t("e"), t("π"), LEFT,
       t("arcsin", "arcsin("), t("arccos", "arccos("), t("arctan", "arctan("), t("|x|", "|", "Valore assoluto"), t("xⁿ", "^", "Potenza"), RIGHT,
       t("x"), t("+"), t("−", "-", "Meno"), t("·", "·", "Per"), t("a⁄b", "/", "Frazione"), t("√", "√(", "Radice quadrata"),
+      // Costanti arbitrarie: integrali indefiniti ed equazioni differenziali (V2.M09, V2.M12).
+      t("c", "c", "Costante c"), t("c₁", "c_1", "Costante c uno"), t("c₂", "c_2", "Costante c due"), t("k"), t("x²", "^2", "Al quadrato"), t("y"),
     ],
   },
 };

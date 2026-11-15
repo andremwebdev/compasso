@@ -154,6 +154,10 @@ describe("tastiera matematica", () => {
     expect(parseExpression(root.text)).toMatchObject({ ok: true, complete: true });
     const functions = type(KEYBOARD.funzioni.keys, "sin x ) · eˣ x )");
     expect(parseExpression(functions.text)).toMatchObject({ ok: true, complete: true });
+    // Le costanti arbitrarie delle equazioni differenziali: c₁ e c₂ si leggono come due lettere distinte.
+    const constants = type(KEYBOARD.funzioni.keys, "c₁ · eˣ x ) + c₂ · x · eˣ x )");
+    expect(constants.text).toBe("c_1·e^(x)+c_2·x·e^(x)");
+    expect(parseExpression(constants.text)).toMatchObject({ ok: true, complete: true });
   });
 
   it("il cursore: si scrive in mezzo, si cancella un tasto intero alla volta, la selezione viene sostituita", () => {
