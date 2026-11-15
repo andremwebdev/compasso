@@ -750,4 +750,471 @@ Prerequisiti: V1.M14.L04, V1.M14.L02
 - Abilità V1.M14.A05: effetto su media, mediana e varianza di aggiungere, togliere o trasformare dati (quesiti di tipo TOL).
 - Teorema V1.M14.T03 Media e varianza di a·x + b — dim.
 
-<!-- SEGUE: VOLUME 2 -->
+---
+
+# Volume 2, Analisi 1
+
+Rigore universitario: definizioni precise, enunciati con tutte le ipotesi (specifica, sezione 4). Le dimostrazioni dei teoremi principali vanno confrontate con un libro di testo quando si scrive la lezione.
+
+## V2.M01 Numeri reali e induzione
+
+Stato: proposta.
+
+#### V2.M01.L01 · Maggioranti, minoranti, massimo e minimo · 15 min
+Prerequisiti: V1.M02.L07, V1.M01.L06
+- Abilità V2.M01.A01: maggioranti, minoranti, massimo e minimo di un insieme dato.
+- Termini: maggiorante, minorante, insieme-limitato, funzione-limitata, massimo-di-un-insieme, minimo-di-un-insieme
+- Teorema V2.M01.T01 Il massimo di un insieme, se esiste, è unico — dim.
+
+#### V2.M01.L02 · Estremo superiore e completezza · 20 min
+Prerequisiti: V2.M01.L01
+- Abilità V2.M01.A02: estremo superiore e inferiore (anche di insiemi come {1 − 1/n}), dire se sono massimo o minimo.
+- Termini: estremo-superiore, estremo-inferiore, assioma-di-completezza
+- Teorema V2.M01.T02 Caratterizzazione dell'estremo superiore con ε — dim.
+
+#### V2.M01.L03 · Conseguenze della completezza · 15 min
+Prerequisiti: V2.M01.L02
+- Abilità V2.M01.A03: vero o falso su estremi, proprietà di Archimede, densità.
+- Teorema V2.M01.T03 Proprietà di Archimede — dim.
+- Teorema V2.M01.T04 Densità di ℚ in ℝ — dim.
+- Teorema V2.M01.T05 Ogni numero reale positivo ha una e una sola radice quadrata positiva — enunciato (si dà l'idea con l'estremo superiore)
+
+#### V2.M01.L04 · Principio di induzione · 20 min
+Prerequisiti: V2.M01.L01
+- Abilità V2.M01.A04: completare e riordinare dimostrazioni per induzione; formule con le sommatorie.
+- Termini: sommatoria, principio-di-induzione, passo-base, passo-induttivo
+- Teorema V2.M01.T06 Somma dei primi n numeri naturali e somma geometrica — dim. (per induzione)
+- Teorema V2.M01.T07 Disuguaglianza di Bernoulli — dim.
+
+#### V2.M01.L05 · Binomio di Newton · 15 min
+Prerequisiti: V2.M01.L04, V1.M13.L03
+- Abilità V2.M01.A05: sviluppo di (a + b)ⁿ e coefficiente di un termine dato.
+- Teorema V2.M01.T08 Formula del binomio di Newton — dim. (induzione e formula di Stifel)
+
+## V2.M02 Numeri complessi
+
+Stato: proposta.
+
+#### V2.M02.L01 · Forma algebrica · 20 min
+Prerequisiti: V1.M05.L02, V1.M07.L04
+- Abilità V2.M02.A01: operazioni in forma algebrica, quoziente compreso.
+- Termini: numero-complesso, unita-immaginaria, parte-reale, parte-immaginaria, complesso-coniugato, modulo-di-un-numero-complesso, piano-di-gauss
+- Teorema V2.M02.T01 Proprietà del coniugato e del modulo — dim.
+
+#### V2.M02.L02 · Forma trigonometrica · 20 min
+Prerequisiti: V2.M02.L01, V1.M10.L05
+- Abilità V2.M02.A02: passare dalla forma algebrica alla trigonometrica e viceversa.
+- Termini: argomento-di-un-numero-complesso, argomento-principale, forma-trigonometrica
+- Teorema V2.M02.T02 Prodotto e quoziente in forma trigonometrica — dim.
+
+#### V2.M02.L03 · Formula di De Moivre e forma esponenziale · 15 min
+Prerequisiti: V2.M02.L02, V2.M01.L04
+- Abilità V2.M02.A03: potenze di numeri complessi; passaggio alla forma esponenziale.
+- Termini: formula-di-eulero, forma-esponenziale
+- Teorema V2.M02.T03 Formula di De Moivre — dim. (per induzione)
+
+#### V2.M02.L04 · Radici n-esime · 20 min
+Prerequisiti: V2.M02.L03
+- Abilità V2.M02.A04: radici n-esime in forma trigonometrica e, quando si può, algebrica.
+- Termini: radice-n-esima-complessa
+- Teorema V2.M02.T04 Un numero complesso non nullo ha esattamente n radici n-esime distinte — dim.
+
+#### V2.M02.L05 · Equazioni in campo complesso · 15 min
+Prerequisiti: V2.M02.L04
+- Abilità V2.M02.A05: equazioni di secondo grado e binomie in ℂ.
+- Termini: molteplicita-di-una-radice
+- Teorema V2.M02.T05 Teorema fondamentale dell'algebra — enunciato (dimostrazione fuori dal programma del corso)
+- Teorema V2.M02.T06 Le radici non reali di un polinomio a coefficienti reali vengono in coppie coniugate — dim.
+
+## V2.M03 Successioni
+
+Stato: proposta.
+
+#### V2.M03.L01 · Successioni e limite · 20 min
+Prerequisiti: V2.M01.L02, V1.M08.L01
+- Abilità V2.M03.A02: verificare un limite con la definizione (da quale indice in poi |aₙ − ℓ| < ε).
+- Termini: successione, termine-generale, definitivamente, limite-di-una-successione, successione-convergente, successione-divergente, successione-irregolare, successione-limitata
+- Teorema V2.M03.T01 Unicità del limite — dim.
+- Teorema V2.M03.T02 Una successione convergente è limitata — dim.
+
+#### V2.M03.L02 · Calcolo dei limiti di successioni · 20 min
+Prerequisiti: V2.M03.L01
+- Abilità V2.M03.A01: limiti di successioni (forme indeterminate, gerarchia degli infiniti, fattori oscillanti, forma 1^∞). **Esiste**: `V2.M03.A01.g1`.
+- Termini: successione-infinitesima, forma-indeterminata, gerarchia-degli-infiniti
+- Teorema V2.M03.T03 Algebra dei limiti (somma, prodotto, quoziente, casi con ∞) — dim. per somma e prodotto
+- Teorema V2.M03.T04 Una successione limitata per una infinitesima è infinitesima — dim.
+- Il limite (1 + a/n)^(bn) → e^(ab), che il livello 3 del generatore usa, è dato qui come limite notevole e dimostrato in L05 (T09, T10).
+
+#### V2.M03.L03 · Teoremi del confronto · 15 min
+Prerequisiti: V2.M03.L02
+- Abilità V2.M03.A03: limiti con il teorema dei carabinieri e con il confronto.
+- Teorema V2.M03.T05 Permanenza del segno — dim.
+- Teorema V2.M03.T06 Teorema dei carabinieri — dim.
+- Teorema V2.M03.T07 Confronto per le successioni divergenti — dim.
+
+#### V2.M03.L04 · Successioni monotone · 15 min
+Prerequisiti: V2.M03.L03
+- Abilità V2.M03.A04: studiare la monotonia di una successione e dedurne il limite.
+- Termini: successione-monotona
+- Teorema V2.M03.T08 Una successione monotona ha limite; se è limitata, converge — dim. (completezza)
+
+#### V2.M03.L05 · Il numero e · 15 min
+Prerequisiti: V2.M03.L04, V2.M01.L05
+- Abilità V2.M03.A05: limiti della forma 1^∞ con (1 + a/n)ⁿ.
+- Teorema V2.M03.T09 (1 + 1/n)ⁿ è crescente e limitata — dim. (binomio di Newton e Bernoulli)
+- Teorema V2.M03.T10 (1 + a/n)ⁿ → eᵃ per ogni a reale — dim. per a intero; il caso generale segue da V2.M04.T09
+
+#### V2.M03.L06 · Sottosuccessioni · 15 min
+Prerequisiti: V2.M03.L04
+- Abilità V2.M03.A06: mostrare che un limite non esiste con due sottosuccessioni.
+- Termini: sottosuccessione
+- Teorema V2.M03.T11 Le sottosuccessioni di una successione che ha limite hanno lo stesso limite — dim.
+- Teorema V2.M03.T12 Teorema di Bolzano-Weierstrass — dim. (per bisezione; serve a V2.M05.T02)
+
+## V2.M04 Limiti di funzioni
+
+Stato: proposta.
+
+#### V2.M04.L01 · Definizione di limite · 20 min
+Prerequisiti: V2.M03.L03, V1.M08.L02
+- Abilità V2.M04.A02: limiti, anche destro e sinistro, letti da un grafico e verificati con la definizione.
+- Termini: intorno, punto-di-accumulazione, limite-di-una-funzione, limite-destro, limite-sinistro
+- Teorema V2.M04.T01 Il limite esiste se e solo se il limite destro e il sinistro esistono e sono uguali — dim.
+- Visualizzazione: VIS.limite-epsilon-delta
+
+#### V2.M04.L02 · Teoremi sui limiti · 20 min
+Prerequisiti: V2.M04.L01
+- Abilità V2.M04.A03: limiti con il teorema del confronto (funzione limitata per infinitesima).
+- Teorema V2.M04.T02 Teorema ponte: limiti di funzioni e limiti di successioni — dim.
+- Teorema V2.M04.T03 Unicità del limite — dim. (dal ponte)
+- Teorema V2.M04.T04 Permanenza del segno — dim.
+- Teorema V2.M04.T05 Teorema del confronto — dim. (dal ponte)
+- Teorema V2.M04.T06 Algebra dei limiti di funzioni — dim. (dal ponte)
+
+#### V2.M04.L03 · Limiti notevoli e forme indeterminate · 20 min
+Prerequisiti: V2.M04.L02, V1.M09.L05, V1.M10.L04
+- Abilità V2.M04.A01: limiti notevoli e forme indeterminate, anche con limiti laterali. **Esiste**: `V2.M04.A01.g1`.
+- Termini: limite-notevole
+- Teorema V2.M04.T07 Limite della funzione composta — dim.
+- Teorema V2.M04.T08 sin x / x → 1 per x → 0 — dim.
+- Teorema V2.M04.T09 (1 + 1/x)ˣ → e per x → ±∞ — dim. (dalle successioni)
+- Teorema V2.M04.T10 ln(1 + x)/x, (eˣ − 1)/x, ((1 + x)^α − 1)/x per x → 0 — dim.
+
+#### V2.M04.L04 · Asintoti · 15 min
+Prerequisiti: V2.M04.L03
+- Abilità V2.M04.A04: asintoti verticali, orizzontali e obliqui.
+- Termini: asintoto-verticale, asintoto-orizzontale, asintoto-obliquo
+
+#### V2.M04.L05 · Infinitesimi, infiniti e o-piccolo · 20 min
+Prerequisiti: V2.M04.L03
+- Abilità V2.M04.A05: ordine di infinitesimo e di infinito; semplificare con gli o-piccolo.
+- Termini: infinitesimo, infinito, ordine-di-infinitesimo, o-piccolo, funzioni-asintotiche
+- Teorema V2.M04.T11 Algebra degli o-piccolo — dim.
+- Teorema V2.M04.T12 Principio di sostituzione degli infinitesimi — dim.
+
+## V2.M05 Continuità
+
+Stato: proposta.
+
+#### V2.M05.L01 · Funzioni continue · 15 min
+Prerequisiti: V2.M04.L03
+- Abilità V2.M05.A01: continuità in un punto, anche al variare di un parametro.
+- Termini: funzione-continua
+- Teorema V2.M05.T03 Somme, prodotti, quozienti e composte di funzioni continue sono continue — dim.
+- Teorema V2.M05.T04 Le funzioni elementari sono continue nel loro dominio — dim. per polinomi, seno ed esponenziale; le inverse seguono da T07
+
+#### V2.M05.L02 · Punti di discontinuità · 15 min
+Prerequisiti: V2.M05.L01
+- Abilità V2.M05.A02: classificare i punti di discontinuità.
+- Termini: discontinuita-eliminabile, discontinuita-di-salto, discontinuita-di-seconda-specie
+
+#### V2.M05.L03 · Teorema degli zeri · 15 min
+Prerequisiti: V2.M05.L02, V2.M03.L04
+- Abilità V2.M05.A03: esistenza di zeri in un intervallo; passi del metodo di bisezione.
+- Termini: metodo-di-bisezione
+- Teorema V2.M05.T01 Teorema degli zeri — dim. (in `src/riserva/`)
+
+#### V2.M05.L04 · Teorema di Weierstrass · 15 min
+Prerequisiti: V2.M05.L03, V2.M03.L06
+- Abilità V2.M05.A04: dire se il teorema si applica; massimo e minimo assoluti.
+- Termini: massimo-assoluto, minimo-assoluto
+- Teorema V2.M05.T02 Teorema di Weierstrass — dim. (in `src/riserva/`)
+
+#### V2.M05.L05 · Valori intermedi e funzioni inverse · 15 min
+Prerequisiti: V2.M05.L04
+- Abilità V2.M05.A05: immagine di una funzione continua su un intervallo.
+- Teorema V2.M05.T05 Teorema dei valori intermedi — dim. (dal teorema degli zeri)
+- Teorema V2.M05.T06 Una funzione continua e iniettiva su un intervallo è strettamente monotona — enunciato
+- Teorema V2.M05.T07 L'inversa di una funzione continua e strettamente monotona su un intervallo è continua — enunciato
+
+## V2.M06 Derivate
+
+Stato: proposta.
+
+#### V2.M06.L01 · Derivata: definizione e significato geometrico · 20 min
+Prerequisiti: V2.M05.L01, V1.M12.L03
+- Abilità V2.M06.A01: derivata con il rapporto incrementale; retta tangente in un punto.
+- Termini: rapporto-incrementale, derivata, funzione-derivabile, retta-tangente-al-grafico
+- Teorema V2.M06.T04 Una funzione derivabile in un punto è continua in quel punto — dim.
+- Visualizzazione: VIS.secante-tangente
+
+#### V2.M06.L02 · Derivate delle funzioni elementari · 15 min
+Prerequisiti: V2.M06.L01, V2.M04.L03
+- Abilità V2.M06.A02: derivate fondamentali e linearità.
+- Teorema V2.M06.T05 Derivate di xⁿ, sin x, cos x, eˣ, ln x — dim. (dai limiti notevoli)
+- Teorema V2.M06.T06 Linearità della derivata — dim.
+
+#### V2.M06.L03 · Regole di derivazione · 20 min
+Prerequisiti: V2.M06.L02
+- Abilità V2.M06.A03: derivate con prodotto, quoziente e funzione composta. **Esiste**: `V2.M06.A03.g1`.
+- Teorema V2.M06.T07 Derivata del prodotto e del quoziente — dim.
+- Teorema V2.M06.T08 Derivata della funzione composta — dim.
+
+#### V2.M06.L04 · Derivata dell'inversa e derivate successive · 15 min
+Prerequisiti: V2.M06.L03, V2.M05.L05, V1.M10.L05
+- Abilità V2.M06.A04: derivate di arcoseno, arcotangente, aˣ, logₐ x; derivate seconde.
+- Termini: derivata-seconda, derivate-successive
+- Teorema V2.M06.T09 Derivata della funzione inversa — dim.
+
+#### V2.M06.L05 · Punti di non derivabilità · 15 min
+Prerequisiti: V2.M06.L03
+- Abilità V2.M06.A05: punti angolosi, cuspidi, flessi a tangente verticale.
+- Termini: derivata-destra, derivata-sinistra, punto-angoloso, cuspide, flesso-a-tangente-verticale
+
+#### V2.M06.L06 · Teoremi di Fermat e di Rolle · 15 min
+Prerequisiti: V2.M06.L05, V2.M05.L04
+- Abilità V2.M06.A06: verificare le ipotesi di Rolle e trovare il punto.
+- Termini: punto-di-massimo-relativo, punto-di-minimo-relativo, punto-stazionario
+- Teorema V2.M06.T01 Teorema di Fermat — dim. (in `src/riserva/`)
+- Teorema V2.M06.T02 Teorema di Rolle — dim. (in `src/riserva/`)
+
+#### V2.M06.L07 · Teorema di Lagrange e conseguenze · 20 min
+Prerequisiti: V2.M06.L06
+- Abilità V2.M06.A07: punto di Lagrange; monotonia dal segno della derivata.
+- Teorema V2.M06.T03 Teorema di Lagrange — dim. (in `src/riserva/`)
+- Teorema V2.M06.T10 Una funzione con derivata nulla su un intervallo è costante — dim.
+- Teorema V2.M06.T11 Criterio di monotonia — dim.
+
+#### V2.M06.L08 · Teorema di Cauchy e regola di de l'Hôpital · 20 min
+Prerequisiti: V2.M06.L07
+- Abilità V2.M06.A08: limiti con de l'Hôpital, controllando le ipotesi.
+- Teorema V2.M06.T12 Teorema di Cauchy — dim.
+- Teorema V2.M06.T13 Regola di de l'Hôpital — dim. per 0/0 in un punto finito; enunciato negli altri casi
+
+## V2.M07 Studio di funzione
+
+Stato: proposta.
+
+#### V2.M07.L01 · Massimi e minimi relativi · 15 min
+Prerequisiti: V2.M06.L07
+- Abilità V2.M07.A01: estremi relativi dal segno della derivata prima.
+- Teorema V2.M07.T01 Test della derivata prima — dim.
+
+#### V2.M07.L02 · Massimi e minimi assoluti, ottimizzazione · 20 min
+Prerequisiti: V2.M07.L01
+- Abilità V2.M07.A02: massimo e minimo assoluti su un intervallo chiuso.
+- Abilità V2.M07.A03: problemi di ottimizzazione.
+
+#### V2.M07.L03 · Convessità e flessi · 20 min
+Prerequisiti: V2.M07.L02, V2.M06.L04
+- Abilità V2.M07.A04: intervalli di convessità e punti di flesso.
+- Termini: funzione-convessa, funzione-concava, punto-di-flesso
+- Teorema V2.M07.T02 Convessità e segno della derivata seconda — dim.
+- Teorema V2.M07.T03 Test della derivata seconda per gli estremi — dim.
+
+#### V2.M07.L04 · Studio completo di una funzione · 20 min
+Prerequisiti: V2.M07.L03, V2.M04.L04
+- Abilità V2.M07.A05: studio di funzioni razionali e irrazionali, dal dominio al grafico (servono i grafici statici del motore).
+- Termini: tabella-di-variazione
+
+#### V2.M07.L05 · Studio di funzioni trascendenti · 20 min
+Prerequisiti: V2.M07.L04
+- Abilità V2.M07.A06: studio con esponenziali, logaritmi e valori assoluti.
+
+#### V2.M07.L06 · Quante soluzioni ha un'equazione · 15 min
+Prerequisiti: V2.M07.L05
+- Abilità V2.M07.A07: numero di soluzioni di f(x) = k al variare di k.
+
+## V2.M08 Formula di Taylor
+
+Stato: proposta.
+
+#### V2.M08.L01 · Polinomio di Taylor e resto di Peano · 20 min
+Prerequisiti: V2.M06.L08, V2.M04.L05
+- Abilità V2.M08.A02: polinomio di Taylor dalle derivate in un punto.
+- Termini: polinomio-di-taylor, polinomio-di-mac-laurin, resto-di-peano
+- Teorema V2.M08.T01 Formula di Taylor con resto di Peano — dim. (de l'Hôpital ripetuto)
+- Visualizzazione: VIS.taylor
+
+#### V2.M08.L02 · Sviluppi notevoli · 20 min
+Prerequisiti: V2.M08.L01
+- Abilità V2.M08.A03: sviluppi di funzioni composte e di prodotti fino a un ordine dato.
+- Teorema V2.M08.T02 Sviluppi di eˣ, sin x, cos x, ln(1 + x), (1 + x)^α — dim. (dalla T01); lo sviluppo di arctan x è enunciato
+
+#### V2.M08.L03 · Sviluppi di Taylor nel calcolo dei limiti · 20 min
+Prerequisiti: V2.M08.L02
+- Abilità V2.M08.A01: limiti con gli sviluppi, anche di prodotti. **Esiste**: `V2.M08.A01.g1`.
+- Termini: parte-principale
+
+#### V2.M08.L04 · Resto di Lagrange e approssimazioni · 15 min
+Prerequisiti: V2.M08.L02, V2.M06.L08
+- Abilità V2.M08.A04: stimare l'errore di un'approssimazione.
+- Termini: resto-di-lagrange
+- Teorema V2.M08.T03 Formula di Taylor con resto di Lagrange — dim. (dal teorema di Cauchy)
+
+#### V2.M08.L05 · Taylor e studio locale · 15 min
+Prerequisiti: V2.M08.L03, V2.M07.L03
+- Abilità V2.M08.A05: natura di un punto stazionario con le derivate successive.
+- Teorema V2.M08.T04 Criterio delle derivate successive — dim.
+
+## V2.M09 Integrali
+
+Stato: proposta.
+
+#### V2.M09.L01 · Integrale di Riemann · 20 min
+Prerequisiti: V2.M01.L02, V2.M05.L04
+- Abilità V2.M09.A03: somme inferiori e superiori di funzioni semplici; integrali da aree note.
+- Termini: partizione, somma-inferiore, somma-superiore, funzione-integrabile, integrale-definito
+- Teorema V2.M09.T01 Le funzioni monotone su [a; b] sono integrabili — dim.
+- Teorema V2.M09.T02 Le funzioni continue su [a; b] sono integrabili — enunciato (serve la continuità uniforme, che il programma non fa)
+- Visualizzazione: VIS.riemann
+
+#### V2.M09.L02 · Proprietà dell'integrale e teorema della media · 15 min
+Prerequisiti: V2.M09.L01
+- Abilità V2.M09.A04: valor medio di una funzione su un intervallo.
+- Termini: valor-medio-integrale
+- Teorema V2.M09.T03 Linearità, additività e monotonia dell'integrale — dim. della monotonia, enunciato il resto
+- Teorema V2.M09.T04 Teorema della media integrale — dim.
+
+#### V2.M09.L03 · Funzione integrale e teorema fondamentale · 20 min
+Prerequisiti: V2.M09.L02, V2.M06.L07
+- Abilità V2.M09.A05: derivata di una funzione integrale, anche con estremi variabili.
+- Termini: funzione-integrale, primitiva
+- Teorema V2.M09.T05 Teorema fondamentale del calcolo integrale — dim.
+- Teorema V2.M09.T06 Due primitive su un intervallo differiscono per una costante — dim.
+- Teorema V2.M09.T07 Formula fondamentale del calcolo integrale — dim.
+
+#### V2.M09.L04 · Integrali indefiniti e integrali immediati · 15 min
+Prerequisiti: V2.M09.L03
+- Abilità V2.M09.A06: primitive immediate e di f(ax + b).
+- Termini: integrale-indefinito, costante-di-integrazione
+
+#### V2.M09.L05 · Integrazione per sostituzione · 15 min
+Prerequisiti: V2.M09.L04
+- Abilità V2.M09.A07: integrali per sostituzione.
+- Teorema V2.M09.T08 Formula di integrazione per sostituzione — dim.
+
+#### V2.M09.L06 · Integrazione per parti · 15 min
+Prerequisiti: V2.M09.L04
+- Abilità V2.M09.A08: integrali per parti, anche ripetute e cicliche.
+- Teorema V2.M09.T09 Formula di integrazione per parti — dim.
+
+#### V2.M09.L07 · Integrazione delle funzioni razionali · 20 min
+Prerequisiti: V2.M09.L05, V2.M09.L06, V1.M04.L07
+- Abilità V2.M09.A01: integrali indefiniti con tutte le tecniche (fratti semplici, divisione, parti ripetute). **Esiste**: `V2.M09.A01.g1` (rimando da spostare qui).
+- Termini: fratti-semplici
+
+#### V2.M09.L08 · Integrali definiti e aree · 20 min
+Prerequisiti: V2.M09.L07
+- Abilità V2.M09.A02: integrali definiti, anche con cambio degli estremi. **Esiste**: `V2.M09.A02.g1` (rimando da spostare qui).
+- Abilità V2.M09.A09: area della regione tra due curve.
+
+#### V2.M09.L09 · Studio della funzione integrale · 15 min
+Prerequisiti: V2.M09.L08, V2.M07.L04
+- Abilità V2.M09.A10: dominio, monotonia e limiti di una funzione integrale.
+
+## V2.M10 Integrali impropri
+
+Stato: proposta.
+
+#### V2.M10.L01 · Integrali impropri · 20 min
+Prerequisiti: V2.M09.L08, V2.M04.L03
+- Abilità V2.M10.A02: integrali impropri calcolati con la definizione.
+- Termini: integrale-improprio, integrale-convergente, integrale-divergente
+- Teorema V2.M10.T01 Integrali di riferimento di 1/xᵖ, all'infinito e vicino a 0 — dim.
+
+#### V2.M10.L02 · Criteri di convergenza · 20 min
+Prerequisiti: V2.M10.L01, V2.M04.L05
+- Abilità V2.M10.A01: convergenza con il criterio giusto. **Esiste**: `V2.M10.A01.g1`.
+- Termini: integrale-assolutamente-convergente
+- Teorema V2.M10.T02 Criterio del confronto — dim.
+- Teorema V2.M10.T03 Criterio del confronto asintotico — dim.
+- Teorema V2.M10.T04 La convergenza assoluta implica la convergenza — dim.
+
+## V2.M11 Serie numeriche
+
+Stato: proposta.
+
+#### V2.M11.L01 · Serie numeriche · 20 min
+Prerequisiti: V2.M03.L02
+- Abilità V2.M11.A02: somma di serie geometriche e telescopiche.
+- Termini: serie, somma-parziale, serie-convergente, serie-divergente, serie-indeterminata, serie-geometrica, serie-telescopica
+- Teorema V2.M11.T01 Somma della serie geometrica — dim.
+- Teorema V2.M11.T02 Condizione necessaria per la convergenza — dim.
+
+#### V2.M11.L02 · Serie a termini positivi e confronto · 20 min
+Prerequisiti: V2.M11.L01, V2.M03.L04
+- Abilità V2.M11.A03: confronto e confronto asintotico.
+- Termini: serie-a-termini-positivi, serie-armonica
+- Teorema V2.M11.T03 Una serie a termini positivi converge o diverge — dim.
+- Teorema V2.M11.T04 Criterio del confronto — dim.
+- Teorema V2.M11.T05 Criterio del confronto asintotico — dim.
+- Teorema V2.M11.T06 La serie armonica diverge — dim.
+
+#### V2.M11.L03 · Criterio dell'integrale · 15 min
+Prerequisiti: V2.M11.L02, V2.M10.L02
+- Abilità V2.M11.A04: serie armonica generalizzata e serie con logaritmi.
+- Termini: serie-armonica-generalizzata
+- Teorema V2.M11.T07 Criterio dell'integrale — dim.
+- Teorema V2.M11.T08 Convergenza della serie armonica generalizzata — dim.
+
+#### V2.M11.L04 · Criteri del rapporto e della radice · 15 min
+Prerequisiti: V2.M11.L02
+- Abilità V2.M11.A05: serie con potenze, esponenziali e fattoriali (serve il fattoriale nel motore).
+- Teorema V2.M11.T09 Criterio del rapporto — dim.
+- Teorema V2.M11.T10 Criterio della radice — dim.
+
+#### V2.M11.L05 · Serie a segni alterni e convergenza assoluta · 20 min
+Prerequisiti: V2.M11.L03, V2.M11.L04
+- Abilità V2.M11.A01: verdetto di convergenza con il criterio giusto. **Esiste**: `V2.M11.A01.g1` (rimando da spostare qui).
+- Termini: serie-a-segni-alterni, serie-assolutamente-convergente
+- Teorema V2.M11.T11 Criterio di Leibniz — dim.
+- Teorema V2.M11.T12 Una serie assolutamente convergente converge — dim.
+
+#### V2.M11.L06 · Serie di potenze (varia) · 20 min
+Prerequisiti: V2.M11.L05
+- Abilità V2.M11.A06: raggio e intervallo di convergenza.
+- Termini: serie-di-potenze, raggio-di-convergenza
+- Teorema V2.M11.T13 Esistenza del raggio di convergenza — dim.
+- Teorema V2.M11.T14 Raggio di convergenza con il criterio del rapporto — dim.
+
+## V2.M12 Equazioni differenziali
+
+Stato: proposta.
+
+#### V2.M12.L01 · Equazioni differenziali e variabili separabili · 20 min
+Prerequisiti: V2.M09.L07
+- Abilità V2.M12.A03: dire se una funzione data risolve un'equazione o un problema di Cauchy.
+- Termini: equazione-differenziale, ordine-di-un-equazione-differenziale, integrale-generale, problema-di-cauchy, equazione-a-variabili-separabili
+- Teorema V2.M12.T01 Esistenza e unicità per il problema di Cauchy — enunciato (la dimostrazione è di Analisi 2)
+
+#### V2.M12.L02 · Equazioni lineari del primo ordine · 20 min
+Prerequisiti: V2.M12.L01
+- Abilità V2.M12.A01: equazioni del primo ordine (separabili e lineari) e problemi di Cauchy. **Esiste**: `V2.M12.A01.g1`.
+- Termini: equazione-differenziale-lineare
+- Teorema V2.M12.T02 Formula risolutiva delle equazioni lineari del primo ordine — dim.
+
+#### V2.M12.L03 · Lineari del secondo ordine omogenee · 20 min
+Prerequisiti: V2.M12.L02, V2.M02.L03
+- Abilità V2.M12.A04: equazioni omogenee nei tre casi del discriminante.
+- Termini: equazione-omogenea, equazione-caratteristica
+- Teorema V2.M12.T03 Le soluzioni di un'equazione lineare omogenea del secondo ordine formano uno spazio di dimensione 2 — dim. della linearità; la dimensione segue da T01
+- Teorema V2.M12.T04 Soluzioni nei tre casi del discriminante — dim.
+
+#### V2.M12.L04 · Lineari del secondo ordine complete · 20 min
+Prerequisiti: V2.M12.L03
+- Abilità V2.M12.A02: equazioni complete (somiglianza, risonanza) e problemi di Cauchy. **Esiste**: `V2.M12.A02.g1`.
+- Termini: soluzione-particolare, risonanza
+- Teorema V2.M12.T05 Soluzione generale = soluzione dell'omogenea associata + una soluzione particolare — dim.
+
+<!-- SEGUE: VOLUME 3 -->
