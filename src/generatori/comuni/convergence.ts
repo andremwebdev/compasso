@@ -31,3 +31,9 @@ export function pAgainstOne(p: Exponent, letter = "p"): string {
   const sign = compareWithOne(p);
   return `${letter} = ${exponentLatex(p)}${sign === 0 ? "" : sign > 0 ? " > 1" : " < 1"}`;
 }
+
+/** La potenza del logaritmo: \ln x, \ln^{2} x, \sqrt{\ln x}, \ln x\sqrt{\ln x}. */
+export function logPowerLatex(variable: string, q: Exponent): string {
+  if (q[1] === 1) return q[0] === 1 ? `\\ln ${variable}` : `\\ln^{${q[0]}} ${variable}`;
+  return powerLatex(`\\ln ${variable}`, q, `\\left(\\ln ${variable}\\right)`);
+}

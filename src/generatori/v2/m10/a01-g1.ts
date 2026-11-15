@@ -22,7 +22,7 @@
 import { defineGenerator, type ExerciseDraft, type ExpectedWrong, type GeneratorContext } from "../../../esercizi";
 import type { ErrorCode } from "../../../errori";
 import { Rng } from "../../../motore/random/rng";
-import { compareWithOne, exponentLatex, pAgainstOne, powerLatex, value, type Exponent } from "../../comuni/convergence";
+import { compareWithOne, exponentLatex, logPowerLatex, pAgainstOne, powerLatex, value, type Exponent } from "../../comuni/convergence";
 
 type Rng_ = GeneratorContext["rng"];
 
@@ -415,7 +415,7 @@ function planOf(model: Model): Plan {
     case "logarithm": {
       // k/(x·lnᵠx) su [2, +∞): con t = ln x diventa k∫dt/tᵠ.
       const { k, q } = model;
-      const denominator = q[0] === q[1] ? "x \\ln x" : q[1] === 1 ? `x \\ln^{${q[0]}} x` : `x ${powerLatex("\\ln x", q)}`;
+      const denominator = `x ${logPowerLatex("x", q)}`;
       const fLatex = `\\frac{${k}}{${denominator}}`;
       const converges = value(q) > 1;
       return {
