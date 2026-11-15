@@ -177,7 +177,7 @@ Lo schema è fisso (`src/esercizi/schema.ts`) e la verifica automatica esiste (`
 
 **Prima di cominciare**
 
-- Il codice dell'abilità e della lezione vengono dalla **scaletta del modulo** (elenco di lezioni e abilità, fase 5). Se la scaletta del modulo non c'è, si scrive prima quella; i codici già assegnati sono in `STATO.md` e non si cambiano.
+- Il codice dell'abilità e della lezione vengono dalla **scaletta del modulo** (`docs/SCALETTE.md`, da usare solo per i moduli con `Stato: approvata`). Se la scaletta del modulo non c'è, si scrive prima quella; i codici già assegnati sono in `STATO.md` e non si cambiano.
 - Il **tipo di risposta** deve essere uno che l'app sa già mostrare e valutare: `number`, `expression`, `set`, `limit`, `matrix`, `choice`, `truefalse`. `ordering` esiste nello schema ma la schermata di esercizio non lo mostra ancora: non usarlo finché non c'è.
 - Si scrivono **a parole** i tre livelli e, per ogni forma di esercizio, gli errori tipici che può produrre (almeno tre dal livello 2). Se non se ne trovano tre credibili, la forma non va bene così.
 
@@ -349,7 +349,7 @@ La sintassi è fissa; la legge e la controlla `src/contenuti/formato/` (`parseLe
 
 **Prima di scrivere una lezione**
 
-- La lezione è nella scaletta del modulo, con codice, prerequisiti e abilità. I prerequisiti si scrivono solo se quelle lezioni **esistono già** (la verifica rifiuta un codice che non c'è): quelli che mancano si annotano in `STATO.md` e si aggiungono quando arrivano.
+- La lezione è nella scaletta del modulo (`docs/SCALETTE.md`, modulo approvato), con codice, prerequisiti, abilità, termini e teoremi. I prerequisiti si scrivono solo se quelle lezioni **esistono già** (la verifica rifiuta un codice che non c'è): quelli che mancano si annotano in `STATO.md` e si aggiungono quando arrivano.
 - Ogni abilità in `abilita` deve avere **già** il suo generatore `…g1`, con `lesson` uguale al codice della lezione (il test lo pretende). Quindi: prima il generatore, poi la lezione; oppure la lezione con `abilita: []` e l'abilità aggiunta quando il generatore c'è.
 - Ogni lezione ha almeno una definizione, un esempio svolto, una domanda lampo, un riquadro attenzione e il riepilogo (`test/contenuti/lezioni.test.ts` lo controlla).
 - Si guardano gli esercizi di livello 3 dei generatori della lezione: ogni caso che usano (zero doppio, polinomio senza zeri, parametro) deve essere spiegato nella lezione. Andrea li fa alla fine.

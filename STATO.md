@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: fine della sessione extra E2 (generatori difficili di Analisi, parte 2: integrali, integrali impropri, serie, equazioni differenziali). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: fine della sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -22,6 +22,7 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - `V2.M10.A01.g1` convergenza di integrali impropri e `V2.M11.A01.g1` convergenza delle serie: **scelta multipla** verdetto + criterio, opzioni sbagliate sui criteri usati male; la verifica controlla numericamente il comportamento negli estremi (o del termine generale);
   - `V2.M12.A01.g1` primo ordine (separabili, lineari, Cauchy) e `V2.M12.A02.g1` secondo ordine lineari a coefficienti costanti (tre casi, termine noto, risonanza, Cauchy): la soluzione si **sostituisce** nell'equazione, si contano le costanti indipendenti e si controllano le condizioni.
   - Nuovo nello schema degli esercizi: controllo speciale `check` per le risposte `expression` (`antiderivative`, `differentialEquation`, in `src/esercizi/checks.ts`). Comuni nuovi: `writing.ts`, `exact-sum.ts`, `convergence.ts`, `ode.ts`. Tastiera: tasti `c`, `c₁`, `c₂`, `k` nel livello Funzioni.
+- **Scalette dei 35 moduli** (sessione E4) in `docs/SCALETTE.md`, **proposta da approvare modulo per modulo**: 230 lezioni con durata e prerequisiti, 237 abilità, 505 termini del glossario (ognuno definito una volta), 225 teoremi (205 dimostrati). Codici già assegnati rispettati; controllata con uno script (codici unici, prerequisiti esistenti e all'indietro, termini unici, durate). In fondo al file: che cosa serve al motore prima di certi moduli e le scelte da confermare.
 - **Test**: 1.042 in 45 file, verdi in locale e su GitHub.
 
 ## In corso
@@ -47,7 +48,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 
 **Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14)
 
-1. **Scaletta di ogni modulo** prima dei contenuti: lezioni e abilità con codici, prerequisiti, generatori previsti, termini del glossario, visualizzazione. Una sessione può fare la scaletta di più moduli; si rispettano i codici assegnati qui sotto. Proposta: in `docs/SCALETTA.md`.
+1. **Approvazione delle scalette** (`docs/SCALETTE.md`, fatte nella sessione E4): Andrea approva modulo per modulo e segna `Stato: approvata`. Le lezioni di un modulo si scrivono solo dopo; i suoi codici diventano fissi.
 2. **Completare V1.M06** per primo, attorno al riferimento: lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
 3. **Lezione `V1.M04.L07`** sulla scomposizione (il generatore esiste già) e il resto di V1.M04.
 4. **Gli altri moduli in ordine di prerequisiti** (M01, M02, M03, M05, M07, … M14). Per ogni modulo, in quest'ordine: generatori (uno per sessione se complessi), lezioni, flashcard manuali, dimostrazioni dove servono, visualizzazione del modulo (M08, M09, M10, M12), controllo «Lo so già».
@@ -94,6 +95,8 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V3.M03.L01`, `V3.M03.A01` | Lezione (da scrivere) e abilità: determinante — generatore `V3.M03.A01.g1` |
 | `V2.M05.T01`, `V2.M05.T02` | Teorema degli zeri, teorema di Weierstrass (in `src/riserva/v2/m05/`) |
 | `V2.M06.T01`, `V2.M06.T02`, `V2.M06.T03` | Teoremi di Fermat, Rolle, Lagrange (in `src/riserva/v2/m06/`); `T03` per Lagrange è quello degli esempi della specifica |
+
+**Rimandi da spostare** (proposta E4, da fare quando si scrive la lezione, cambiando il campo `lesson`): `V2.M09.A01.g1` → `V2.M09.L07`, `V2.M09.A02.g1` → `V2.M09.L08`, `V2.M11.A01.g1` → `V2.M11.L05`. Gli altri rimandi restano come sotto.
 
 Per i generatori delle sessioni E1 ed E2 i codici di **abilità** (`V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01`) sono fissi; le **lezioni** indicate sono il campo `lesson` dei generatori (dove porta «Torna alla lezione»): la scaletta può mantenerle oppure spostare il rimando a un'altra lezione, purché quella lezione spieghi tutti i casi del livello 3 (numero `e` e fattori oscillanti per le successioni; limiti laterali per le funzioni; prodotti di sviluppi per Taylor). Le altre abilità di quei moduli partono da `A02`.
 
@@ -200,7 +203,7 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 31. Prerequisiti di V1.M06.L04 vuoti finché le lezioni precedenti non esistono (3).
 32. Glossario ricavato dalle lezioni; la cartella `src/glossario/` resta vuota e si può togliere (3).
 33. Visualizzazioni: SVG con Preact senza librerie, file in `src/visualizzazioni/`, scheda di ognuna in `docs/VISUALIZZAZIONI.md` prima del codice (4c, proposta in `REGOLE.md`: la fissa la prima visualizzazione).
-34. Scaletta dei moduli proposta in `docs/SCALETTA.md` (4c).
+34. Scalette dei moduli in `docs/SCALETTE.md` (nome dato dal compito della sessione E4; prima proposto `SCALETTA.md`) (4c, E4).
 
 *App e dati*
 
@@ -243,3 +246,12 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 65. Diciotto errori tipici nuovi (`AN.PRIMITIVA_ELEMENTARE`, `AN.SOSTITUZIONE_FATTORE`, `AN.INTEGRAZIONE_PARTI`, `AN.INTEGRALE_PRODOTTO`, `AN.FRATTI_SEMPLICI`, `AN.ESTREMI_INTEGRALE`, `AN.SOGLIA_CONVERGENZA`, `AN.IMPROPRIO_SINGOLARITA`, `AN.CRITERIO_INCONCLUDENTE`, `AN.CONFRONTO_VERSO`, `AN.LEIBNIZ_IPOTESI`, `AN.CONVERGENZA_ASSOLUTA`, `AN.EDO_COSTANTE`, `AN.EDO_SEPARAZIONE`, `AN.EDO_FATTORE_INTEGRANTE`, `AN.EDO_CARATTERISTICA`, `AN.EDO_PARTICOLARE`, `AN.CAUCHY_CONDIZIONI`), con esempi verificati in `scripts/verifica-esempi-errori.py` (E2).
 66. Tastiera: tasti `c`, `c₁`, `c₂`, `k`, `x²`, `y` aggiunti al livello Funzioni (scrivono `c_1`, `c_2`): senza, primitive ed equazioni differenziali non si potevano scrivere dal telefono (E2).
 67. Integrali definiti: logaritmi raccolti in uno solo quando l'argomento resta piccolo (`4 ln(4/3)`), altrimenti un logaritmo per primo (`11 ln 2 − 3 ln 5`); un errore sugli estremi è sempre tra le opzioni (E2).
+
+*Scalette (E4)*
+
+68. Rimandi di tre generatori spostati alla lezione che spiega tutti i casi del livello 3: `V2.M09.A01.g1` → L07, `V2.M09.A02.g1` → L08, `V2.M11.A01.g1` → L05 (E4).
+69. `V1.M06.L04` prende anche il prerequisito `V1.M05.L05` (equazioni fratte), da cui arriva `condizione-di-esistenza` (E4).
+70. Goniometria (V1.M10) usa Pitagora prima della sua dimostrazione (V1.M11.L04) e definisce `circonferenza`, `raggio`, `angolo`, `triangolo-rettangolo`, `cateto`, `ipotenusa`; il piano cartesiano nasce in V1.M07.L04 (E4).
+71. Equazioni irrazionali e con valore assoluto (V1.M05) risolte con la verifica, perché le disequazioni vengono dopo (E4).
+72. Il limite (1 + a/n)ⁿ → eᵃ si usa in V2.M03.L02 e si dimostra in L05 (E4).
+73. Venti teoremi solo enunciati, con il motivo; enti primitivi senza voce di glossario; ogni lezione ha almeno un'abilità (E4).
