@@ -264,7 +264,7 @@ Gli **avvisi** (`report.warnings`) non bocciano da soli, ma un generatore finito
 
 ## Come replicare un generatore
 
-I generatori di riferimento sono sei: cinque scritti nella sessione 3, quello dei limiti nella sessione E1. Coprono i tipi di risposta più usati: ogni generatore nuovo parte da uno di loro.
+I generatori di riferimento sono nove: cinque scritti nella sessione 3, quello dei limiti nella sessione E1, tre nella sessione E2 (primitive, equazioni differenziali, scelta multipla «verdetto: criterio»). Coprono i tipi di risposta più usati: ogni generatore nuovo parte da uno di loro.
 
 | Se la risposta è… | Copia | Che cosa mostra |
 | --- | --- | --- |
@@ -274,8 +274,11 @@ I generatori di riferimento sono sei: cinque scritti nella sessione 3, quello de
 | un numero esatto (determinanti, valori, limiti finiti, probabilità) | `src/generatori/v3/m03/a01-g1.ts` — determinante | estrazione ripetuta finché i numeri sono puliti e gli errori danno risultati tutti diversi, verifica con un altro algoritmo |
 | una matrice o un vettore (sistemi, prodotti, inverse) | `src/generatori/v3/m02/a01-g1.ts` — sistemi con Gauss | costruzione `L·U` perché i conti restino interi, passaggi registrati dal motore, verifica `A·x = b` |
 | il valore di un limite (numero, `+∞`, `−∞`, «non esiste») | `src/generatori/v2/m03/a01-g1.ts` — limiti di successioni | un modello per forma di esercizio e un «piano» (`planOf`) che dà espressione, limite, errori e passaggi; risposte sbagliate con `distinctWrongLimits`; verifica con la prova numerica `confirmsLimit` (`src/generatori/comuni/limits.ts`): valori vicino al punto, posti pari e dispari |
+| una primitiva (vale qualunque costante abbia) | `src/generatori/v2/m09/a01-g1.ts` — integrali indefiniti | `check: { kind: "antiderivative" }`: la risposta si deriva; l'ultima sbagliata è la primitiva senza `+ c`; primitive sbagliate filtrate per derivata |
+| la soluzione di un'equazione differenziale | `src/generatori/v2/m12/a02-g1.ts` — secondo ordine | `check: { kind: "differentialEquation" }`: sostituzione, numero di costanti, condizioni di Cauchy; sbagliate filtrate con `checkVerdict` e `sameUnderCheck`; verifica simbolica con `solvesSymbolically` |
+| un verdetto con la sua giustificazione (convergenza, criteri) | `src/generatori/v2/m11/a01-g1.ts` — serie | `choice` «**Verdetto**: perché»; il modello dichiara il comportamento (esponente, rapporto) e `verify` lo controlla numericamente sulla funzione del testo |
 
-Per vero o falso, scelta multipla scritta a mano e riordini non c'è ancora un riferimento: il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella). Indicazioni per quei tipi:
+Per vero o falso e riordini non c'è ancora un riferimento (per la scelta multipla scritta a mano c'è `V2.M11.A01.g1`): il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella). Indicazioni per quei tipi:
 
 - **`choice`** scritta a mano: solo quando la risposta non è un oggetto matematico (una proprietà, un metodo da scegliere). Ogni opzione sbagliata ha il suo codice di errore, come le risposte sbagliate previste.
 - **`truefalse`**: un'affermazione costruita all'indietro, vera o falsa con la stessa probabilità; l'affermazione falsa è quella che nasce da un errore tipico, e il codice di chi risponde il contrario va nel campo `error` della risposta. Due soli esiti: niente scelta multipla.
@@ -321,6 +324,13 @@ Per vero o falso, scelta multipla scritta a mano e riordini non c'è ancora un r
 - **Tempi su GitHub.** Un test che gira su centinaia di semi ha il suo tempo massimo (`}, 30_000);`). Senza, passa in locale e fallisce su GitHub: è successo nella sessione 4b.
 - **Strumenti comuni.** `src/generatori/comuni/` contiene quello che serve a più generatori (`rationalAt` per il valore esatto in un punto, `distinctWrong…`; per i limiti `limitLatex`, `distinctWrongLimits`, `confirmsLimit` in `limits.ts`; per i polinomi scritti termine per termine `termWriter` in `terms.ts`). Nei test, `test/generatori/scrivi.ts` scrive una risposta come la scriverebbe Andrea (`limitText`, `plainText`).
 - **Limiti.** Il motore non calcola limiti: il valore si legge dai dati scelti (coefficienti dominanti, sviluppi tenuti come frazioni esatte) e `verify` lo conferma con i valori vicino al punto. Con i numeri in virgola mobile un limite finito grande (`e¹²`) non va scambiato per un infinito, e le potenze che escono dalla portata (`(1 + 1/n)^(n²)`) vanno provate con `n` piccoli (`scales`). Una somma dopo `lim` va tra parentesi (lo fa `limitLatex`). Una funzione che serve a un secondo generatore si sposta lì; una funzione di matematica vera va nel motore, in una sessione dedicata, non dentro un generatore.
+
+**Trappole emerse nella sessione E2.**
+
+- `rng.intExcept(min, max, lista)` esclude **solo** la lista: lo zero va messo nella lista se non deve uscire.
+- In `combinationLatex` (`comuni/ode.ts`) e simili, il coefficiente 1 si omette solo davanti a una lettera: un termine noto `±1` va scritto.
+- Con un controllo speciale (`check`), una risposta sbagliata prevista che il controllo stesso riconosce (per esempio una soluzione con una costante sola) deve avere **quel** codice: filtrale con `checkVerdict` come in `V2.M12.A02.g1`.
+- Valori esatti di integrali: `ExactSum` (`comuni/exact-sum.ts`) raccoglie i logaritmi spezzandoli nei primi; il numero si scrive con `toExpr()`.
 
 ## Come scrivere una lezione
 

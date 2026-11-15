@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: fine della sessione extra E1 (generatori difficili di Analisi, parte 1: limiti di successioni, limiti di funzioni, Taylor). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: fine della sessione extra E2 (generatori difficili di Analisi, parte 2: integrali, integrali impropri, serie, equazioni differenziali). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -13,21 +13,16 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
 - **Tre generatori di Analisi** (sessione E1), tutti con risposta di tipo limite (numero, `+∞`, `−∞`, «non esiste»), tre livelli, verifica automatica senza problemi né avvisi, 750 esercizi ciascuno ricalcolati con sympy **dal testo mostrato**: `V2.M03.A01.g1` limiti di successioni (è il generatore di riferimento per le risposte di tipo limite), `V2.M04.A01.g1` limiti notevoli e forme indeterminate, `V2.M08.A01.g1` sviluppi di Taylor nei limiti (controllato anche con de l'Hôpital dal testo, nel suo test). Strumenti comuni nuovi in `src/generatori/comuni/`: `limits.ts` (scrittura del limite, `distinctWrongLimits`, prova numerica `confirmsLimit`) e `terms.ts` (polinomi scritti termine per termine).
 - **Lezione di riferimento** `V1.M06.L04` «Disequazioni fratte».
 - **Fetta verticale nell'app**: lezione a tratti con domande lampo, schermata di esercizio completa, tastiera matematica (Base, Insiemi, Funzioni), dati in IndexedDB con versione (`DATA_VERSION = 1`) e ripieghi, esercizi per generatore e livello.
-- **Catalogo errori**: 77 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor: `AN.CONFRONTO_INFINITI`, `AN.FATTORE_LIMITATO`, `AN.LIMITE_NOTEVOLE`, `AN.SEGNO_INFINITO`, `AN.TAYLOR_SVILUPPO`), allineato alla tabella della specifica e verificato con sympy.
+- **Catalogo errori**: 95 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali), allineato alla tabella della specifica e verificato con sympy.
 - **Regole** (sessione 4c): `REGOLE.md` completo per generatori, lezioni, dimostrazioni, visualizzazioni, catalogo, con le trappole emerse dalle revisioni.
-- **Generatori di Analisi (sessione E1)*
-
-53. Codici di abilità `V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01` assegnati prima della scaletta; lezioni di riferimento proposte `V2.M03.L02`, `V2.M04.L03`, `V2.M08.L03` (E1).
-54. Cinque errori tipici nuovi: `AN.CONFRONTO_INFINITI`, `AN.FATTORE_LIMITATO`, `AN.LIMITE_NOTEVOLE`, `AN.SEGNO_INFINITO`, `AN.TAYLOR_SVILUPPO`. L'ultimo è volutamente largo (fattoriale, segni, denominatori dimenticati, sostituzione di `ax` fatta a metà): se nel diario servirà distinguerli, va diviso (E1).
-55. `AN.CONFRONTO_INFINITI` copre anche «la regola dei gradi usata in un punto finito»; `AN.SEGNO_INFINITO` copre sia il segno sbagliato sia `±∞` al posto di «non esiste» (e viceversa) (E1).
-56. Verifica indipendente dei limiti = prova numerica vicino al punto (destra e sinistra, posti pari e dispari), non un calcolo simbolico: il motore non calcola limiti (specifica, sezione 6) (E1).
-57. Il testo dei limiti chiede sempre «un numero in forma esatta, oppure +∞, −∞ o "non esiste"», anche quando la risposta è per forza un numero (Taylor): non suggerisce il tipo di risposta (E1).
-58. Limite notevole `(1 + 1/t)^t → e` usato anche per `t → −∞` (con le basi negative), dichiarato nei passaggi: la lezione dovrà dimostrarlo o enunciarlo (E1).
-59. Taylor: limiti di pulizia più larghi (interi e denominatori fino a 60) perché i coefficienti `1/24`, `1/48` sono propri dell'argomento; un errore di sviluppo che lascia termini non cancellati non diventa una risposta sbagliata prevista (chi se ne accorge si ferma) (E1).
-60. `sin(−x)` e `cos(−x)` non compaiono; argomenti negativi solo per esponenziale e logaritmo. `arctan t / t → 1` è trattato come limite notevole dal livello 2 (E1).
-
-*Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
-- **Test**: 1.012 in 38 file, verdi in locale e su GitHub.
+- **Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
+- **Sei generatori di Analisi** (sessione E2), tre livelli, verifica automatica senza problemi né avvisi, ricalcolati con sympy o mpmath **dal testo mostrato**:
+  - `V2.M09.A01.g1` integrali indefiniti (immediati, sostituzione, parti, fratti semplici, divisione, parti ripetute e cicliche): la primitiva scritta si **deriva**, qualunque costante abbia; senza costante è `AN.COSTANTE_INTEGRAZIONE`, `ln x` al posto di `ln|x|` è `COND.LOGARITMO`;
+  - `V2.M09.A02.g1` integrali definiti (`F(b) − F(a)` con somme esatte, logaritmi raccolti; verifica con Simpson);
+  - `V2.M10.A01.g1` convergenza di integrali impropri e `V2.M11.A01.g1` convergenza delle serie: **scelta multipla** verdetto + criterio, opzioni sbagliate sui criteri usati male; la verifica controlla numericamente il comportamento negli estremi (o del termine generale);
+  - `V2.M12.A01.g1` primo ordine (separabili, lineari, Cauchy) e `V2.M12.A02.g1` secondo ordine lineari a coefficienti costanti (tre casi, termine noto, risonanza, Cauchy): la soluzione si **sostituisce** nell'equazione, si contano le costanti indipendenti e si controllano le condizioni.
+  - Nuovo nello schema degli esercizi: controllo speciale `check` per le risposte `expression` (`antiderivative`, `differentialEquation`, in `src/esercizi/checks.ts`). Comuni nuovi: `writing.ts`, `exact-sum.ts`, `convergence.ts`, `ode.ts`. Tastiera: tasti `c`, `c₁`, `c₂`, `k` nel livello Funzioni.
+- **Test**: 1.042 in 45 file, verdi in locale e su GitHub.
 
 ## In corso
 
@@ -89,12 +84,18 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V2.M04.A01`, `V2.M04.L03` | Abilità: limiti notevoli e forme indeterminate — generatore `V2.M04.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M04.L03` «Limiti notevoli e forme indeterminate» (da scrivere) |
 | `V2.M06.L03`, `V2.M06.A03` | Lezione (da scrivere) e abilità: regole di derivazione — generatore `V2.M06.A03.g1` |
 | `V2.M08.A01`, `V2.M08.L03` | Abilità: sviluppi di Taylor nei limiti — generatore `V2.M08.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M08.L03` «Sviluppi di Taylor nel calcolo dei limiti» (da scrivere) |
+| `V2.M09.A01`, `V2.M09.L04` | Abilità: integrali indefiniti — generatore `V2.M09.A01.g1` (E2); lezione proposta `V2.M09.L04` |
+| `V2.M09.A02`, `V2.M09.L05` | Abilità: integrali definiti — generatore `V2.M09.A02.g1` (E2); lezione proposta `V2.M09.L05` |
+| `V2.M10.A01`, `V2.M10.L02` | Abilità: convergenza di integrali impropri — generatore `V2.M10.A01.g1` (E2); lezione proposta `V2.M10.L02` |
+| `V2.M11.A01`, `V2.M11.L03` | Abilità: convergenza delle serie — generatore `V2.M11.A01.g1` (E2); lezione proposta `V2.M11.L03` |
+| `V2.M12.A01`, `V2.M12.L02` | Abilità: equazioni del primo ordine — generatore `V2.M12.A01.g1` (E2); lezione proposta `V2.M12.L02` |
+| `V2.M12.A02`, `V2.M12.L04` | Abilità: equazioni lineari del secondo ordine — generatore `V2.M12.A02.g1` (E2); lezione proposta `V2.M12.L04` |
 | `V3.M02.L01`, `V3.M02.A01` | Lezione (da scrivere) e abilità: metodo di Gauss — generatore `V3.M02.A01.g1` |
 | `V3.M03.L01`, `V3.M03.A01` | Lezione (da scrivere) e abilità: determinante — generatore `V3.M03.A01.g1` |
 | `V2.M05.T01`, `V2.M05.T02` | Teorema degli zeri, teorema di Weierstrass (in `src/riserva/v2/m05/`) |
 | `V2.M06.T01`, `V2.M06.T02`, `V2.M06.T03` | Teoremi di Fermat, Rolle, Lagrange (in `src/riserva/v2/m06/`); `T03` per Lagrange è quello degli esempi della specifica |
 
-Per i tre generatori della sessione E1 i codici di **abilità** (`V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01`) sono fissi; le **lezioni** indicate sono il campo `lesson` dei generatori (dove porta «Torna alla lezione»): la scaletta può mantenerle oppure spostare il rimando a un'altra lezione, purché quella lezione spieghi tutti i casi del livello 3 (numero `e` e fattori oscillanti per le successioni; limiti laterali per le funzioni; prodotti di sviluppi per Taylor). Le altre abilità di quei moduli partono da `A02`.
+Per i generatori delle sessioni E1 ed E2 i codici di **abilità** (`V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01`) sono fissi; le **lezioni** indicate sono il campo `lesson` dei generatori (dove porta «Torna alla lezione»): la scaletta può mantenerle oppure spostare il rimando a un'altra lezione, purché quella lezione spieghi tutti i casi del livello 3 (numero `e` e fattori oscillanti per le successioni; limiti laterali per le funzioni; prodotti di sviluppi per Taylor). Le altre abilità di quei moduli partono da `A02`.
 
 Liberi per la scaletta di V1.M06: `L01`-`L03` (primo grado, secondo grado, segno di un prodotto), `D01`, `A01`-`A03`. Quando esistono, `V1.M06.L04` prende i prerequisiti `V1.M06.L03` e `V1.M04.L07` (oggi `[]`, perché la verifica rifiuta lezioni che non ci sono), e i termini che oggi spiega a parole (zero di un polinomio, condizione di esistenza, tabella dei segni) diventano rimandi `[[…]]`.
 
@@ -118,6 +119,9 @@ Generatori e lezione:
 - La prova numerica delle verifiche (`confirmsLimit`) lavora in virgola mobile, con tolleranza del 2 per mille: basta a distinguere la risposta giusta da quelle sbagliate, ma non è una dimostrazione. La garanzia vera è il ricalcolo con sympy dal testo, fatto a mano (script fuori dal repository, come per gli altri generatori).
 
 - Al livello 1 scomposizione, Gauss e qualche derivata hanno due sole risposte sbagliate: niente scelta multipla per quegli esercizi.
+- Serie di potenze (V2.M11, «varia») non coperte: nessun generatore per il raggio di convergenza (E2).
+- Equazioni differenziali: niente equazioni lineari del primo ordine con coefficiente non costante oltre `n/x`, niente termine noto trigonometrico nel secondo ordine; la sostituzione numerica scarta i punti fuori dominio (per `c/x` con `x = 0`) (E2).
+- Il controllo delle primitive accetta qualunque funzione con la derivata giusta, anche scritta su un dominio più piccolo, salvo i logaritmi dichiarati dal generatore (`COND.LOGARITMO`) (E2).
 - Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno (sotto la soglia).
 - La lezione V1.M06.L04 non ha ancora la visualizzazione `VIS.disequazioni-grafico`.
 - Le cinque dimostrazioni di riserva seguono le strade classiche dei manuali di Analisi 1 (zeri per bisezione; Weierstrass con una successione che tende all'estremo superiore e Bolzano-Weierstrass; Fermat con il segno del rapporto incrementale; Rolle da Weierstrass e Fermat; Lagrange con la funzione ausiliaria), ma sono state scritte **senza un libro aperto**: il confronto con il libro di testo chiesto da `REGOLE.md` resta da fare quando entrano nelle lezioni.
@@ -142,7 +146,7 @@ Altro:
 ## Domande aperte (decide Andrea)
 
 - **Errore tipico nuovo** «√(x²) = x anche per x negativo» (serve per `√(x² + ax) + x` con `x → −∞` e per i limiti con il valore assoluto): aggiungerlo permetterebbe quelle forme in `V2.M04.A01.g1`.
-- **Copia della specifica nel Progetto di Claude**: la tabella degli errori ha cinque righe nuove (sessione E1), ma la sessione non ha avuto il permesso di scrivere nel Progetto: va ricaricato a mano `docs/SPECIFICA.md` (per il resto le due copie sono identiche).
+- **Copia della specifica nel Progetto di Claude**: la tabella degli errori ha 23 righe nuove (5 della sessione E1, 18 della E2) che nel Progetto mancano: va ricaricato `docs/SPECIFICA.md` (per il resto le due copie sono identiche).
 
 - **Errore tipico nuovo** «zero doppio trattato come zero semplice» (`(x − 3)²` studiato come `x − 3`): aggiungerlo cambia catalogo e tabella della specifica.
 - **Parentesi degli intervalli**: `(1; 3)` (oggi) oppure `]1; 3[` nella scrittura dell'app? In lettura valgono entrambe.
@@ -224,3 +228,18 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 50. Teorema degli zeri dimostrato per bisezione (non con l'estremo superiore): richiede le successioni di V2.M03, che nel programma vengono prima (4d).
 51. Enunciati su un intervallo `[a; b]` con `a < b`; Fermat su un intervallo aperto `(a; b)`; il caso del minimo ricondotto al massimo passando a `−f`, scritto per esteso nell'ultimo passaggio (4d).
 52. Nella modalità «riordina» l'ultimo passaggio non è sempre fisso: dove l'ordine è già obbligato, si sono segnati fissi i passaggi che altrimenti si potrebbero scambiare (i due lati in Fermat, le due proprietà di `g` in Lagrange), restando entro un terzo (4d).
+53. Codici di abilità `V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01` assegnati prima della scaletta; lezioni di riferimento proposte `V2.M03.L02`, `V2.M04.L03`, `V2.M08.L03` (E1).
+54. Cinque errori tipici nuovi: `AN.CONFRONTO_INFINITI`, `AN.FATTORE_LIMITATO`, `AN.LIMITE_NOTEVOLE`, `AN.SEGNO_INFINITO`, `AN.TAYLOR_SVILUPPO`. L'ultimo è volutamente largo (fattoriale, segni, denominatori dimenticati, sostituzione di `ax` fatta a metà): se nel diario servirà distinguerli, va diviso (E1).
+55. `AN.CONFRONTO_INFINITI` copre anche «la regola dei gradi usata in un punto finito»; `AN.SEGNO_INFINITO` copre sia il segno sbagliato sia `±∞` al posto di «non esiste» (e viceversa) (E1).
+56. Verifica indipendente dei limiti = prova numerica vicino al punto (destra e sinistra, posti pari e dispari), non un calcolo simbolico: il motore non calcola limiti (specifica, sezione 6) (E1).
+57. Il testo dei limiti chiede sempre «un numero in forma esatta, oppure +∞, −∞ o "non esiste"», anche quando la risposta è per forza un numero (Taylor): non suggerisce il tipo di risposta (E1).
+58. Limite notevole `(1 + 1/t)^t → e` usato anche per `t → −∞` (con le basi negative), dichiarato nei passaggi: la lezione dovrà dimostrarlo o enunciarlo (E1).
+59. Taylor: limiti di pulizia più larghi (interi e denominatori fino a 60) perché i coefficienti `1/24`, `1/48` sono propri dell'argomento; un errore di sviluppo che lascia termini non cancellati non diventa una risposta sbagliata prevista (chi se ne accorge si ferma) (E1).
+60. `sin(−x)` e `cos(−x)` non compaiono; argomenti negativi solo per esponenziale e logaritmo. `arctan t / t → 1` è trattato come limite notevole dal livello 2 (E1).
+61. Schema degli esercizi esteso (in `src/esercizi/`, non nel motore): risposta `expression` con `check` opzionale; con il controllo, `correct` è la scrittura mostrata e deve superarlo; i vincoli di forma non si usano (E2).
+62. Primitive: senza costante arbitraria è `AN.COSTANTE_INTEGRAZIONE` anche se la derivata è giusta; l'ultima opzione sbagliata è sempre la primitiva giusta senza `+ c` (E2).
+63. Equazioni differenziali: le costanti si contano come rango numerico delle derivate rispetto alle lettere (`c₁eˣ + c₂eˣ` ne ha una); nei problemi di Cauchy sia «costanti lasciate» sia «condizioni non rispettate» sono `AN.CAUCHY_CONDIZIONI` (E2).
+64. Convergenza (V2.M10, V2.M11) come scelta multipla «verdetto: giustificazione»: un'opzione con il verdetto giusto ma il criterio sbagliato è sbagliata. Per le serie a segni alterni i verdetti sono «converge assolutamente», «converge, ma non assolutamente», «non converge» (E2).
+65. Diciotto errori tipici nuovi (`AN.PRIMITIVA_ELEMENTARE`, `AN.SOSTITUZIONE_FATTORE`, `AN.INTEGRAZIONE_PARTI`, `AN.INTEGRALE_PRODOTTO`, `AN.FRATTI_SEMPLICI`, `AN.ESTREMI_INTEGRALE`, `AN.SOGLIA_CONVERGENZA`, `AN.IMPROPRIO_SINGOLARITA`, `AN.CRITERIO_INCONCLUDENTE`, `AN.CONFRONTO_VERSO`, `AN.LEIBNIZ_IPOTESI`, `AN.CONVERGENZA_ASSOLUTA`, `AN.EDO_COSTANTE`, `AN.EDO_SEPARAZIONE`, `AN.EDO_FATTORE_INTEGRANTE`, `AN.EDO_CARATTERISTICA`, `AN.EDO_PARTICOLARE`, `AN.CAUCHY_CONDIZIONI`), con esempi verificati in `scripts/verifica-esempi-errori.py` (E2).
+66. Tastiera: tasti `c`, `c₁`, `c₂`, `k`, `x²`, `y` aggiunti al livello Funzioni (scrivono `c_1`, `c_2`): senza, primitive ed equazioni differenziali non si potevano scrivere dal telefono (E2).
+67. Integrali definiti: logaritmi raccolti in uno solo quando l'argomento resta piccolo (`4 ln(4/3)`), altrimenti un logaritmo per primo (`11 ln 2 − 3 ln 5`); un errore sugli estremi è sempre tra le opzioni (E2).
