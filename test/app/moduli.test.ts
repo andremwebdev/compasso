@@ -7,7 +7,7 @@ import { fieldKindOf, previewText } from "../../src/app/risposta/preview";
 import { freshSeed } from "../../src/app/risposta/seeds";
 import { renderRichText } from "../../src/app/testo/render";
 import { loadLesson } from "../../src/contenuti";
-import { generateExercise } from "../../src/esercizi";
+import { choiceOptions, generateExercise } from "../../src/esercizi";
 import { generators } from "../../src/generatori";
 import { parseExpression } from "../../src/motore/parser";
 import { parseSolutionSet } from "../../src/motore/parser/sets";
@@ -98,10 +98,13 @@ describe("anteprima della risposta", () => {
     expect(previewText(set, "x + ) 2").kind).toBe("error");
   });
 
-  it("ogni tipo di risposta scritta ha il suo campo", () => {
+  it("ogni tipo di risposta scritta ha il suo campo, e ogni scelta multipla le sue opzioni", () => {
     for (const generator of generators) {
-      const { answer } = generateExercise(generator, 1, 0);
-      expect(fieldKindOf(answer), generator.code).not.toBeNull();
+      const exercise = generateExercise(generator, 1, 0);
+      const { answer } = exercise;
+      // Le risposte a scelta (scelta multipla, vero o falso, riordino) non si scrivono: niente campo.
+      if (answer.kind === "choice") expect(choiceOptions(exercise), generator.code).not.toBeNull();
+      else if (answer.kind !== "truefalse" && answer.kind !== "ordering") expect(fieldKindOf(answer), generator.code).not.toBeNull();
     }
   });
 });
