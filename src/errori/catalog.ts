@@ -284,6 +284,15 @@ export const errorCatalog = [
     example: tex`$|x-1|<2$ equivale a $-2<x-1<2$, cioè $-1<x<3$. $|x-1|>2$ equivale a $x-1<-2$ oppure $x-1>2$, cioè $x<-1$ oppure $x>3$.`,
     reference: "V1.M06",
   },
+  {
+    // Aggiunto su decisione di Andrea (20 novembre 2026): DISEQ.SECONDO_GRADO parla d'altro.
+    code: "DISEQ.ZERO_DOPPIO",
+    name: "Zero doppio trattato come zero semplice",
+    category: "DISEQ",
+    explanation: tex`Un fattore elevato a una potenza pari, come $(x-r)^2$, non cambia segno in $r$: è positivo per ogni $x\neq r$ e si annulla solo in $r$. Nella tabella dei segni non va studiato come $x-r$: non rovescia il segno, toglie al più il punto $r$ (o lo aggiunge, con $\geq$ e $\leq$).`,
+    example: tex`$(x-3)^2(x+1)>0$: il fattore $(x-3)^2$ è positivo per $x\neq3$, quindi basta $x+1>0$ con $x\neq3$, cioè $-1<x<3$ oppure $x>3$. Studiando $(x-3)^2$ come $x-3$ si ottiene $x<-1$ oppure $x>3$, che è sbagliato: per $x=0$ si ha $9\cdot1=9>0$, quindi $0$ è soluzione.`,
+    reference: "V1.M06",
+  },
 
   // ───────────────────────────── LOG: logica e lettura ─────────────────────────────
   {

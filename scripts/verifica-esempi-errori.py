@@ -321,6 +321,16 @@ def _():
     assert ineq(Abs(x) > 3) == Union(Interval.open(-oo, -3), Interval.open(3, oo))
 
 
+@check("DISEQ.ZERO_DOPPIO")
+def _():
+    right = Union(Interval.open(-1, 3), Interval.open(3, oo))
+    assert ineq((x - 3) ** 2 * (x + 1) > 0) == right
+    wrong = ineq((x - 3) * (x + 1) > 0)  # (x − 3)² studiato come x − 3
+    assert wrong == Union(Interval.open(-oo, -1), Interval.open(3, oo))
+    assert wrong != right
+    assert ((0 - 3) ** 2 * (0 + 1)) == 9 and right.contains(0) is S.true and wrong.contains(0) is S.false
+
+
 # ───────────────────────────── LOG ─────────────────────────────
 
 

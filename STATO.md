@@ -13,7 +13,7 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
 - **Tre generatori di Analisi** (sessione E1), tutti con risposta di tipo limite (numero, `+∞`, `−∞`, «non esiste»), tre livelli, verifica automatica senza problemi né avvisi, 750 esercizi ciascuno ricalcolati con sympy **dal testo mostrato**: `V2.M03.A01.g1` limiti di successioni (è il generatore di riferimento per le risposte di tipo limite), `V2.M04.A01.g1` limiti notevoli e forme indeterminate, `V2.M08.A01.g1` sviluppi di Taylor nei limiti (controllato anche con de l'Hôpital dal testo, nel suo test). Strumenti comuni nuovi in `src/generatori/comuni/`: `limits.ts` (scrittura del limite, `distinctWrongLimits`, prova numerica `confirmsLimit`) e `terms.ts` (polinomi scritti termine per termine).
 - **Lezione di riferimento** `V1.M06.L04` «Disequazioni fratte».
 - **Fetta verticale nell'app**: lezione a tratti con domande lampo, schermata di esercizio completa, tastiera matematica (Base, Insiemi, Funzioni), dati in IndexedDB con versione (`DATA_VERSION = 1`) e ripieghi, esercizi per generatore e livello.
-- **Catalogo errori**: 95 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali), allineato alla tabella della specifica e verificato con sympy.
+- **Catalogo errori**: 96 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali, `DISEQ.ZERO_DOPPIO` su decisione di Andrea il 20 novembre 2026), allineato alla tabella della specifica e verificato con sympy.
 - **Regole** (sessione 4c): `REGOLE.md` completo per generatori, lezioni, dimostrazioni, visualizzazioni, catalogo, con le trappole emerse dalle revisioni.
 - **Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
 - **Sei generatori di Analisi** (sessione E2), tre livelli, verifica automatica senza problemi né avvisi, ricalcolati con sympy o mpmath **dal testo mostrato**:
@@ -49,9 +49,9 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 **Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14)
 
 1. ~~Approvazione delle scalette~~ del Volume 1: fatta (Andrea, 20 novembre 2026).
-2. **Completare V1.M06** per primo, attorno al riferimento (prima aggiungere l'errore «zero doppio trattato come zero semplice», decisione 2 di Andrea): lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
+2. **Si parte da V1.M01** (decisione di Andrea, 20 novembre 2026), poi i moduli in ordine; V1.M06 si completa attorno al riferimento quando arriva il suo turno: lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
 3. **Lezione `V1.M04.L07`** sulla scomposizione (il generatore esiste già) e il resto di V1.M04.
-4. **Gli altri moduli in ordine di prerequisiti** (M01, M02, M03, M05, M07, … M14). Per ogni modulo, in quest'ordine: generatori (uno per sessione se complessi), lezioni, flashcard manuali, dimostrazioni dove servono, visualizzazione del modulo (M08, M09, M10, M12), controllo «Lo so già».
+4. **Gli altri moduli in ordine di prerequisiti** (M01, M02, M03, M05, M07, … M14; M01 per primo). Per ogni modulo, in quest'ordine: generatori (uno per sessione se complessi), lezioni, flashcard manuali, dimostrazioni dove servono, visualizzazione del modulo (M08, M09, M10, M12), controllo «Lo so già».
    - Prima di M02, M03, M10, M13: ⚙ estendere il parser (numeri periodici, notazione scientifica, gradi, fattoriale).
    - In M09: un generatore con estremi `e`, `e²`, `ln 2` per provare la lettura degli insiemi (`docs/REVISIONE.md`, punti da incrociare).
    - In M10: equazioni goniometriche con soluzioni tutte periodiche (trappole del motore in `REGOLE.md`).
@@ -155,7 +155,7 @@ Altro:
 Prese in chat sulle domande aperte; da eseguire nelle sessioni indicate, non ancora fatte.
 
 1. **Errore tipico nuovo «√(x²) = x anche per x negativo»: sì.** Voce nuova nel catalogo e nella tabella della specifica (sezione 5); poi le forme `√(x² + ax) + x` con `x → −∞` e con il valore assoluto in `V2.M04.A01.g1` (cambiano alcuni semi congelati: annotarlo). Utile anche nel Volume 1 (radicali, valore assoluto).
-2. **Errore tipico nuovo «zero doppio trattato come zero semplice»: sì.** Voce nuova nel catalogo e nella tabella della specifica; da usare nei generatori di V1.M06 (segno di un prodotto, fratte). **Da fare prima di scrivere V1.M06.L03.**
+2. **Errore tipico nuovo «zero doppio trattato come zero semplice»: sì. Fatto**: `DISEQ.ZERO_DOPPIO` nel catalogo, nella specifica (anche la copia nel Progetto) e nello script sympy. Resta da usarlo nei generatori di V1.M06 (segno di un prodotto; `V1.M06.A04.g1` lo può aggiungere solo decidendo il cambio dei semi congelati).
 3. **Intervalli: tonde, `(1; 3)`** (com'è oggi). Le lezioni scrivono gli intervalli così; in lettura resta valido anche `]1; 3[`.
 4. **IndexedDB nella versione PC**: la prova in Safari e Firefox resta alla fase 9.
 5. **`log` senza base nel Volume 2: rifiutato** come testo ambiguo, con un messaggio che chiede `ln` o la base (⚙ parser, prima delle lezioni del Volume 2). Nel Volume 1 `log` resta in base 10. I testi del Volume 2 scrivono sempre `ln`.

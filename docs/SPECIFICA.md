@@ -412,6 +412,7 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | DISEQ.ESTREMI | Estremi inclusi o esclusi in modo sbagliato | Con ≤ si includono gli zeri del numeratore, mai quelli del denominatore | V1.M06 |
 | DISEQ.SECONDO\_GRADO | Intervallo interno ed esterni scambiati | Con a > 0 e Δ > 0, ax²+bx+c > 0 vale fuori dalle radici | V1.M06 |
 | DISEQ.VALORE\_ASSOLUTO | Valore assoluto risolto male | Con a > 0: \|x\| < a vale per −a < x < a; \|x\| > a per x < −a o x > a | V1.M06 |
+| DISEQ.ZERO\_DOPPIO | Zero doppio trattato come zero semplice | (x−r)² non cambia segno in r: è positivo per x ≠ r e nullo in r | V1.M06 |
 | LOG.NEGAZIONE\_PER\_OGNI | Negazione di "per ogni" sbagliata | non(per ogni x vale P) = esiste un x per cui P non vale | V1.M01 |
 | LOG.NECESSARIA\_SUFFICIENTE | Necessaria e sufficiente scambiate | In "se A allora B", A è sufficiente per B e B è necessaria per A | V1.M01 |
 | LOG.INVERSA | Implicazione invertita | Da "se A allora B" non segue "se B allora A", né "se non A allora non B" | V1.M01 |
