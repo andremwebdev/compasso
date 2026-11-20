@@ -55,19 +55,25 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 9. ⚙ **Caricamento dei contenuti per modulo** nella versione telefono (specifica, sezione 12): `src/contenuti/index.ts` diviso per modulo.
    - Fase finita quando: tutte le sezioni funzionano con i contenuti presenti, e l'app è installata su iPhone e funziona offline.
 
-**Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14). Piano deciso il 20 novembre 2026: si segue in quest'ordine, un punto per sessione (o poche). Scalette del Volume 1 già approvate.
+**Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14). Piano deciso con Andrea il 20 novembre 2026. Andrea ha l'ordine delle lezioni e dei generatori, uno per sessione, **prima la lezione e poi il suo generatore**. Scalette del Volume 1 approvate: i codici sono fissi.
 
-1. ⚙ **Caricamento dei contenuti per modulo** (è anche il punto 9 della fase 4): prima di qualunque lezione o generatore nuovo, perché cambia dove ogni sessione aggiunge le sue righe.
-2. **V1.M01** Insiemi e logica: generatori A01-A09, poi lezioni L01-L08, flashcard, dimostrazioni T01-T04. Il primo generatore vero o falso diventa riferimento (tabella di `REGOLE.md`). A02 (operazioni tra insiemi, prodotto cartesiano) si fa a **scelta multipla**: il motore non scrive insiemi di elementi né coppie, e non si estende per questo.
-3. ⚙ **Parser e catalogo** prima di V1.M02: numeri periodici, notazione scientifica, gradi, fattoriale; voce di catalogo per «√(x²) = x anche per x negativo» («Decisioni di Andrea», punto 1; nel Volume 1 serve dai radicali di M03).
-4. **V1.M02, V1.M03, V1.M04** (comprese la lezione L07 sulla scomposizione, il cui generatore esiste già) **e V1.M05**.
-5. ⚙ **Impalcatura delle visualizzazioni** con `VIS.disequazioni-grafico` (punto 8 della fase 4), prima di V1.M06.
-6. **V1.M06**: L01-L03 con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi «Codici assegnati»), la visualizzazione nella L04, il resto del modulo (sistemi di disequazioni, irrazionali, valore assoluto; `DISEQ.ZERO_DOPPIO` nel segno di un prodotto). Poi **V1.M07**.
-7. ⚙ **Grafici statici di funzioni** nel motore (specifica 6), prima di V1.M08.
-8. **V1.M08** con `VIS.trasformazioni-funzioni`; **V1.M09** con `VIS.esponenziale-logaritmo` e un generatore con estremi `e`, `e²`, `ln 2`; **V1.M10** con `VIS.circonferenza-goniometrica`, equazioni goniometriche con soluzioni tutte periodiche.
-9. ⚙ **Risposta `ordering`** nella schermata di esercizio (punto 7 della fase 4), prima di V1.M11 (serve a V1.M11.A08).
-10. **V1.M11, V1.M12** (con `VIS.coniche-parametri`), **V1.M13, V1.M14**.
-11. **Chiusura della fase**: ogni modulo ha lezioni, abilità con generatori verificati e «Lo so già»; prova completa sull'iPhone.
+*Prima di cominciare* (sessioni tecniche ⚙, in quest'ordine; nessuna dipende dai contenuti):
+
+1. ⚙ **Caricamento dei contenuti per modulo** (punto 9 della fase 4): cambia dove ogni sessione aggiunge le sue righe.
+2. ⚙ **Figure e grafici nelle lezioni**: grafici statici di funzioni dal motore (specifica 6, «Cosa deve mostrare») con un blocco delle lezioni, e figure SVG scritte a mano (diagrammi di Venn in V1.M01, figure di geometria in V1.M11) con un blocco proprio; colori dalle variabili del tema. Sintassi in `REGOLE.md`.
+3. ⚙ **Impalcatura delle visualizzazioni** con `VIS.disequazioni-grafico`, inserita nella lezione `V1.M06.L04` (punto 8 della fase 4).
+4. ⚙ **Le altre quattro visualizzazioni del Volume 1**: `VIS.trasformazioni-funzioni`, `VIS.esponenziale-logaritmo`, `VIS.circonferenza-goniometrica`, `VIS.coniche-parametri` (scheda in `docs/VISUALIZZAZIONI.md`, poi codice). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08).
+5. ⚙ **Parser e catalogo**: numeri periodici (V1.M02.L05), notazione scientifica (V1.M03.L07), gradi (V1.M10.L01), fattoriale (V1.M13.L01); voce di catalogo «√(x²) = x anche per x negativo» («Decisioni di Andrea», punto 1; le forme nuove di `V2.M04.A01.g1` restano alla fase 6).
+6. ⚙ **Risposta `ordering`** nella schermata di esercizio (punto 7 della fase 4): serve a V1.M11.A08 e alle dimostrazioni.
+
+*Poi le lezioni e i generatori, in modo lineare*, con queste regole:
+
+- La **lezione** si scrive con `abilita: []` e solo domande lampo scritte a mano (la verifica rifiuta un'abilità senza generatore). La sessione del **generatore** aggiunge l'abilità all'intestazione della lezione e le domande lampo prese dal generatore (livello 1 a metà, livello 2 verso la fine), poi ricalcola la durata.
+- **Già fatti, da saltare**: la lezione `V1.M06.L04` e il generatore `V1.M06.A04.g1`; il generatore `V1.M04.A07.g1` (la lezione `V1.M04.L07` si scrive e dichiara subito `abilita: [V1.M04.A07]`).
+- **V1.M01**: il primo generatore vero o falso diventa il riferimento (tabella di `REGOLE.md`). `V1.M01.A02` (operazioni tra insiemi, prodotto cartesiano) è a **scelta multipla**: il motore non scrive insiemi di elementi né coppie.
+- **Unico passo in mezzo**: subito dopo il generatore di `V1.M06.L03`, una sessione breve aggiorna `V1.M06.L04`: prerequisiti `V1.M06.L03`, `V1.M04.L07`, `V1.M05.L05` e rimandi `[[…]]` ai termini che oggi spiega a parole (vedi «Codici assegnati»). Se un generatore di V1.M06 deve usare `DISEQ.ZERO_DOPPIO` in `V1.M06.A04.g1`, cambiano i semi congelati: decisione da annotare.
+- **Dentro le sessioni, senza passi a parte**: in V1.M09 almeno un generatore con estremi `e`, `e²`, `ln 2`, con le risposte aggiunte al test di `test/app/moduli.test.ts`; in V1.M10 equazioni goniometriche con soluzioni tutte periodiche (trappole del motore in `REGOLE.md`).
+- **Chiusura della fase**: ogni modulo ha lezioni, abilità con generatori verificati e «Lo so già»; prova completa sull'iPhone.
 
 In parallelo, senza bloccare niente: la prova sull'iPhone della versione su Pages (la fa Andrea); i difetti trovati diventano sessioni sull'involucro.
 
