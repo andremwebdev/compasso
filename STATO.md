@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: fine della sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: decisioni di Andrea sulle domande aperte (20 novembre 2026). Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -49,7 +49,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 **Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14)
 
 1. **Approvazione delle scalette** (`docs/SCALETTE.md`, fatte nella sessione E4): Andrea approva modulo per modulo e segna `Stato: approvata`. Le lezioni di un modulo si scrivono solo dopo; i suoi codici diventano fissi.
-2. **Completare V1.M06** per primo, attorno al riferimento: lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
+2. **Completare V1.M06** per primo, attorno al riferimento (prima aggiungere l'errore «zero doppio trattato come zero semplice», decisione 2 di Andrea): lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
 3. **Lezione `V1.M04.L07`** sulla scomposizione (il generatore esiste già) e il resto di V1.M04.
 4. **Gli altri moduli in ordine di prerequisiti** (M01, M02, M03, M05, M07, … M14). Per ogni modulo, in quest'ordine: generatori (uno per sessione se complessi), lezioni, flashcard manuali, dimostrazioni dove servono, visualizzazione del modulo (M08, M09, M10, M12), controllo «Lo so già».
    - Prima di M02, M03, M10, M13: ⚙ estendere il parser (numeri periodici, notazione scientifica, gradi, fattoriale).
@@ -60,7 +60,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 
 **Fase 6 — Volumi 2 e 3, in parallelo**
 
-1. **Decidere prima**: `log` o `ln` per il naturale nel Volume 2 (decisione 5).
+1. ⚙ **Prima**: `log` senza base rifiutato negli esercizi del Volume 2 (decisione 5, presa da Andrea).
 2. **Lezioni dei generatori già esistenti**: `V2.M06.L03` (regole di derivazione), `V3.M02.L01` (Gauss), `V3.M03.L01` (determinante).
 3. ⚙ **Motore**: nodi per successioni e somme (prima delle lezioni di V2.M03 e di V2.M11; i generatori di limiti della sessione E1 non ne hanno avuto bisogno), fattoriale e radice n-esima, grafici statici (prima di V2.M07), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
 4. **Scaletta, generatori, lezioni con dimostrazioni** (confrontate con un libro di testo; per V2.M05 e V2.M06 cinque sono già in `src/riserva/`: incollarle, cancellare il file di riserva, collegare con `[[…]]` i risultati usati), modulo per modulo, alternando i due binari; le sei visualizzazioni nei loro moduli (V2.M04, M06, M08, M09; V3.M05, M06).
@@ -118,7 +118,7 @@ Generatori e lezione:
 
 - **«non esiste» non si può scrivere con la tastiera matematica** (non c'è il tasto; `∞` è solo nel livello Insiemi). Sul telefono i tre generatori di limiti si possono fare bene solo come scelta multipla (hanno sempre almeno tre risposte sbagliate previste). Da aggiungere con il livello Analisi della tastiera (fase 4, punto 4): tasti `+∞`, `−∞`, «non esiste», `e`, e la lettera `n` non serve (le risposte sono numeri).
 - I limiti di successioni sono scritti come espressioni nella lettera `n`: per questi esercizi i nodi «successione» del motore (fase 6, punto 3) non servono; mancano ancora fattoriale e radice n-esima, quindi niente `n!` né `ⁿ√n` (criterio del rapporto, formula di Stirling).
-- Nei limiti di funzioni non ci sono forme con il valore assoluto o con `√(x²) = |x|` per `x → −∞`: nel catalogo manca un errore tipico adatto (vedi «Domande aperte»).
+- Nei limiti di funzioni non ci sono forme con il valore assoluto o con `√(x²) = |x|` per `x → −∞`: nel catalogo manca un errore tipico adatto (Andrea ha deciso di aggiungerlo: «Decisioni di Andrea», punto 1).
 - La prova numerica delle verifiche (`confirmsLimit`) lavora in virgola mobile, con tolleranza del 2 per mille: basta a distinguere la risposta giusta da quelle sbagliate, ma non è una dimostrazione. La garanzia vera è il ricalcolo con sympy dal testo, fatto a mano (script fuori dal repository, come per gli altri generatori).
 
 - Al livello 1 scomposizione, Gauss e qualche derivata hanno due sole risposte sbagliate: niente scelta multipla per quegli esercizi.
@@ -148,11 +148,17 @@ Altro:
 
 ## Domande aperte (decide Andrea)
 
-- **Errore tipico nuovo** «√(x²) = x anche per x negativo» (serve per `√(x² + ax) + x` con `x → −∞` e per i limiti con il valore assoluto): aggiungerlo permetterebbe quelle forme in `V2.M04.A01.g1`.
+- **Scalette** (`docs/SCALETTE.md`): Andrea le sta controllando (20 novembre 2026). Le lezioni di un modulo si scrivono solo dopo `Stato: approvata`.
 
-- **Errore tipico nuovo** «zero doppio trattato come zero semplice» (`(x − 3)²` studiato come `x − 3`): aggiungerlo cambia catalogo e tabella della specifica.
-- **Parentesi degli intervalli**: `(1; 3)` (oggi) oppure `]1; 3[` nella scrittura dell'app? In lettura valgono entrambe.
-- **IndexedDB nella versione PC**: funziona in Chromium anche da file; da provare in Safari e Firefox (il ripiego esiste).
+## Decisioni di Andrea (20 novembre 2026)
+
+Prese in chat sulle domande aperte; da eseguire nelle sessioni indicate, non ancora fatte.
+
+1. **Errore tipico nuovo «√(x²) = x anche per x negativo»: sì.** Voce nuova nel catalogo e nella tabella della specifica (sezione 5); poi le forme `√(x² + ax) + x` con `x → −∞` e con il valore assoluto in `V2.M04.A01.g1` (cambiano alcuni semi congelati: annotarlo). Utile anche nel Volume 1 (radicali, valore assoluto).
+2. **Errore tipico nuovo «zero doppio trattato come zero semplice»: sì.** Voce nuova nel catalogo e nella tabella della specifica; da usare nei generatori di V1.M06 (segno di un prodotto, fratte). **Da fare prima di scrivere V1.M06.L03.**
+3. **Intervalli: tonde, `(1; 3)`** (com'è oggi). Le lezioni scrivono gli intervalli così; in lettura resta valido anche `]1; 3[`.
+4. **IndexedDB nella versione PC**: la prova in Safari e Firefox resta alla fase 9.
+5. **`log` senza base nel Volume 2: rifiutato** come testo ambiguo, con un messaggio che chiede `ln` o la base (⚙ parser, prima delle lezioni del Volume 2). Nel Volume 1 `log` resta in base 10. I testi del Volume 2 scrivono sempre `ln`.
 
 ## Decisioni da rivedere
 
@@ -164,7 +170,7 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 2. `(1,5)` è il numero 1,5; `{1,2}` è rifiutato come ambiguo (2, 4a).
 3. Un numero da solo, in una risposta di tipo insieme, vale `x = numero` (2).
 4. `[1; 2] ∪ [2; 3]` vale `[1; 3]`; la forma canonica si pretende solo con `canonicalForm: true`; estremo decimale per uno esatto = `FORMA.DECIMALE` (2).
-5. `log` senza base = base 10, `ln` = naturale; per il Volume 2 da decidere (1).
+5. `log` senza base = base 10, `ln` = naturale; nel Volume 2 `log` senza base è rifiutato (deciso da Andrea, 20 novembre 2026; da fare) (1).
 6. `1/2x` = `(1/2)·x`; `sin π/3` = `sin(π/3)`, ma `sin x/2` = `(sin x)/2` (1, 4a).
 7. `i` è l'unità immaginaria solo negli esercizi sui complessi; `e` è sempre il numero di Nepero (1).
 8. `[−∞; 2]` è testo non valido, non un errore `DISEQ.ESTREMI` (4a).
