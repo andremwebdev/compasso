@@ -1,19 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { isLessonCode, type LessonCode } from "../../codici";
 import { loadLesson } from "../../contenuti";
+import { moduleOfLesson } from "../../contenuti/programma";
 import type { LessonBlock, QuestionOption } from "../../contenuti/formato";
 import { findError } from "../../errori";
 import { generateExercise } from "../../esercizi";
 import { findGenerator } from "../../generatori";
+import { BackButton } from "../componenti/Common";
 import { ExerciseView } from "../componenti/ExerciseView";
 import { RichText } from "../componenti/RichText";
 import { lessonChunks } from "../lezione/chunks";
 import { glossaryItem, type GlossaryItem } from "../lezione/glossary";
+import { isWritten, lessonTitle, missingPrerequisites } from "../programma";
 import { freshSeed } from "../risposta/seeds";
 import { lessonProgress, newId, open, randomSeed, recordAttempt, saveLessonProgress } from "../state";
+import { GlossarySheet } from "./Teoria";
+
+interface LessonViewProps {
+  code: LessonCode;
+  /**
+   * Dentro la sessione di Oggi: niente pulsante «indietro» né esercizi offerti alla fine, ma un
+   * pulsante che passa alla fase successiva.
+   */
+  embedded?: { readonly onDone: () => void; readonly doneLabel: string } | undefined;
+}
 
 /** Una lezione letta dal suo file Markdown, a tratti: ogni tratto finisce con una domanda lampo. */
-export function LessonView({ code }: { code: LessonCode }) {
+export function LessonView({ code, embedded }: LessonViewProps) {
   const lesson = useMemo(() => loadLesson(code), [code]);
   const chunks = useMemo(() => (lesson ? lessonChunks(lesson) : []), [lesson]);
   const saved = lessonProgress.value[code];
@@ -52,10 +65,14 @@ export function LessonView({ code }: { code: LessonCode }) {
     newest.current?.scrollIntoView?.({ behavior: smooth ? "smooth" : "auto", block: "start" });
   }, [reached]);
 
+  const module = moduleOfLesson(code);
+  const backButton = embedded ? null : <BackButton label={module?.title ?? "Teoria"} fallback={module ? { kind: "module", code: module.code } : { kind: "home" }} />;
+  const missing = missingPrerequisites(code);
+
   if (!lesson) {
     return (
       <section class="section">
-        <BackButton />
+        {backButton}
         <p>Questa lezione non esiste ancora.</p>
       </section>
     );
@@ -76,12 +93,12 @@ export function LessonView({ code }: { code: LessonCode }) {
     if (!target) return;
     const item = glossaryItem(target);
     if (item) setTerm(item);
-    else if (isLessonCode(target) && loadLesson(target)) open({ kind: "lesson", code: target });
+    else if (isLessonCode(target) && loadLesson(target)) open({ kind: "lesson", code: target }, "teoria");
   };
 
   return (
     <section class="section lesson" onClick={onRef}>
-      <BackButton />
+      {backButton}
       <header class="lesson-header">
         <p class="eyebrow">
           {lesson.meta.code} · circa {lesson.meta.minutes} minuti
@@ -91,6 +108,29 @@ export function LessonView({ code }: { code: LessonCode }) {
           <span class="lesson-goal-label">Alla fine saprai</span> {lesson.meta.goal}
         </p>
       </header>
+
+      {missing.length > 0 && (
+        <div class="notice" role="note">
+          <p class="notice-title">Prerequisiti non ancora fatti</p>
+          <p class="card-text">La lezione è aperta lo stesso; se qualcosa non torna, parti da qui:</p>
+          <ul class="plain-list">
+            {missing.map((prerequisite) => (
+              <li key={prerequisite}>
+                {isWritten(prerequisite) ? (
+                  <button type="button" class="link" onClick={() => open({ kind: "lesson", code: prerequisite }, "teoria")}>
+                    {lessonTitle(prerequisite)}
+                  </button>
+                ) : (
+                  <span>
+                    {lessonTitle(prerequisite)} <span class="muted-inline">(in arrivo)</span>
+                  </span>
+                )}{" "}
+                <span class="muted-inline">{prerequisite}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {chunks.slice(0, reached).map((chunk, index) => (
         <div key={index} class="lesson-chunk" ref={index === reached - 1 ? newest : undefined}>
@@ -123,7 +163,17 @@ export function LessonView({ code }: { code: LessonCode }) {
             Ho finito la lezione
           </button>
         )}
-        {atEnd && completed && (
+        {atEnd && completed && embedded && (
+          <div class="card card-done">
+            <p class="verdict-title">
+              <span aria-hidden="true">✓</span> Lezione completata
+            </p>
+            <button type="button" class="button button-primary" onClick={embedded.onDone}>
+              {embedded.doneLabel}
+            </button>
+          </div>
+        )}
+        {atEnd && completed && !embedded && (
           <div class="card card-done">
             <p class="verdict-title">
               <span aria-hidden="true">✓</span> Lezione completata
@@ -134,7 +184,20 @@ export function LessonView({ code }: { code: LessonCode }) {
                 <button
                   type="button"
                   class="button button-primary"
-                  onClick={() => open({ kind: "practice", generator: generator.code, levels: [1, 1, 2, 2, 3], endless: false, context: "lezione", lesson: code })}
+                  onClick={() =>
+                    open({
+                      kind: "practice",
+                      key: `lezione-${code}-${Date.now()}`,
+                      plan: {
+                        title: generator.title,
+                        items: ([1, 1, 2, 2, 3] as const).map((level) => ({ generator: generator.code, level })),
+                        endless: false,
+                        context: "lezione",
+                        lesson: code,
+                        check: null,
+                      },
+                    })
+                  }
                 >
                   Fai gli esercizi della lezione
                 </button>
@@ -146,27 +209,8 @@ export function LessonView({ code }: { code: LessonCode }) {
         )}
       </div>
 
-      {term && (
-        <div class="sheet-backdrop" onClick={() => setTerm(null)}>
-          <div class="sheet" role="dialog" aria-modal="true" aria-label={term.name} onClick={(event) => event.stopPropagation()}>
-            <p class="eyebrow">Glossario · {term.lesson}</p>
-            <h2>{term.name}</h2>
-            <RichText text={term.body} />
-            <button type="button" class="button" onClick={() => setTerm(null)}>
-              Chiudi
-            </button>
-          </div>
-        </div>
-      )}
+      {term && <GlossarySheet item={term} onClose={() => setTerm(null)} />}
     </section>
-  );
-}
-
-function BackButton() {
-  return (
-    <button type="button" class="back" onClick={() => open({ kind: "home" })}>
-      <span aria-hidden="true">‹</span> Teoria
-    </button>
   );
 }
 

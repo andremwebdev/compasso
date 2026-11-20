@@ -43,18 +43,6 @@ export function Oggi() {
   );
 }
 
-export function Teoria() {
-  return (
-    <section class="section" aria-labelledby="section-title">
-      <h1 id="section-title">Teoria</h1>
-      <p class="muted">Le lezioni scritte finora. La mappa dei tre volumi arriva con i contenuti.</p>
-      {lessonCodes.map((code) => (
-        <LessonCard key={code} code={code} />
-      ))}
-    </section>
-  );
-}
-
 export function Esercizi() {
   const summaries = new Map(skillSummaries(attempts.value).map((summary) => [summary.skill, summary]));
   return (
@@ -74,7 +62,7 @@ export function Esercizi() {
                   key={level}
                   type="button"
                   class="button"
-                  onClick={() => open({ kind: "practice", generator: generator.code, levels: [level as Level], endless: true, context: "esercizi", lesson: null })}
+                  onClick={() => open({ kind: "practice", key: `${generator.code}-${level}-${Date.now()}`, plan: { title: generator.title, items: [{ generator: generator.code, level: level as Level }], endless: true, context: "esercizi", lesson: null, check: null } })}
                 >
                   Livello {level}
                 </button>

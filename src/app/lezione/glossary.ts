@@ -25,3 +25,9 @@ export function glossaryItem(term: string): GlossaryItem | undefined {
   }
   return cache.get(term);
 }
+
+/** Tutti i termini del glossario, in ordine alfabetico del nome. */
+export function allGlossaryItems(): GlossaryItem[] {
+  glossaryItem("");
+  return [...(cache?.values() ?? [])].sort((a, b) => a.name.localeCompare(b.name, "it"));
+}

@@ -3,8 +3,8 @@
 import { IDBFactory } from "fake-indexeddb";
 import { describe, expect, it } from "vitest";
 import {
-  DATA_VERSION, DataVersionError, migrateData, openIndexedDbStore, openJsonStore, openStore, skillSummaries, type AttemptRecord, type DataStore,
-  type LessonProgress, type TextStorage,
+  DATA_VERSION, DataVersionError, defaultSettings, emptyData, migrateData, openIndexedDbStore, openJsonStore, openStore, skillSummaries,
+  type AttemptRecord, type DataStore, type LessonProgress, type StoredData, type TextStorage,
 } from "../../src/dati";
 
 const attempt = (id: string, patch: Partial<AttemptRecord> = {}): AttemptRecord => ({
@@ -63,7 +63,44 @@ function behavesLikeAStore(open: () => Promise<DataStore>): void {
     await store.addAttempt(attempt("a"));
     await store.saveLessonProgress(progress);
     expect(store.version).toBe(DATA_VERSION);
-    expect(await store.exportData()).toEqual({ version: DATA_VERSION, attempts: [attempt("a")], lessons: [progress] });
+    expect(await store.exportData()).toEqual({ ...emptyData(), attempts: [attempt("a")], lessons: [progress] });
+  });
+
+  it("salva giorni, ripassi, controlli, impostazioni, backup e sessione di Oggi", async () => {
+    const store = await open();
+    const day = { date: "2026-11-20", minutes: 40, track: "V1", completedAt: "2026-11-20T18:00:00.000Z" } as const;
+    const review = { id: "r1", at: "2026-11-20T18:01:00.000Z", card: "V1.M06.D02", grade: 2 } as const;
+    const check = { id: "c1", at: "2026-11-20T18:02:00.000Z", module: "V1.M04", passed: true, skills: ["V1.M04.A07"], failed: [] } as const;
+    const settings = { theme: "dark", tracks: ["V1", "V3"], defaultMinutes: 20 } as const;
+    const session = { date: "2026-11-21", minutes: 60, track: "V3", lesson: null, phase: 2, doneInPhase: 1, startedAt: "2026-11-21T07:00:00.000Z" } as const;
+    await store.addDay(day);
+    await store.addDay({ ...day, minutes: 60 });
+    await store.addReview(review);
+    await store.addCheck(check);
+    await store.saveSettings(settings);
+    await store.saveBackup({ lastAt: "2026-11-20T18:03:00.000Z", lessonsAtLast: 1 });
+    await store.saveSession(session);
+    expect(await store.exportData()).toEqual({
+      ...emptyData(),
+      days: [{ ...day, minutes: 60 }],
+      reviews: [review],
+      checks: [check],
+      settings,
+      backup: { lastAt: "2026-11-20T18:03:00.000Z", lessonsAtLast: 1 },
+      session,
+    });
+    await store.saveSession(null);
+    expect((await store.exportData()).session).toBeNull();
+  });
+
+  it("sostituisce tutti i dati in un colpo (importazione e unione di un backup)", async () => {
+    const store = await open();
+    await store.addAttempt(attempt("a"));
+    await store.saveLessonProgress(progress);
+    const next: StoredData = { ...emptyData(), attempts: [attempt("bb")], days: [{ date: "2026-11-19", minutes: 20, track: null, completedAt: "2026-11-19T20:00:00.000Z" }] };
+    await store.replaceAll(next);
+    expect(await store.exportData()).toEqual(next);
+    expect(await store.attempts()).toEqual([attempt("bb")]);
   });
 }
 
@@ -139,13 +176,52 @@ describe("scelta del magazzino", () => {
 describe("migrazioni", () => {
   it("dati assenti o senza versione danno un salvataggio vuoto alla versione attuale", () => {
     for (const raw of [null, undefined, "testo", 3, {}, { version: 0, attempts: [attempt("a")] }]) {
-      expect(migrateData(raw)).toEqual({ version: DATA_VERSION, attempts: [], lessons: [] });
+      expect(migrateData(raw)).toEqual(emptyData());
     }
   });
 
   it("i dati della versione attuale passano invariati", () => {
-    const data = { version: DATA_VERSION, attempts: [attempt("a")], lessons: [progress] };
+    const data: StoredData = { ...emptyData(), attempts: [attempt("a")], lessons: [progress], settings: { theme: "light", tracks: ["V2", "V3"], defaultMinutes: 60 } };
     expect(migrateData(JSON.parse(JSON.stringify(data)))).toEqual(data);
+  });
+
+  it("dalla versione 1: tentativi e lezioni restano, il resto parte vuoto con le impostazioni predefinite", () => {
+    const v1 = { version: 1, attempts: [attempt("a")], lessons: [progress] };
+    expect(migrateData(JSON.parse(JSON.stringify(v1)))).toEqual({ ...emptyData(), attempts: [attempt("a")], lessons: [progress] });
+    expect(defaultSettings()).toEqual({ theme: "system", tracks: ["V1"], defaultMinutes: 40 });
+  });
+
+  it("impostazioni strane prendono i valori predefiniti", () => {
+    const data = migrateData({ ...emptyData(), settings: { theme: "viola", tracks: ["V9"], defaultMinutes: 45 } });
+    expect(data.settings).toEqual(defaultSettings());
+  });
+
+  it("una base IndexedDB della versione 1 si apre e tiene i suoi dati", async () => {
+    const factory = new IDBFactory();
+    await new Promise<void>((resolve, reject) => {
+      const request = factory.open("compasso", 1);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        db.createObjectStore("attempts", { keyPath: "id" }).createIndex("at", "at");
+        db.createObjectStore("lessons", { keyPath: "code" });
+      };
+      request.onsuccess = () => {
+        const db = request.result;
+        const tx = db.transaction(["attempts", "lessons"], "readwrite");
+        tx.objectStore("attempts").put(attempt("a"));
+        tx.objectStore("lessons").put(progress);
+        tx.oncomplete = () => {
+          db.close();
+          resolve();
+        };
+      };
+      request.onerror = () => reject(request.error);
+    });
+    const store = await openIndexedDbStore(factory);
+    expect(store.version).toBe(DATA_VERSION);
+    expect(await store.exportData()).toEqual({ ...emptyData(), attempts: [attempt("a")], lessons: [progress] });
+    await store.addDay({ date: "2026-11-20", minutes: 40, track: "V1", completedAt: "2026-11-20T18:00:00.000Z" });
+    expect((await store.exportData()).days.length).toBe(1);
   });
 
   it("dati di una versione futura vengono rifiutati", () => {

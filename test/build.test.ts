@@ -35,11 +35,19 @@ async function expectAppWorks(doc: Doc) {
   expect(labels).toEqual(["Oggi", "Teoria", "Esercizi", "Test", "Tu"]);
   expect(doc.querySelector('nav.tab-bar button[aria-current="page"]')?.textContent).toBe("Oggi");
 
-  // Teoria → la lezione, letta dal file Markdown: titolo, riquadri, formule.
+  // Teoria → volume → modulo → la lezione, letta dal file Markdown: titolo, riquadri, formule.
   button(doc, "nav.tab-bar button", "Teoria").click();
   await settle();
+  button(doc, ".card-link", "Fondamenta").click();
+  await settle();
+  button(doc, ".card-link", "V1.M06").click();
+  await settle();
+  // Le lezioni non ancora scritte ci sono, come «in arrivo».
+  expect(doc.querySelector(".card-coming")?.textContent).toContain("In arrivo");
   button(doc, ".card-link", "Disequazioni fratte").click();
   await settle();
+  // I prerequisiti mancanti sono segnalati, ma la lezione si apre.
+  expect(doc.querySelector(".notice")?.textContent).toContain("Prerequisiti non ancora fatti");
   expect(doc.querySelector(".lesson-header h1")?.textContent).toBe("Disequazioni fratte");
   expect(doc.querySelector(".box-definition .box-label")?.textContent).toContain("Definizione");
   expect(doc.querySelector(".box-warning .box-label")?.textContent).toContain("Attenzione");
@@ -88,7 +96,7 @@ async function expectAppWorks(doc: Doc) {
   button(doc, "nav.tab-bar button", "Tu").click();
   await settle();
   expect(doc.querySelector("main")?.textContent).toContain("Tentativi nel registro: 2");
-  expect(doc.querySelector("main")?.textContent).toContain("Versione dei dati: 1");
+  expect(doc.querySelector("main")?.textContent).toContain("Versione dei dati: 2");
 }
 
 describe("versione PC (file unico)", () => {

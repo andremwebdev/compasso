@@ -1,10 +1,12 @@
 import { render } from "preact";
 import { App } from "./App";
 import { registerServiceWorker } from "./register-sw";
-import { loadData } from "./state";
+import { connectHistory, connectTheme, loadData } from "./state";
 
 const root = document.getElementById("app");
 if (!root) throw new Error("Elemento #app non trovato nella pagina");
+connectTheme();
+connectHistory();
 render(<App />, root);
 
 // I dati di Andrea si aprono subito: le schermate si aggiornano da sole quando arrivano.

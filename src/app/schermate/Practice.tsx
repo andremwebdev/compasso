@@ -1,94 +1,111 @@
-import { useMemo, useRef, useState } from "preact/hooks";
-import type { Evaluation, Level } from "../../esercizi";
-import { generateExercise } from "../../esercizi";
-import { loadLesson } from "../../contenuti";
-import { findGenerator } from "../../generatori";
-import { ExerciseView } from "../componenti/ExerciseView";
-import { freshSeed } from "../risposta/seeds";
-import { open, randomSeed, type Screen } from "../state";
+// La schermata di una serie di esercizi aperta da Teoria o da Esercizi: dopo una lezione, scelta
+// libera, ripasso misto, «Allenati su questo» del diario, controllo «Lo so già».
 
-type PracticeScreen = Extract<Screen, { kind: "practice" }>;
+import { useState } from "preact/hooks";
+import type { KnownCheck } from "../../dati";
+import { lessonOfSkill, skillText } from "../../contenuti/programma";
+import { BackButton } from "../componenti/Common";
+import { ExerciseSeries, type SeriesResult } from "../componenti/ExerciseSeries";
+import { isWritten, lessonTitle } from "../programma";
+import { goBack, newId, open, recordCheck, type PracticePlan } from "../state";
+import { CHECK_PASS, checkRecord } from "./checks";
 
-/** Una serie di esercizi dello stesso generatore: a livelli crescenti dopo una lezione, oppure libera dalla sezione Esercizi. */
-export function Practice({ plan }: { plan: PracticeScreen }) {
-  const generator = findGenerator(plan.generator);
-  // Posizione nella serie, seme dell'esercizio mostrato, esiti degli esercizi già fatti.
-  const [position, setPosition] = useState(0);
-  const [seed, setSeed] = useState(randomSeed);
-  const [results, setResults] = useState<readonly Evaluation["outcome"][]>([]);
-  const [finished, setFinished] = useState(false);
-  const level: Level = plan.levels[Math.min(position, plan.levels.length - 1)] ?? 1;
-  const exercise = useMemo(() => (generator ? generateExercise(generator, level, seed) : null), [generator, level, seed]);
-  // I testi degli esercizi già usciti: il prossimo seme ne deve dare uno diverso.
-  const seen = useRef(new Set<string>());
-  if (exercise) seen.current.add(exercise.prompt);
-  const lessonExists = generator ? loadLesson(generator.lesson) !== null : false;
-  const back = (): void => (plan.lesson ? open({ kind: "lesson", code: plan.lesson }, "teoria") : open({ kind: "home" }));
+export function Practice({ plan }: { plan: PracticePlan }) {
+  const [round, setRound] = useState(0);
+  const [finished, setFinished] = useState<readonly SeriesResult[] | null>(null);
+  const [check, setCheck] = useState<KnownCheck | null>(null);
+  const backLabel = plan.lesson ? "Lezione" : plan.check ? "Modulo" : "Indietro";
 
-  if (!generator || !exercise) {
-    return (
-      <section class="section">
-        <p>Questo esercizio non esiste ancora.</p>
-      </section>
-    );
-  }
-
-  const last = !plan.endless && position >= plan.levels.length - 1;
-  const correct = results.filter((outcome) => outcome === "correct").length;
+  const finish = (results: readonly SeriesResult[]): void => {
+    setFinished(results);
+    if (plan.check) {
+      const record = checkRecord(plan.check, results, newId(), new Date().toISOString());
+      recordCheck(record);
+      setCheck(record);
+    }
+  };
 
   return (
     <section class="section">
-      <button type="button" class="back" onClick={back}>
-        <span aria-hidden="true">‹</span> {plan.lesson ? "Lezione" : "Esercizi"}
-      </button>
+      <BackButton label={backLabel} />
       <header class="lesson-header">
-        <p class="eyebrow">{plan.endless ? `Livello ${level}` : `Esercizio ${Math.min(position + 1, plan.levels.length)} di ${plan.levels.length} · livello ${level}`}</p>
-        <h1>{generator.title}</h1>
+        <h1>{plan.title}</h1>
       </header>
-
       {finished ? (
         <div class="card card-done">
-          <p class="verdict-title">Serie finita</p>
-          <p>
-            Risposte giuste: <strong>{correct}</strong> su {results.length}.
-          </p>
+          {check ? <CheckOutcome check={check} correct={finished.filter((r) => r.outcome === "correct").length} total={finished.length} /> : (
+            <>
+              <p class="verdict-title">Serie finita</p>
+              <p>
+                Risposte giuste: <strong>{finished.filter((r) => r.outcome === "correct").length}</strong> su {finished.length}.
+              </p>
+            </>
+          )}
           <div class="exercise-actions">
-            <button
-              type="button"
-              class="button button-primary"
-              onClick={() => {
-                setPosition(0);
-                setResults([]);
-                setSeed(freshSeed(generator, plan.levels[0] ?? 1, seen.current, randomSeed));
-                setFinished(false);
-              }}
-            >
-              Un'altra serie
-            </button>
-            <button type="button" class="button" onClick={back}>
-              {plan.lesson ? "Torna alla lezione" : "Torna agli esercizi"}
+            {!plan.check && (
+              <button
+                type="button"
+                class="button button-primary"
+                onClick={() => {
+                  setFinished(null);
+                  setRound(round + 1);
+                }}
+              >
+                Un'altra serie
+              </button>
+            )}
+            <button type="button" class="button" onClick={() => goBack()}>
+              Torna indietro
             </button>
           </div>
         </div>
       ) : (
-        <ExerciseView
-          key={`${position}-${seed}`}
-          exercise={exercise}
-          context={plan.context}
-          onAnswered={(evaluation) => setResults([...results, evaluation.outcome])}
-          // «Esercizio simile»: stessi livello e posizione, numeri nuovi.
-          onSimilar={() => setSeed(freshSeed(generator, level, seen.current, randomSeed))}
-          onLesson={lessonExists ? () => open({ kind: "lesson", code: generator.lesson }, "teoria") : undefined}
-          onNext={() => {
-            if (last) setFinished(true);
-            else {
-              setPosition(position + 1);
-              setSeed(freshSeed(generator, plan.levels[position + 1] ?? level, seen.current, randomSeed));
-            }
-          }}
-          nextLabel={last ? "Fine della serie" : "Avanti"}
-        />
+        <ExerciseSeries key={round} items={plan.items} endless={plan.endless} context={plan.context} onFinished={finish} />
       )}
     </section>
+  );
+}
+
+/** L'esito del controllo «Lo so già»: superato, oppure le abilità da rivedere con le loro lezioni. */
+function CheckOutcome({ check, correct, total }: { check: KnownCheck; correct: number; total: number }) {
+  if (check.passed) {
+    return (
+      <>
+        <p class="verdict-title">
+          <span aria-hidden="true">✓</span> Controllo superato
+        </p>
+        <p>
+          Giuste {correct} su {total}. Le abilità del modulo partono da «consolidato» ed entrano nel ripasso; Oggi salta le sue lezioni.
+        </p>
+      </>
+    );
+  }
+  return (
+    <>
+      <p class="verdict-title">
+        <span aria-hidden="true">✗</span> Controllo non superato
+      </p>
+      <p>
+        Giuste {correct} su {total}: ne servivano almeno {CHECK_PASS}. Da rivedere:
+      </p>
+      <ul class="plain-list">
+        {check.failed.map((skill) => {
+          const lesson = lessonOfSkill(skill);
+          return (
+            <li key={skill}>
+              {skillText(skill) ?? skill}{" "}
+              {lesson &&
+                (isWritten(lesson.code) ? (
+                  <button type="button" class="link" onClick={() => open({ kind: "lesson", code: lesson.code }, "teoria")}>
+                    {lessonTitle(lesson.code)}
+                  </button>
+                ) : (
+                  <span class="muted-inline">({lessonTitle(lesson.code)}, in arrivo)</span>
+                ))}
+            </li>
+          );
+        })}
+      </ul>
+    </>
   );
 }
