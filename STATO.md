@@ -55,17 +55,21 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 9. ⚙ **Caricamento dei contenuti per modulo** nella versione telefono (specifica, sezione 12): `src/contenuti/index.ts` diviso per modulo.
    - Fase finita quando: tutte le sezioni funzionano con i contenuti presenti, e l'app è installata su iPhone e funziona offline.
 
-**Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14)
+**Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14). Piano deciso il 20 novembre 2026: si segue in quest'ordine, un punto per sessione (o poche). Scalette del Volume 1 già approvate.
 
-1. ~~Approvazione delle scalette~~ del Volume 1: fatta (Andrea, 20 novembre 2026).
-2. **Si parte da V1.M01** (decisione di Andrea, 20 novembre 2026), poi i moduli in ordine; V1.M06 si completa attorno al riferimento quando arriva il suo turno: lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
-3. **Lezione `V1.M04.L07`** sulla scomposizione (il generatore esiste già) e il resto di V1.M04.
-4. **Gli altri moduli in ordine di prerequisiti** (M01, M02, M03, M05, M07, … M14; M01 per primo). Per ogni modulo, in quest'ordine: generatori (uno per sessione se complessi), lezioni, flashcard manuali, dimostrazioni dove servono, visualizzazione del modulo (M08, M09, M10, M12), controllo «Lo so già».
-   - Prima di M02, M03, M10, M13: ⚙ estendere il parser (numeri periodici, notazione scientifica, gradi, fattoriale).
-   - In M09: un generatore con estremi `e`, `e²`, `ln 2` per provare la lettura degli insiemi (`docs/REVISIONE.md`, punti da incrociare).
-   - In M10: equazioni goniometriche con soluzioni tutte periodiche (trappole del motore in `REGOLE.md`).
-5. ~~Controllo «Lo so già»~~: fatto nell'involucro (si attiva da solo per ogni modulo con almeno un generatore).
-   - Fase finita quando: ogni modulo ha lezioni, abilità con generatori verificati e controllo «Lo so già».
+1. ⚙ **Caricamento dei contenuti per modulo** (è anche il punto 9 della fase 4): prima di qualunque lezione o generatore nuovo, perché cambia dove ogni sessione aggiunge le sue righe.
+2. **V1.M01** Insiemi e logica: generatori A01-A09, poi lezioni L01-L08, flashcard, dimostrazioni T01-T04. Il primo generatore vero o falso diventa riferimento (tabella di `REGOLE.md`). A02 (operazioni tra insiemi, prodotto cartesiano) si fa a **scelta multipla**: il motore non scrive insiemi di elementi né coppie, e non si estende per questo.
+3. ⚙ **Parser e catalogo** prima di V1.M02: numeri periodici, notazione scientifica, gradi, fattoriale; voce di catalogo per «√(x²) = x anche per x negativo» («Decisioni di Andrea», punto 1; nel Volume 1 serve dai radicali di M03).
+4. **V1.M02, V1.M03, V1.M04** (comprese la lezione L07 sulla scomposizione, il cui generatore esiste già) **e V1.M05**.
+5. ⚙ **Impalcatura delle visualizzazioni** con `VIS.disequazioni-grafico` (punto 8 della fase 4), prima di V1.M06.
+6. **V1.M06**: L01-L03 con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi «Codici assegnati»), la visualizzazione nella L04, il resto del modulo (sistemi di disequazioni, irrazionali, valore assoluto; `DISEQ.ZERO_DOPPIO` nel segno di un prodotto). Poi **V1.M07**.
+7. ⚙ **Grafici statici di funzioni** nel motore (specifica 6), prima di V1.M08.
+8. **V1.M08** con `VIS.trasformazioni-funzioni`; **V1.M09** con `VIS.esponenziale-logaritmo` e un generatore con estremi `e`, `e²`, `ln 2`; **V1.M10** con `VIS.circonferenza-goniometrica`, equazioni goniometriche con soluzioni tutte periodiche.
+9. ⚙ **Risposta `ordering`** nella schermata di esercizio (punto 7 della fase 4), prima di V1.M11 (serve a V1.M11.A08).
+10. **V1.M11, V1.M12** (con `VIS.coniche-parametri`), **V1.M13, V1.M14**.
+11. **Chiusura della fase**: ogni modulo ha lezioni, abilità con generatori verificati e «Lo so già»; prova completa sull'iPhone.
+
+In parallelo, senza bloccare niente: la prova sull'iPhone della versione su Pages (la fa Andrea); i difetti trovati diventano sessioni sull'involucro.
 
 **Fase 6 — Volumi 2 e 3, in parallelo**
 
