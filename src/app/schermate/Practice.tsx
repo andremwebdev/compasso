@@ -14,7 +14,7 @@ export function Practice({ plan }: { plan: PracticePlan }) {
   const [round, setRound] = useState(0);
   const [finished, setFinished] = useState<readonly SeriesResult[] | null>(null);
   const [check, setCheck] = useState<KnownCheck | null>(null);
-  const backLabel = plan.lesson ? "Lezione" : plan.check ? "Modulo" : "Indietro";
+  const backLabel = plan.lesson ? "Lezione" : "Indietro";
 
   const finish = (results: readonly SeriesResult[]): void => {
     setFinished(results);

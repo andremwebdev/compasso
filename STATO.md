@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: decisioni di Andrea sulle domande aperte (20 novembre 2026). Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: involucro parte 1, sezioni e navigazione (20 novembre 2026). Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -23,7 +23,14 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - `V2.M12.A01.g1` primo ordine (separabili, lineari, Cauchy) e `V2.M12.A02.g1` secondo ordine lineari a coefficienti costanti (tre casi, termine noto, risonanza, Cauchy): la soluzione si **sostituisce** nell'equazione, si contano le costanti indipendenti e si controllano le condizioni.
   - Nuovo nello schema degli esercizi: controllo speciale `check` per le risposte `expression` (`antiderivative`, `differentialEquation`, in `src/esercizi/checks.ts`). Comuni nuovi: `writing.ts`, `exact-sum.ts`, `convergence.ts`, `ode.ts`. Tastiera: tasti `c`, `c₁`, `c₂`, `k` nel livello Funzioni.
 - **Scalette dei 35 moduli** (sessione E4) in `docs/SCALETTE.md`, **proposta da approvare modulo per modulo**: 230 lezioni con durata e prerequisiti, 237 abilità, 505 termini del glossario (ognuno definito una volta), 225 teoremi (205 dimostrati). Codici già assegnati rispettati; controllata con uno script (codici unici, prerequisiti esistenti e all'indietro, termini unici, durate). In fondo al file: che cosa serve al motore prima di certi moduli e le scelte da confermare.
-- **Test**: 1.042 in 45 file, verdi in locale e su GitHub.
+- **Involucro, parte 1** (sezioni e navigazione):
+  - **Oggi**: durata scelta ogni giorno (20/40/60, proposta quella delle impostazioni), cinque fasi nell'ordine con la taratura della specifica, binari alternati giorno per giorno, lezione che non sta nel tempo continua il giorno dopo, sessione salvata e riprendibile, chiusura con riepilogo, errori nuovi, serie e promemoria del backup.
+  - **Teoria**: volume → modulo → lezione con lo stato; le 230 lezioni delle scalette compaiono, quelle non scritte «in arrivo» (programma generato da `docs/SCALETTE.md`); avviso sui prerequisiti mancanti con i link; glossario toccabile e come pagina; «Lo so già» per modulo.
+  - **Esercizi**: schede Esercizi (argomento, difficoltà automatica o 1-3, quantità, ripasso misto, «Lo so già»), Flashcard (automatiche e manuali, autovalutazione), Dimostrazioni (riordina, trova lo sbagliato, completa; nessuna lezione scritta ne ha ancora).
+  - **Test**: schermata «in arrivo». **Tu**: serie con giorni liberi, padronanza in quattro livelli, diario degli errori, impostazioni (binari, tema, durata), backup (esporta, condividi, importa, unisci, promemoria).
+  - Dati alla versione 2 con migrazione; cronologia del browser; avviso «versione nuova disponibile»; il tentativo fatto prima dell'apertura dei dati ora si salva. Formule di padronanza e ripasso in `REGOLE.md`.
+  - Provata in Chrome a 414×896 (iPhone XR): tutte le sezioni, tema scuro, niente scorrimento orizzontale, ricarica senza rete dopo il service worker.
+- **Test**: 1.087 in 49 file, verdi in locale e su GitHub.
 
 ## In corso
 
@@ -36,12 +43,11 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 **Fase 4 — involucro dell'app**
 
 1. **Prova su iPhone** della versione su Pages (la fa Andrea, o la sessione la prepara come elenco di cose da toccare): tastiera di sistema che non si apre, tasti comodi, tabelle dei segni che scorrono, installazione e uso offline. I difetti trovati diventano il primo lavoro.
-2. **Navigazione e sezioni**: cronologia del browser (tasto indietro), le cinque sezioni complete con i contenuti presenti (Oggi, Teoria, Esercizi, Test come segnaposto ordinato, Tu), avviso di prerequisiti mancanti con i link.
-3. **Impostazioni e backup**: esportazione e ripristino dei dati (`exportData` esiste), avviso «versione nuova disponibile», risoluzione del tentativo perso all'avvio (problemi noti).
+2. ~~Navigazione e sezioni~~ e 3. ~~Impostazioni e backup~~: fatti (involucro parte 1). Restano da provare su iPhone vero: download del backup dall'app installata, condivisione, scelta del file.
 4. ⚙ **Tastiera completa**: livelli Analisi, Lineare, Complessi; cifre anche nel livello Funzioni; frazioni e potenze «a modello».
 5. **Aspetto Compasso definitivo**: due temi, modalità lettura, valori di colori e caratteri (specifica, sezione 10).
-6. **Flashcard, glossario, diario**: flashcard automatiche e manuali mostrate, glossario come pagina, diario degli errori.
-7. ⚙ **Riordino e dimostrazioni interattive**: risposta `ordering` nella schermata di esercizio; le tre modalità (riordina, trova lo sbagliato, completa) ricavate dal blocco `dimostrazione`; scheda Dimostrazioni.
+6. ~~Flashcard, glossario, diario~~: fatti (involucro parte 1).
+7. ⚙ **Risposta `ordering`** nella schermata di esercizio (le tre modalità delle dimostrazioni e la scheda esistono già, fuori da `ExerciseView`, e non registrano tentativi).
 8. ⚙ **Impalcatura delle visualizzazioni** con la prima, `VIS.disequazioni-grafico`, e la sua scheda in `docs/VISUALIZZAZIONI.md` (`REGOLE.md`, «Come aggiungere una visualizzazione»); poi aggiungerla alla lezione `V1.M06.L04`.
 9. ⚙ **Caricamento dei contenuti per modulo** nella versione telefono (specifica, sezione 12): `src/contenuti/index.ts` diviso per modulo.
    - Fase finita quando: tutte le sezioni funzionano con i contenuti presenti, e l'app è installata su iPhone e funziona offline.
@@ -55,7 +61,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
    - Prima di M02, M03, M10, M13: ⚙ estendere il parser (numeri periodici, notazione scientifica, gradi, fattoriale).
    - In M09: un generatore con estremi `e`, `e²`, `ln 2` per provare la lettura degli insiemi (`docs/REVISIONE.md`, punti da incrociare).
    - In M10: equazioni goniometriche con soluzioni tutte periodiche (trappole del motore in `REGOLE.md`).
-5. ⚙ **Controllo «Lo so già»** nell'app (specifica, sezione 3), quando i primi moduli hanno contenuti.
+5. ~~Controllo «Lo so già»~~: fatto nell'involucro (si attiva da solo per ogni modulo con almeno un generatore).
    - Fase finita quando: ogni modulo ha lezioni, abilità con generatori verificati e controllo «Lo so già».
 
 **Fase 6 — Volumi 2 e 3, in parallelo**
@@ -134,11 +140,11 @@ Generatori e lezione:
 App:
 
 - Non provata su un iPhone vero.
-- Niente cronologia del browser: si torna indietro solo con il pulsante in alto.
 - `∀x ∈ ℝ` e `∄x ∈ ℝ` sono mostrati ma non si possono scrivere (si usano `ℝ` e `∅`); il livello Funzioni della tastiera non ha le cifre.
-- Un tentativo fatto nei millisecondi prima che l'archivio dei dati sia aperto non viene salvato.
 - Su telefono la riga finale dei passaggi delle disequazioni fratte va fatta scorrere di lato; le opzioni di scelta multipla di un insieme mostrano solo gli intervalli.
-- `ordering` non è mostrato dalla schermata di esercizio; le dimostrazioni sono solo statiche; flashcard lette ma non mostrate.
+- `ordering` non è mostrato dalla schermata di esercizio. Nella lezione le dimostrazioni restano statiche; le modalità interattive sono nella scheda Dimostrazioni.
+- Il glifo «◐» (lezione in corso) in alcuni caratteri del sistema esce piccolo: da rivedere con l'aspetto definitivo.
+- Esportazione del backup su iPhone dall'app installata non provata: c'è anche «Condividi il backup» (foglio di condivisione) dove il browser lo permette.
 
 Altro:
 
@@ -164,6 +170,20 @@ Prese in chat sulle domande aperte; da eseguire nelle sessioni indicate, non anc
 ## Decisioni da rivedere
 
 Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero tra parentesi è la sessione.
+
+*Involucro, parte 1 (I1)*
+
+74. Binario attivo all'inizio: solo Fondamenta (decisione di Andrea di partire da V1.M01); gli altri si attivano nelle impostazioni. Tema predefinito «come il telefono», durata proposta 40 minuti.
+75. Formula della padronanza, ripasso a intervalli (gradini 1-3-7-16-35-90 giorni), decadimento a 60 giorni: in `REGOLE.md`, «Dati, padronanza e ripasso»; da tarare nella fase 8.
+76. «Lo so già»: 5 esercizi ai livelli 2, 2, 2, 3, 3 sui generatori del modulo a turno; superato con 4 giuste; vale per tutte le abilità del modulo (anche senza generatore) e fa saltare le sue lezioni a Oggi. Contesto nuovo dei tentativi: `controllo`.
+77. Oggi: un esercizio stimato 2 minuti, una flashcard mezzo; nel ripasso metà tempo alle flashcard; le fasi vuote si saltano da sole; la lezione ha un righello del tempo e, finito il tempo, «Continua domani»; il giorno conta quando si arriva alla chiusura.
+78. Alternanza dei binari: dopo il binario dell'ultimo giorno completato viene il successivo tra gli attivi; ma se in quel binario c'è una lezione a metà, si continua quella.
+79. Esercizi sulla lezione senza lezione del giorno (o non finita): abilità delle ultime lezioni completate del binario, altrimenti dei generatori del volume, difficoltà automatica.
+80. Serie: i giorni liberi coprono ma non allungano la serie; si usano solo con una serie in corso.
+81. Diario: le domande lampo non entrano (come per la padronanza); `NON_CLASSIFICATO` sta negli errori di concetto ma non alimenta i punti deboli.
+82. Backup: file JSON `compasso-backup-AAAA-MM-GG.json`; importare sostituisce tutto (con conferma) tranne la sessione di Oggi; unire somma i registri, prende il punto più avanti di ogni lezione e tiene impostazioni e sessione del dispositivo; promemoria anche se il backup non è mai stato fatto, appena c'è una lezione o una sessione completata.
+83. Riordino delle dimostrazioni con le frecce su/giù invece del trascinamento (più sicuro sul telefono); le dimostrazioni interattive non registrano tentativi.
+84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 
 *Scrittura e lettura*
 
