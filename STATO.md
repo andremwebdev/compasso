@@ -48,7 +48,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 
 **Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14)
 
-1. **Approvazione delle scalette** (`docs/SCALETTE.md`, fatte nella sessione E4): Andrea approva modulo per modulo e segna `Stato: approvata`. Le lezioni di un modulo si scrivono solo dopo; i suoi codici diventano fissi.
+1. ~~Approvazione delle scalette~~ del Volume 1: fatta (Andrea, 20 novembre 2026).
 2. **Completare V1.M06** per primo, attorno al riferimento (prima aggiungere l'errore «zero doppio trattato come zero semplice», decisione 2 di Andrea): lezioni L01-L03 (primo grado, secondo grado, segno di un prodotto) con i loro generatori; poi prerequisiti e rimandi `[[…]]` della L04 (vedi sotto la tabella dei codici); sistemi di disequazioni, irrazionali, valore assoluto.
 3. **Lezione `V1.M04.L07`** sulla scomposizione (il generatore esiste già) e il resto di V1.M04.
 4. **Gli altri moduli in ordine di prerequisiti** (M01, M02, M03, M05, M07, … M14). Per ogni modulo, in quest'ordine: generatori (uno per sessione se complessi), lezioni, flashcard manuali, dimostrazioni dove servono, visualizzazione del modulo (M08, M09, M10, M12), controllo «Lo so già».
@@ -148,7 +148,7 @@ Altro:
 
 ## Domande aperte (decide Andrea)
 
-- **Scalette** (`docs/SCALETTE.md`): Andrea le sta controllando (20 novembre 2026). Le lezioni di un modulo si scrivono solo dopo `Stato: approvata`.
+- **Scalette dei Volumi 2 e 3** (`docs/SCALETTE.md`): ancora `proposta`; Andrea le guarderà quando si avvicinano, da confrontare con il libro di testo. Il Volume 1 è approvato (vedi «Decisioni di Andrea», punto 6).
 
 ## Decisioni di Andrea (20 novembre 2026)
 
@@ -159,6 +159,7 @@ Prese in chat sulle domande aperte; da eseguire nelle sessioni indicate, non anc
 3. **Intervalli: tonde, `(1; 3)`** (com'è oggi). Le lezioni scrivono gli intervalli così; in lettura resta valido anche `]1; 3[`.
 4. **IndexedDB nella versione PC**: la prova in Safari e Firefox resta alla fase 9.
 5. **`log` senza base nel Volume 2: rifiutato** come testo ambiguo, con un messaggio che chiede `ln` o la base (⚙ parser, prima delle lezioni del Volume 2). Nel Volume 1 `log` resta in base 10. I testi del Volume 2 scrivono sempre `ln`.
+6. **Scalette del Volume 1 approvate** tutte e 14 (V1.M01-M14), senza correzioni, con le scelte da confermare in fondo a `docs/SCALETTE.md`: i codici delle lezioni del Volume 1 sono fissi e le lezioni si possono scrivere.
 
 ## Decisioni da rivedere
 

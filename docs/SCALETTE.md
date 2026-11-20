@@ -40,7 +40,7 @@ I tre spostamenti sono già fatti nel campo `lesson` dei generatori (20 novembre
 
 ## V1.M01 Insiemi e logica
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M01.L01 · Insiemi · 15 min
 Prerequisiti: nessuno
@@ -88,7 +88,7 @@ Prerequisiti: V1.M01.L07
 
 ## V1.M02 Numeri
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M02.L01 · Numeri naturali e interi · 15 min
 Prerequisiti: V1.M01.L02
@@ -140,7 +140,7 @@ Prerequisiti: V1.M02.L01
 
 ## V1.M03 Calcolo numerico
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M03.L01 · Ordine delle operazioni · 10 min
 Prerequisiti: V1.M02.L01
@@ -195,7 +195,7 @@ Prerequisiti: V1.M03.L06, V1.M02.L07
 
 ## V1.M04 Calcolo letterale
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M04.L01 · Monomi · 15 min
 Prerequisiti: V1.M03.L04
@@ -251,7 +251,7 @@ Prerequisiti: V1.M04.L09
 
 ## V1.M05 Equazioni
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M05.L01 · Equazioni di primo grado · 15 min
 Prerequisiti: V1.M04.L02
@@ -297,7 +297,7 @@ Prerequisiti: V1.M05.L03
 
 ## V1.M06 Disequazioni
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M06.L01 · Disequazioni di primo grado · 15 min
 Prerequisiti: V1.M05.L01, V1.M03.L09
@@ -338,7 +338,7 @@ Prerequisiti: V1.M06.L05, V1.M05.L07
 
 ## V1.M07 Sistemi
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M07.L01 · Sistemi lineari di due equazioni · 15 min
 Prerequisiti: V1.M05.L01
@@ -369,7 +369,7 @@ Prerequisiti: V1.M07.L05
 
 ## V1.M08 Funzioni
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M08.L01 · Funzioni · 15 min
 Prerequisiti: V1.M01.L02, V1.M07.L04
@@ -421,7 +421,7 @@ Prerequisiti: V1.M08.L08, V1.M06.L04
 
 ## V1.M09 Esponenziali e logaritmi
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M09.L01 · Funzione esponenziale · 15 min
 Prerequisiti: V1.M08.L07, V1.M03.L06
@@ -461,7 +461,7 @@ Prerequisiti: V1.M09.L06, V1.M06.L05
 
 ## V1.M10 Goniometria e trigonometria
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M10.L01 · Angoli: gradi e radianti · 15 min
 Prerequisiti: V1.M03.L03
@@ -534,7 +534,7 @@ Prerequisiti: V1.M10.L12, V1.M10.L07
 
 ## V1.M11 Geometria euclidea
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M11.L01 · Segmenti, semirette e angoli · 15 min
 Prerequisiti: V1.M01.L07, V1.M10.L01
@@ -612,7 +612,7 @@ Prerequisiti: V1.M11.L10
 
 ## V1.M12 Geometria analitica
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M12.L01 · Punti e distanze · 15 min
 Prerequisiti: V1.M07.L04, V1.M11.L04
@@ -673,7 +673,7 @@ Prerequisiti: V1.M12.L01, V1.M11.L11
 
 ## V1.M13 Combinatoria e probabilità
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M13.L01 · Principio fondamentale del calcolo combinatorio · 15 min
 Prerequisiti: V1.M01.L03
@@ -721,7 +721,7 @@ Prerequisiti: V1.M13.L06
 
 ## V1.M14 Statistica
 
-Stato: proposta.
+Stato: approvata (Andrea, 20 novembre 2026).
 
 #### V1.M14.L01 · Dati e frequenze · 15 min
 Prerequisiti: V1.M03.L08
