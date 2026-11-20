@@ -192,6 +192,7 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 89. Frazione a modello: dopo un numero, una lettera o una parentesi chiusa quello diventa il numeratore (`3/(□)`), con una selezione la selezione, altrimenti `(□)/(□)`. ⇥ dal numeratore entra nel denominatore.
 90. ⚙ Parser: `()` vuota = casella da riempire (□, incompleto) invece di «parentesi chiusa in più»; anche dentro `root(3; )`.
 91. Matrici: Invio conferma anche dalle caselle (come prima); il passaggio di casella è sui tasti «◂ casella», «casella ▸» e sul tasto Tab della tastiera fisica.
+92. ⚙ Parser: i simboli che servono solo agli insiemi (∀, ∄, ∅, ℝ, ∪, ∨, ∧) scritti in un'espressione danno un messaggio che dice che cosa vogliono dire e che lì la risposta non è un insieme (decisione di Andrea, 20 novembre 2026: la tastiera continua a mostrare tutti i livelli in ogni esercizio, riconoscere quale simbolo usare fa parte dello studio).
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 
 *Scrittura e lettura*

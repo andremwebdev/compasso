@@ -40,6 +40,17 @@ type WordToken =
   | { type: "const"; name: "pi" }
   | { type: "sym"; name: string };
 
+/** I simboli della tastiera Insiemi che in un'espressione non hanno senso, con il loro significato. */
+const SET_ONLY_SYMBOLS: Readonly<Record<string, string>> = {
+  "∀": "∀x vuol dire «tutti i numeri reali»",
+  "∄": "∄x vuol dire «nessuna soluzione»",
+  "∅": "l'insieme vuoto",
+  "ℝ": "tutti i numeri reali",
+  "∪": "l'unione di due insiemi",
+  "∨": "«oppure» tra due condizioni",
+  "∧": "«e» tra due condizioni",
+};
+
 /** Tutte le parole riconosciute dentro una sequenza di lettere, dalla più lunga alla più corta. */
 const WORDS: readonly (readonly [string, WordToken])[] = (() => {
   const words = new Map<string, WordToken>();
@@ -143,6 +154,13 @@ export function tokenize(text: string, options: LexOptions = {}): { tokens: Toke
     }
 
     if (ch === "∞") return { error: { message: "L'infinito non è un numero: qui non si può usare.", position: pos } };
+
+    // Simboli che servono solo a scrivere un insieme di soluzioni: in un'espressione non sono un
+    // carattere sconosciuto, sono al posto sbagliato. Il messaggio lo dice e ricorda che cosa vogliono dire.
+    const setSymbol = SET_ONLY_SYMBOLS[ch];
+    if (setSymbol !== undefined) {
+      return { error: { message: `«${ch}» (${setSymbol}) si usa solo per scrivere un insieme di soluzioni, e qui la risposta non è un insieme.`, position: pos } };
+    }
 
     // Operatori di due caratteri.
     const pair = ch + (next ?? "");
