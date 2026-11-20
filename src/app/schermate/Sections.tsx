@@ -32,17 +32,6 @@ function LessonCard({ code }: { code: (typeof lessonCodes)[number] }) {
   );
 }
 
-export function Oggi() {
-  const next = lessonCodes.find((code) => !lessonProgress.value[code]?.completed) ?? lessonCodes[0];
-  return (
-    <section class="section" aria-labelledby="section-title">
-      <h1 id="section-title">Oggi</h1>
-      <p class="muted">La sessione guidata arriva più avanti. Per ora, da qui riprendi la lezione.</p>
-      {next && <LessonCard code={next} />}
-    </section>
-  );
-}
-
 export function Test() {
   return (
     <section class="section" aria-labelledby="section-title">

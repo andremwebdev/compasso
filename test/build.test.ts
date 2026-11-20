@@ -35,6 +35,17 @@ async function expectAppWorks(doc: Doc) {
   expect(labels).toEqual(["Oggi", "Teoria", "Esercizi", "Test", "Tu"]);
   expect(doc.querySelector('nav.tab-bar button[aria-current="page"]')?.textContent).toBe("Oggi");
 
+  // Oggi: durata da scegliere, binario e lezione del giorno; la sessione parte dalla lezione (niente da ripassare).
+  expect([...doc.querySelectorAll(".choice-item")].map((b) => b.textContent)).toEqual(["20 min", "40 min", "60 min"]);
+  expect(doc.querySelector('.choice-item[aria-checked="true"]')?.textContent).toBe("40 min");
+  expect(doc.querySelector("main")?.textContent).toContain("Fondamenta");
+  button(doc, ".choice-item", "20 min").click();
+  await settle();
+  button(doc, "main button", "Inizia la sessione").click();
+  await settle();
+  expect(doc.querySelector(".phase-current")?.textContent).toContain("Lezione nuova");
+  expect(doc.querySelector(".lesson-header h1")?.textContent).toBe("Disequazioni fratte");
+
   // Teoria → volume → modulo → la lezione, letta dal file Markdown: titolo, riquadri, formule.
   button(doc, "nav.tab-bar button", "Teoria").click();
   await settle();
