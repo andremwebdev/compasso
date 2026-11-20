@@ -1156,3 +1156,17 @@ button.list-row {
   border-radius: 8px;
   background: var(--def-fondo);
 }
+
+.skill-row {
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed var(--linea);
+}
+
+details > summary {
+  cursor: pointer;
+  list-style-position: outside;
+}
+
+details.card > summary {
+  min-height: 2.75rem;
+}

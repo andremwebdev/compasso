@@ -115,6 +115,21 @@ async function expectAppWorks(doc: Doc) {
   await settle();
   expect(doc.querySelector("main")?.textContent).toContain("Tentativi nel registro: 2");
   expect(doc.querySelector("main")?.textContent).toContain("Versione dei dati: 2");
+  // Tu: serie, padronanza, diario, impostazioni, backup.
+  const tu = doc.querySelector("main")?.textContent ?? "";
+  for (const title of ["Serie di giorni", "Padronanza", "Diario degli errori", "Impostazioni", "Backup"]) expect(tu).toContain(title);
+  for (const label of ["Esporta", "Importa", "Unisci"]) expect(button(doc, ".exercise-actions button", label)).toBeDefined();
+  // Il diario si apre, e il pulsante in alto (la cronologia) riporta indietro.
+  button(doc, "main button", "Apri il diario").click();
+  await settle();
+  expect(doc.querySelector(".lesson-header h1")?.textContent).toBe("Diario degli errori");
+  button(doc, "main button.back", "Tu").click();
+  await settle();
+  expect(doc.querySelector("main h1")?.textContent).toBe("Tu");
+  // Test: per ora «in arrivo».
+  button(doc, "nav.tab-bar button", "Test").click();
+  await settle();
+  expect(doc.querySelector("main")?.textContent).toContain("Simulazione del TOL");
 }
 
 describe("versione PC (file unico)", () => {

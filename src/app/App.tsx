@@ -4,9 +4,9 @@ import { Practice } from "./schermate/Practice";
 import { Esercizi } from "./schermate/Esercizi";
 import { FlashcardsScreen, ProofScreen } from "./schermate/Ripasso";
 import { Oggi } from "./schermate/Oggi";
-import { Test, Tu } from "./schermate/Sections";
+import { DiaryScreen, MasteryScreen, Test, Tu } from "./schermate/Tu";
 import { GlossaryView, ModuleView, TeoriaHome, VolumeView } from "./schermate/Teoria";
-import { currentSection, dataProblem, screen } from "./state";
+import { currentSection, dataProblem, screen, updateReady } from "./state";
 
 /** La pagina iniziale della sezione aperta. */
 function SectionHome() {
@@ -45,8 +45,9 @@ function CurrentScreen() {
     case "proof":
       return <ProofScreen key={current.theorem} lesson={current.lesson} theorem={current.theorem} />;
     case "mastery":
+      return <MasteryScreen />;
     case "diary":
-      return <SectionHome />;
+      return <DiaryScreen />;
   }
 }
 
@@ -54,6 +55,11 @@ export function App() {
   return (
     <>
       <main class="page">
+        {updateReady.value && (
+          <p class="update-banner" role="status">
+            Versione nuova disponibile: la userai dalla prossima apertura dell'app. I progressi restano.
+          </p>
+        )}
         {dataProblem.value && (
           <p class="answer-problem" role="alert">
             {dataProblem.value}
