@@ -39,7 +39,7 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - **Indice leggero** calcolato dalla compilazione (`__CONTENT_INDEX__`, circa 6 KB oggi): codici, titoli, livelli, errori, termini, flashcard. Navigazione, Oggi, Esercizi, diario e «Lo so già» lavorano su questo; lezione, serie di esercizi, mazzo di flashcard, glossario e dimostrazioni caricano prima i loro moduli («Caricamento…»).
   - **Telefono**: moduli ES; `moduli/vN/mNN.js` letto solo quando serve, codice comune in `chunks/`. All'avvio si leggono `app.js` più tre file comuni (circa 640 KB, prima 853 KB), nessun modulo. **PC**: file unico come prima.
   - **Prova in Chrome senza finestra** (schermo 414×896, tocco) dentro `test/build.test.ts`: lo stesso percorso della prova PC, all'avvio nessun file di modulo, poi solo `moduli/v1/m06.js`; poi a server spento si riapre dal service worker, la lezione si legge e un esercizio di V2.M06 (mai aperto) carica il suo modulo dalla copia salvata.
-- **Test**: 1.232 in 51 file, verdi in locale.
+- **Test**: 1.232 in 51 file, verdi in locale e su GitHub (anche la prova in Chrome).
 
 ## In corso
 
@@ -214,7 +214,7 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 94. L'indice leggero non è un file nel repository: lo calcolano la compilazione e Vitest a ogni avvio (niente file generato da tenere allineato).
 95. Versione telefono a moduli ES (`<script type="module">`) invece di un solo script: iOS li supporta da anni; il codice comune lo divide esbuild in `chunks/`.
 96. Il test della versione telefono non gira più in jsdom (che non sa eseguire moduli ES) ma in Chrome senza finestra, guidato con il protocollo DevTools da `test/chrome.ts`, senza dipendenze nuove; su GitHub c'è sempre, in locale senza Chrome si salta con un avviso.
-97. Il glossario, le dimostrazioni e il glossario toccato in una lezione caricano i moduli che servono quando si aprono; le flashcard in scadenza e i loro elenchi vengono dall'indice.
+97. La pagina del glossario, le dimostrazioni e un termine toccato in una lezione caricano i moduli che servono quando si aprono; le flashcard in scadenza e i loro elenchi vengono dall'indice.
 
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 
