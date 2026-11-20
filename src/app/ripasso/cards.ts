@@ -5,6 +5,7 @@
 import type { LessonCode, TheoremCode } from "../../codici";
 import { lessonCodes, loadLesson } from "../../contenuti";
 import type { Lesson, ProofStep } from "../../contenuti/formato";
+import { loadedModules } from "../../moduli/caricamento";
 
 export interface Card {
   readonly id: string;
@@ -33,11 +34,14 @@ export function cardsOfLesson(lesson: Lesson): Card[] {
 }
 
 let cache: Map<string, Card> | null = null;
+let cachedModules = -1;
 
-/** Tutte le flashcard delle lezioni scritte. */
+/** Tutte le flashcard delle lezioni scritte nei moduli caricati (si rifà quando arriva un modulo). */
 export function allCards(): Card[] {
-  if (!cache) {
+  const modules = loadedModules().length;
+  if (!cache || cachedModules !== modules) {
     cache = new Map();
+    cachedModules = modules;
     for (const code of lessonCodes) {
       const lesson = loadLesson(code);
       if (lesson) for (const card of cardsOfLesson(lesson)) cache.set(card.id, card);
@@ -72,7 +76,7 @@ export function proofsOfLesson(lesson: Lesson): ProofEntry[] {
   });
 }
 
-/** Tutte le dimostrazioni delle lezioni scritte. */
+/** Tutte le dimostrazioni delle lezioni scritte nei moduli caricati. */
 export function allProofs(): ProofEntry[] {
   return lessonCodes.flatMap((code) => {
     const lesson = loadLesson(code);

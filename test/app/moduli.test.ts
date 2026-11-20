@@ -9,11 +9,14 @@ import { freshSeed } from "../../src/app/risposta/seeds";
 import { renderRichText } from "../../src/app/testo/render";
 import { loadLesson } from "../../src/contenuti";
 import { choiceOptions, generateExercise } from "../../src/esercizi";
-import { generators } from "../../src/generatori";
+import { loadedGenerators } from "../../src/generatori";
 import { parseLimitValue } from "../../src/motore/calculus/limit";
 import { parseExpression } from "../../src/motore/parser";
 import { parseSolutionSet } from "../../src/motore/parser/sets";
 import { setToInequalityLatex, setToLatex } from "../../src/motore/sets";
+
+// Tutti i generatori: test/setup.ts carica tutti i moduli prima di ogni file di test.
+const generators = loadedGenerators();
 
 describe("testo ricco", () => {
   it("il Markdown diventa HTML e le formule passano da KaTeX senza essere toccate da Markdown", () => {

@@ -8,7 +8,8 @@ import { findModule, findVolume, programme, skillsOfModule } from "../../contenu
 import type { TrackId } from "../../dati";
 import { BackButton, GroupTitle, MasteryBadge } from "../componenti/Common";
 import { RichText } from "../componenti/RichText";
-import { allGlossaryItems, type GlossaryItem } from "../lezione/glossary";
+import { modulesWithLessons, WithModules } from "../caricamento";
+import { allGlossaryItems, glossaryTermCount, type GlossaryItem } from "../lezione/glossary";
 import { generatorsOfModule, groupLevel, isWritten, knownModules, lessonState, lessonTitle } from "../programma";
 import { checks, masteries, open } from "../state";
 import { knownCheckPlan } from "./checks";
@@ -43,7 +44,7 @@ export function TeoriaHome() {
       <button type="button" class="card card-link" onClick={() => open({ kind: "glossary" })}>
         <span class="eyebrow">Glossario</span>
         <span class="card-title">Termini definiti nelle lezioni</span>
-        <span class="card-text">{allGlossaryItems().length} termini finora</span>
+        <span class="card-text">{glossaryTermCount()} termini finora</span>
       </button>
     </section>
   );
@@ -143,8 +144,6 @@ export function ModuleView({ code }: { code: ModuleCode }) {
 }
 
 export function GlossaryView() {
-  const [term, setTerm] = useState<GlossaryItem | null>(null);
-  const items = allGlossaryItems();
   return (
     <section class="section">
       <BackButton label="Teoria" />
@@ -152,6 +151,17 @@ export function GlossaryView() {
         <h1>Glossario</h1>
         <p class="muted">I termini definiti nelle lezioni scritte. Tocca un termine per leggerne la definizione.</p>
       </header>
+      {/* Le definizioni sono nelle lezioni: servono i moduli che ne hanno. */}
+      <WithModules modules={modulesWithLessons}>{() => <GlossaryList />}</WithModules>
+    </section>
+  );
+}
+
+function GlossaryList() {
+  const [term, setTerm] = useState<GlossaryItem | null>(null);
+  const items = allGlossaryItems();
+  return (
+    <>
       <div class="list">
         {items.map((item) => (
           <button key={item.term} type="button" class="list-row" onClick={() => setTerm(item)}>
@@ -161,7 +171,7 @@ export function GlossaryView() {
         ))}
       </div>
       {term && <GlossarySheet item={term} onClose={() => setTerm(null)} />}
-    </section>
+    </>
   );
 }
 

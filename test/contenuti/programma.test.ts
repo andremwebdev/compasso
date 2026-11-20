@@ -8,7 +8,10 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { lessonCodes, loadLesson } from "../../src/contenuti";
 import { findPlannedLesson, lessonOfSkill, parseProgramme, programme, programmeSource } from "../../src/contenuti/programma";
-import { generators } from "../../src/generatori";
+import { loadedGenerators } from "../../src/generatori";
+
+// Tutti i generatori: test/setup.ts carica tutti i moduli prima di ogni file di test.
+const generators = loadedGenerators();
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const dataFile = path.join(root, "src/contenuti/programma/data.ts");

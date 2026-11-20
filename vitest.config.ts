@@ -1,4 +1,5 @@
 import { defineConfig } from "vitest/config";
+import { contentIndexDefine } from "./scripts/indice-contenuti.mjs";
 
 export default defineConfig({
   // Le lezioni (.md) si importano come testo, come fa esbuild nella compilazione vera.
@@ -10,12 +11,16 @@ export default defineConfig({
       },
     },
   ],
-  // Costanti che in produzione sostituisce esbuild (vedi scripts/build.mjs).
+  // Costanti che in produzione sostituisce esbuild (vedi scripts/build.mjs). L'indice dei contenuti
+  // si calcola dai file dei moduli, come nella compilazione.
   define: {
     __TARGET__: JSON.stringify("pc"),
+    __CONTENT_INDEX__: await contentIndexDefine(),
   },
   test: {
     include: ["test/**/*.test.ts"],
     environment: "node",
+    // Prima di ogni file di test si caricano tutti i moduli (test/setup.ts).
+    setupFiles: ["test/setup.ts"],
   },
 });

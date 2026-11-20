@@ -1,14 +1,21 @@
-// Prova end-to-end: compila le due versioni e le avvia in un DOM simulato (jsdom).
-// Controlla che l'app parta davvero, che la barra abbia le cinque sezioni, che la lezione si apra
-// dal suo file Markdown con le formule disegnate da KaTeX, che la schermata di esercizio abbia
-// la tastiera matematica e che non ci siano richieste di rete esterne.
+// Prova end-to-end: compila le due versioni e le avvia. La versione PC (file unico) gira in un DOM
+// simulato (jsdom); la versione telefono, fatta di moduli ES caricati a richiesta e di un service
+// worker, gira in un Chrome senza finestra con lo schermo di un iPhone XR (test/chrome.ts), anche
+// senza rete. Si controlla che l'app parta davvero, che la barra abbia le cinque sezioni, che la
+// lezione si apra dal suo file Markdown con le formule disegnate da KaTeX, che la schermata di
+// esercizio abbia la tastiera matematica, che non ci siano richieste di rete esterne e che i moduli
+// dei contenuti siano file separati, letti solo quando servono.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { createServer, type Server } from "node:http";
+import type { AddressInfo } from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
-import { beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { moduleCodes } from "../src/moduli/index";
+import { Chrome, findChrome, type ChromePage } from "./chrome";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pcFile = path.join(root, "dist", "pc", "compasso.html");
@@ -18,134 +25,166 @@ beforeAll(() => {
   execFileSync(process.execPath, [path.join(root, "scripts", "build.mjs")], { cwd: root, stdio: "pipe" });
 }, 120_000);
 
-type Doc = Document;
+// ───────────────────────────── guida dell'app, uguale per jsdom e Chrome ─────────────────────────────
 
-const button = (doc: Doc, selector: string, text: string): HTMLElement => {
-  const found = [...doc.querySelectorAll<HTMLElement>(selector)].find((element) => element.textContent?.includes(text));
-  if (!found) throw new Error(`pulsante «${text}» non trovato (${selector})`);
-  return found;
-};
+/** Le azioni sulla pagina: ognuna gira dentro la pagina (jsdom o Chrome) e restituisce un valore semplice. */
+interface Ui {
+  /** Tocca il primo elemento del selettore che contiene il testo, poi aspetta che l'app abbia finito. */
+  click(selector: string, text: string): Promise<void>;
+  text(selector: string): Promise<string | null>;
+  texts(selector: string): Promise<string[]>;
+  count(selector: string): Promise<number>;
+  attr(selector: string, name: string): Promise<string | null>;
+  value(selector: string): Promise<string | null>;
+  disabled(selector: string, text: string): Promise<boolean>;
+  exists(selector: string, text: string): Promise<boolean>;
+  /** Aspetta i ridisegni in sospeso e la fine di ogni «Caricamento…». */
+  settle(): Promise<void>;
+}
 
-/** Lascia finire i ridisegni in sospeso. */
-const settle = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 30));
+/** Il codice che si installa nella pagina (testo: deve girare tale e quale anche in Chrome). */
+const UI_SOURCE = `window.__ui = {
+  find(selector, text) {
+    const found = [...document.querySelectorAll(selector)].find((element) => (element.textContent || "").includes(text));
+    if (!found) throw new Error("elemento «" + text + "» non trovato (" + selector + ")");
+    return found;
+  },
+  click(selector, text) { this.find(selector, text).click(); return this.settle(); },
+  text(selector) { const element = document.querySelector(selector); return element ? element.textContent : null; },
+  texts(selector) { return [...document.querySelectorAll(selector)].map((element) => element.textContent); },
+  count(selector) { return document.querySelectorAll(selector).length; },
+  attr(selector, name) { const element = document.querySelector(selector); return element ? element.getAttribute(name) : null; },
+  value(selector) { const element = document.querySelector(selector); return element ? element.value : null; },
+  disabled(selector, text) { return this.find(selector, text).disabled; },
+  exists(selector, text) { try { this.find(selector, text); return true; } catch { return false; } },
+  settle() {
+    return new Promise((resolve) => {
+      const start = Date.now();
+      const tick = () => (document.querySelector(".loading") && Date.now() - start < 10000 ? setTimeout(tick, 20) : setTimeout(() => resolve(null), 30));
+      setTimeout(tick, 30);
+    });
+  },
+};`;
 
-/** Controlli comuni alle due versioni, sul documento già avviato: avvio, lezione, esercizio. */
-async function expectAppWorks(doc: Doc) {
-  const labels = [...doc.querySelectorAll("nav.tab-bar button")].map((b) => b.textContent);
+/** Una guida sopra una funzione che valuta un'espressione nella pagina. */
+function makeUi(evaluate: (expression: string) => Promise<unknown>): Ui {
+  const call = <T>(method: string, ...args: string[]): Promise<T> =>
+    evaluate(`(() => { if (!window.__ui) { ${UI_SOURCE} } return window.__ui.${method}(${args.map((arg) => JSON.stringify(arg)).join(", ")}); })()`) as Promise<T>;
+  return {
+    click: async (selector, text) => {
+      await call("click", selector, text);
+    },
+    text: (selector) => call("text", selector),
+    texts: (selector) => call("texts", selector),
+    count: (selector) => call("count", selector),
+    attr: (selector, name) => call("attr", selector, name),
+    value: (selector) => call("value", selector),
+    disabled: (selector, text) => call("disabled", selector, text),
+    exists: (selector, text) => call("exists", selector, text),
+    settle: async () => {
+      await call("settle");
+    },
+  };
+}
+
+const jsdomUi = (dom: JSDOM): Ui => makeUi(async (expression) => dom.window.eval(expression) as unknown);
+const chromeUi = (page: ChromePage): Ui => makeUi((expression) => page.evaluate(expression));
+
+/** Controlli comuni alle due versioni, sull'app già avviata: avvio, lezione, esercizio. */
+async function expectAppWorks(ui: Ui) {
+  const labels = await ui.texts("nav.tab-bar button");
   expect(labels).toEqual(["Oggi", "Teoria", "Esercizi", "Test", "Tu"]);
-  expect(doc.querySelector('nav.tab-bar button[aria-current="page"]')?.textContent).toBe("Oggi");
+  expect((await ui.text('nav.tab-bar button[aria-current="page"]'))).toBe("Oggi");
 
   // Oggi: durata da scegliere, binario e lezione del giorno; la sessione parte dalla lezione (niente da ripassare).
-  expect([...doc.querySelectorAll(".choice-item")].map((b) => b.textContent)).toEqual(["20 min", "40 min", "60 min"]);
-  expect(doc.querySelector('.choice-item[aria-checked="true"]')?.textContent).toBe("40 min");
-  expect(doc.querySelector("main")?.textContent).toContain("Fondamenta");
-  button(doc, ".choice-item", "20 min").click();
-  await settle();
-  button(doc, "main button", "Inizia la sessione").click();
-  await settle();
-  expect(doc.querySelector(".phase-current")?.textContent).toContain("Lezione nuova");
-  expect(doc.querySelector(".lesson-header h1")?.textContent).toBe("Disequazioni fratte");
+  expect(await ui.texts(".choice-item")).toEqual(["20 min", "40 min", "60 min"]);
+  expect((await ui.text('.choice-item[aria-checked="true"]'))).toBe("40 min");
+  expect((await ui.text("main"))).toContain("Fondamenta");
+  await ui.click(".choice-item", "20 min");
+  await ui.click("main button", "Inizia la sessione");
+  expect((await ui.text(".phase-current"))).toContain("Lezione nuova");
+  expect((await ui.text(".lesson-header h1"))).toBe("Disequazioni fratte");
   // Si esce dalla lezione del giorno senza perdere nulla, e si riprende dallo stesso punto.
-  button(doc, "main button", "Esci e riprendi dopo").click();
-  await settle();
-  expect(doc.querySelector("main")?.textContent).toContain("Sessione in pausa");
-  expect(doc.querySelector("main")?.textContent).toContain("Lezione nuova");
-  button(doc, "main button", "Riprendi la sessione").click();
-  await settle();
-  expect(doc.querySelector(".phase-current")?.textContent).toContain("Lezione nuova");
+  await ui.click("main button", "Esci e riprendi dopo");
+  expect((await ui.text("main"))).toContain("Sessione in pausa");
+  expect((await ui.text("main"))).toContain("Lezione nuova");
+  await ui.click("main button", "Riprendi la sessione");
+  expect((await ui.text(".phase-current"))).toContain("Lezione nuova");
 
   // Teoria → volume → modulo → la lezione, letta dal file Markdown: titolo, riquadri, formule.
-  button(doc, "nav.tab-bar button", "Teoria").click();
-  await settle();
-  button(doc, ".card-link", "Fondamenta").click();
-  await settle();
-  button(doc, ".card-link", "V1.M06").click();
-  await settle();
+  await ui.click("nav.tab-bar button", "Teoria");
+  await ui.click(".card-link", "Fondamenta");
+  await ui.click(".card-link", "V1.M06");
   // Le lezioni non ancora scritte ci sono, come «in arrivo».
-  expect(doc.querySelector(".card-coming")?.textContent).toContain("In arrivo");
-  button(doc, ".card-link", "Disequazioni fratte").click();
-  await settle();
+  expect((await ui.text(".card-coming"))).toContain("In arrivo");
+  await ui.click(".card-link", "Disequazioni fratte");
   // I prerequisiti mancanti sono segnalati, ma la lezione si apre.
-  expect(doc.querySelector(".notice")?.textContent).toContain("Prerequisiti non ancora fatti");
-  expect(doc.querySelector(".lesson-header h1")?.textContent).toBe("Disequazioni fratte");
-  expect(doc.querySelector(".box-definition .box-label")?.textContent).toContain("Definizione");
-  expect(doc.querySelector(".box-warning .box-label")?.textContent).toContain("Attenzione");
-  expect(doc.querySelectorAll(".lesson .formula .katex").length).toBeGreaterThan(10);
-  expect(doc.querySelector(".katex-error")).toBeNull();
+  expect((await ui.text(".notice"))).toContain("Prerequisiti non ancora fatti");
+  expect((await ui.text(".lesson-header h1"))).toBe("Disequazioni fratte");
+  expect((await ui.text(".box-definition .box-label"))).toContain("Definizione");
+  expect((await ui.text(".box-warning .box-label"))).toContain("Attenzione");
+  expect((await ui.count(".lesson .formula .katex"))).toBeGreaterThan(10);
+  expect(await ui.count(".katex-error")).toBe(0);
   // Si vede solo il primo tratto, che finisce con una domanda lampo: senza risposta non si continua.
-  expect(doc.querySelectorAll(".box-question").length).toBe(1);
-  expect(doc.querySelector(".box-example")).toBeNull();
-  const next = button(doc, ".lesson-footer button", "Continua") as HTMLButtonElement;
-  expect(next.disabled).toBe(true);
-  button(doc, ".box-question .option", "stesso segno").click();
-  await settle();
-  button(doc, ".box-question button", "Conferma").click();
-  await settle();
-  expect(doc.querySelector(".box-question .verdict-title")?.textContent).toContain("Giusta");
-  (button(doc, ".lesson-footer button", "Continua") as HTMLButtonElement).click();
-  await settle();
-  expect(doc.querySelector(".box-example")).not.toBeNull();
-  expect(doc.querySelector(".lesson-position")?.textContent).toContain("Tratto 2 di 5");
+  expect((await ui.count(".box-question"))).toBe(1);
+  expect(await ui.count(".box-example")).toBe(0);
+  expect(await ui.disabled(".lesson-footer button", "Continua")).toBe(true);
+  await ui.click(".box-question .option", "stesso segno");
+  await ui.click(".box-question button", "Conferma");
+  expect((await ui.text(".box-question .verdict-title"))).toContain("Giusta");
+  await ui.click(".lesson-footer button", "Continua");
+  expect(await ui.count(".box-example")).toBeGreaterThan(0);
+  expect((await ui.text(".lesson-position"))).toContain("Tratto 2 di 5");
 
   // Esercizi: tre schede; le flashcard della lezione; poi disequazioni fratte con la difficoltà
   // automatica (abilità nuova: livello 1): campo, anteprima, tastiera; «Non lo so» mostra la soluzione.
-  button(doc, "nav.tab-bar button", "Esercizi").click();
-  await settle();
-  expect([...doc.querySelectorAll(".tabs-item")].map((b) => b.textContent)).toEqual(["Esercizi", "Flashcard", "Dimostrazioni"]);
-  button(doc, ".tabs-item", "Flashcard").click();
-  await settle();
-  expect(doc.querySelector("main")?.textContent).toContain("4 flashcard");
-  button(doc, ".tabs-item", "Esercizi").click();
-  await settle();
-  button(doc, ".list-row", "Disequazioni fratte").click();
-  await settle();
-  expect(doc.querySelector(".series-position")?.textContent).toContain("livello 1 (automatico)");
-  expect(doc.querySelector(".exercise-prompt .katex")).not.toBeNull();
-  expect(doc.querySelector(".answer-input")?.getAttribute("inputmode")).toBe("none");
-  expect(doc.querySelector('.keyboard-level[aria-selected="true"]')?.textContent).toBe("Insiemi");
-  for (const label of ["x", "≥", "1"]) button(doc, ".keyboard-keys .key", label).click();
-  await settle();
-  expect((doc.querySelector(".answer-input") as HTMLInputElement).value).toBe("x ≥ 1");
-  expect(doc.querySelector(".preview .katex")).not.toBeNull();
-  button(doc, ".exercise-actions button", "Indizio 1 di 2").click();
-  await settle();
-  expect(doc.querySelectorAll(".hints li").length).toBe(1);
-  button(doc, ".exercise-actions button", "Non lo so").click();
-  await settle();
-  expect(doc.querySelector(".verdict-title")?.textContent).toContain("Non data");
-  expect(doc.querySelectorAll(".steps li").length).toBeGreaterThan(3);
-  expect(doc.querySelector(".steps .katex")).not.toBeNull();
-  expect(button(doc, ".exercise-actions button", "Esercizio simile")).toBeDefined();
-  expect(button(doc, ".exercise-actions button", "Torna alla lezione")).toBeDefined();
+  await ui.click("nav.tab-bar button", "Esercizi");
+  expect(await ui.texts(".tabs-item")).toEqual(["Esercizi", "Flashcard", "Dimostrazioni"]);
+  await ui.click(".tabs-item", "Flashcard");
+  expect((await ui.text("main"))).toContain("4 flashcard");
+  await ui.click(".tabs-item", "Esercizi");
+  await ui.click(".list-row", "Disequazioni fratte");
+  expect((await ui.text(".series-position"))).toContain("livello 1 (automatico)");
+  expect(await ui.count(".exercise-prompt .katex")).toBeGreaterThan(0);
+  expect((await ui.attr(".answer-input", "inputmode"))).toBe("none");
+  expect((await ui.text('.keyboard-level[aria-selected="true"]'))).toBe("Insiemi");
+  for (const label of ["x", "≥", "1"]) await ui.click(".keyboard-keys .key", label);
+  expect((await ui.value(".answer-input"))).toBe("x ≥ 1");
+  expect(await ui.count(".preview .katex")).toBeGreaterThan(0);
+  await ui.click(".exercise-actions button", "Indizio 1 di 2");
+  expect((await ui.count(".hints li"))).toBe(1);
+  await ui.click(".exercise-actions button", "Non lo so");
+  expect((await ui.text(".verdict-title"))).toContain("Non data");
+  expect((await ui.count(".steps li"))).toBeGreaterThan(3);
+  expect(await ui.count(".steps .katex")).toBeGreaterThan(0);
+  expect(await ui.exists(".exercise-actions button", "Esercizio simile")).toBe(true);
+  expect(await ui.exists(".exercise-actions button", "Torna alla lezione")).toBe(true);
 
   // Tu → il registro ha la domanda lampo e l'esercizio; la lezione risulta cominciata.
-  button(doc, "nav.tab-bar button", "Tu").click();
-  await settle();
-  expect(doc.querySelector("main")?.textContent).toContain("Tentativi nel registro: 2");
-  expect(doc.querySelector("main")?.textContent).toContain("Versione dei dati: 2");
+  await ui.click("nav.tab-bar button", "Tu");
+  expect((await ui.text("main"))).toContain("Tentativi nel registro: 2");
+  expect((await ui.text("main"))).toContain("Versione dei dati: 2");
   // Tu: serie, padronanza, diario, impostazioni, backup.
-  const tu = doc.querySelector("main")?.textContent ?? "";
+  const tu = (await ui.text("main")) ?? "";
   for (const title of ["Serie di giorni", "Padronanza", "Diario degli errori", "Impostazioni", "Backup"]) expect(tu).toContain(title);
-  for (const label of ["Esporta", "Importa", "Unisci"]) expect(button(doc, ".exercise-actions button", label)).toBeDefined();
+  for (const label of ["Esporta", "Importa", "Unisci"]) expect(await ui.exists(".exercise-actions button", label)).toBe(true);
   // Il diario si apre, e il pulsante in alto (la cronologia) riporta indietro.
-  button(doc, "main button", "Apri il diario").click();
-  await settle();
-  expect(doc.querySelector(".lesson-header h1")?.textContent).toBe("Diario degli errori");
-  button(doc, "main button.back", "Tu").click();
-  await settle();
-  expect(doc.querySelector("main h1")?.textContent).toBe("Tu");
+  await ui.click("main button", "Apri il diario");
+  expect((await ui.text(".lesson-header h1"))).toBe("Diario degli errori");
+  await ui.click("main button.back", "Tu");
+  expect((await ui.text("main h1"))).toBe("Tu");
   // Test: per ora «in arrivo».
-  button(doc, "nav.tab-bar button", "Test").click();
-  await settle();
-  expect(doc.querySelector("main")?.textContent).toContain("Simulazione del TOL");
+  await ui.click("nav.tab-bar button", "Test");
+  expect((await ui.text("main"))).toContain("Simulazione del TOL");
 }
 
 describe("versione PC (file unico)", () => {
   it("si avvia, mostra la lezione e la schermata di esercizio", async () => {
     const html = readFileSync(pcFile, "utf8");
     const dom = new JSDOM(html, { runScripts: "dangerously", url: "file:///compasso.html", pretendToBeVisual: true });
-    await settle();
-    await expectAppWorks(dom.window.document);
+    const ui = jsdomUi(dom);
+    await ui.settle();
+    await expectAppWorks(ui);
   });
 
   it("è davvero un file unico, senza riferimenti esterni", () => {
@@ -169,18 +208,118 @@ describe("versione PC (file unico)", () => {
 });
 
 describe("versione telefono (PWA)", () => {
-  it("si avvia, mostra la lezione e la schermata di esercizio", async () => {
-    const dom = await JSDOM.fromFile(path.join(telefonoDir, "index.html"), {
-      runScripts: "dangerously",
-      resources: "usable",
-      pretendToBeVisual: true,
+  it("i moduli dei contenuti sono file separati, e l'avvio non ne contiene nessuno", () => {
+    const files = ["v1", "v2", "v3"].flatMap((volume) => readdirSync(path.join(telefonoDir, "moduli", volume)).map((name) => `${volume}/${name}`));
+    expect(files.sort()).toEqual(moduleCodes.map((code) => `${code.toLowerCase().replace(".", "/")}.js`).sort());
+    const app = readFileSync(path.join(telefonoDir, "app.js"), "utf8");
+    const m06 = readFileSync(path.join(telefonoDir, "moduli", "v1", "m06.js"), "utf8");
+    const m09 = readFileSync(path.join(telefonoDir, "moduli", "v2", "m09.js"), "utf8");
+    // Il testo della lezione e il codice dei generatori sono nel file del loro modulo, non altrove.
+    const generatorText = "Risolvi la disequazione";
+    const lessonText = "in cui l'incognita compare in almeno un denominatore";
+    expect(m06).toContain(generatorText);
+    expect(m06).toContain(lessonText);
+    expect(m09).toContain("V2.M09.A01.g1");
+    const others = [app, ...readdirSync(path.join(telefonoDir, "chunks")).map((name) => readFileSync(path.join(telefonoDir, "chunks", name), "utf8"))];
+    for (const text of others) {
+      expect(text).not.toContain(generatorText);
+      expect(text).not.toContain(lessonText);
+    }
+    // app.js li chiede con import(), uno per modulo.
+    for (const code of moduleCodes) expect(app).toContain(`./moduli/${code.toLowerCase().replace(".", "/")}.js`);
+    // La pagina avvia app.js come modulo ES.
+    expect(readFileSync(path.join(telefonoDir, "index.html"), "utf8")).toContain('<script type="module" src="app.js"></script>');
+  });
+
+  it("il file PC resta unico e contiene tutti i moduli", () => {
+    const html = readFileSync(pcFile, "utf8");
+    expect(html).toContain("in cui l'incognita compare in almeno un denominatore");
+    expect(html).toContain("V2.M09.A01.g1");
+    expect(html).not.toContain("moduli/v1/m06.js");
+  });
+
+  describe("in Chrome con lo schermo di un iPhone XR", () => {
+    const executable = findChrome();
+    // Su GitHub Chrome c'è sempre: lì la prova non si salta mai.
+    if (!executable && process.env.CI) throw new Error("Chrome non trovato: imposta CHROME_PATH");
+    const maybe = executable ? it : it.skip;
+    if (!executable) console.warn("Chrome non trovato (CHROME_PATH): prova della versione telefono saltata in locale.");
+
+    let server: Server;
+    let base = "";
+    let chrome: Chrome | null = null;
+
+    beforeAll(async () => {
+      server = createServer((request, response) => {
+        const url = new URL(request.url ?? "/", "http://localhost");
+        const file = path.join(telefonoDir, url.pathname === "/" ? "index.html" : decodeURIComponent(url.pathname));
+        if (!file.startsWith(telefonoDir) || !existsSync(file)) {
+          response.writeHead(404).end();
+          return;
+        }
+        const types: Record<string, string> = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webmanifest": "application/manifest+json", ".png": "image/png", ".woff2": "font/woff2" };
+        response.writeHead(200, { "content-type": types[path.extname(file)] ?? "application/octet-stream" }).end(readFileSync(file));
+      });
+      await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", () => resolve()));
+      base = `http://127.0.0.1:${(server.address() as AddressInfo).port}/`;
+      if (executable) chrome = await Chrome.launch(executable);
+    }, 60_000);
+
+    afterAll(async () => {
+      await chrome?.close();
+      server.closeAllConnections();
+      await new Promise((resolve) => server.close(resolve));
     });
-    await new Promise<void>((resolve) => {
-      if (dom.window.document.readyState === "complete") resolve();
-      else dom.window.addEventListener("load", () => resolve());
-    });
-    await settle();
-    await expectAppWorks(dom.window.document);
+
+    /** I file dei moduli che la pagina ha letto finora. */
+    const loadedModuleFiles = (page: ChromePage): Promise<string[]> =>
+      page.evaluate('[...new Set(performance.getEntriesByType("resource").map((entry) => entry.name).filter((name) => name.includes("/moduli/")).map((name) => name.slice(name.indexOf("moduli/"))))].sort()');
+
+    maybe(
+      "si avvia senza leggere i moduli, li legge uno alla volta, e funziona offline",
+      async () => {
+        const page = await chrome!.newPage();
+        const ui = chromeUi(page);
+        await page.goto(base);
+        await ui.settle();
+        expect(await page.evaluate("innerWidth")).toBe(414);
+        // Avvio: la pagina Oggi c'è, e nessun modulo dei contenuti è stato letto.
+        expect(await ui.texts("nav.tab-bar button")).toEqual(["Oggi", "Teoria", "Esercizi", "Test", "Tu"]);
+        expect(await loadedModuleFiles(page)).toEqual([]);
+
+        // Il service worker ha salvato tutti i file, moduli compresi.
+        const saved = await page.evaluate<string[]>(
+          'navigator.serviceWorker.ready.then(async () => { const name = (await caches.keys()).find((key) => key.startsWith("compasso-")); const cache = await caches.open(name); return (await cache.keys()).map((request) => new URL(request.url).pathname.slice(1)); })',
+        );
+        for (const code of moduleCodes) expect(saved).toContain(`moduli/${code.toLowerCase().replace(".", "/")}.js`);
+
+        // Lo stesso percorso della versione PC: usa solo il modulo V1.M06 (lezione e disequazioni fratte).
+        await expectAppWorks(ui);
+        expect(await loadedModuleFiles(page)).toEqual(["moduli/v1/m06.js"]);
+
+        // Senza rete: il server si spegne, la pagina si riapre dal service worker.
+        server.closeAllConnections();
+        await new Promise((resolve) => server.close(resolve));
+        await page.reload();
+        await ui.settle();
+        expect(await page.evaluate("navigator.serviceWorker.controller !== null")).toBe(true);
+        expect(await ui.text('nav.tab-bar button[aria-current="page"]')).toBe("Oggi");
+        // La lezione, offline.
+        await ui.click("nav.tab-bar button", "Teoria");
+        await ui.click(".card-link", "Fondamenta");
+        await ui.click(".card-link", "V1.M06");
+        await ui.click(".card-link", "Disequazioni fratte");
+        expect(await ui.text(".lesson-header h1")).toBe("Disequazioni fratte");
+        expect(await ui.count(".lesson .formula .katex")).toBeGreaterThan(10);
+        // Un esercizio di un altro modulo, mai aperto prima: il suo file arriva dalla copia salvata.
+        await ui.click("nav.tab-bar button", "Esercizi");
+        await ui.click(".list-row", "Derivate");
+        expect(await ui.count(".exercise-prompt .katex")).toBeGreaterThan(0);
+        expect(await ui.count(".katex-error")).toBe(0);
+        expect(await loadedModuleFiles(page)).toEqual(["moduli/v1/m06.js", "moduli/v2/m06.js"]);
+      },
+      120_000,
+    );
   });
 
   it("ha un manifest valido, con le icone PNG richieste", () => {

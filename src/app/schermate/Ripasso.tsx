@@ -2,9 +2,10 @@
 // modalità. Il mazzo di flashcard si usa anche nella fase «Ripasso» di Oggi.
 
 import { useMemo, useState } from "preact/hooks";
-import type { LessonCode, TheoremCode } from "../../codici";
+import { moduleOf, type LessonCode, type TheoremCode } from "../../codici";
 import { loadLesson } from "../../contenuti";
 import { GRADE_LABELS } from "../../dati";
+import { modulesOf, WithModules } from "../caricamento";
 import { BackButton, Tabs } from "../componenti/Common";
 import { RichText } from "../componenti/RichText";
 import { findCard, proofsOfLesson } from "../ripasso/cards";
@@ -13,8 +14,18 @@ import { newId, recordReview } from "../state";
 
 const KIND_LABELS = { definizione: "Definizione", teorema: "Teorema", manuale: "Flashcard" } as const;
 
+interface DeckProps {
+  cards: readonly string[];
+  onFinished: (count: number) => void;
+}
+
+/** Il mazzo, dopo aver caricato i moduli delle sue flashcard (il codice di una flashcard dice il modulo). */
+export function FlashcardDeck(props: DeckProps) {
+  return <WithModules modules={modulesOf(props.cards.filter((id) => id !== ""))}>{() => <Deck {...props} />}</WithModules>;
+}
+
 /** Un mazzo di flashcard: davanti, «Mostra il retro», autovalutazione; ogni risposta si registra. */
-export function FlashcardDeck({ cards, onFinished }: { cards: readonly string[]; onFinished: (count: number) => void }) {
+function Deck({ cards, onFinished }: DeckProps) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const card = findCard(cards[index] ?? "");
@@ -92,8 +103,18 @@ export function FlashcardsScreen({ title, cards }: { title: string; cards: reado
   );
 }
 
+interface ProofScreenProps {
+  lesson: LessonCode;
+  theorem: TheoremCode;
+}
+
+/** Una dimostrazione, dopo aver caricato il modulo della sua lezione. */
+export function ProofScreen(props: ProofScreenProps) {
+  return <WithModules modules={[moduleOf(props.lesson)]}>{() => <Proof {...props} />}</WithModules>;
+}
+
 /** Una dimostrazione nelle tre modalità interattive. */
-export function ProofScreen({ lesson, theorem }: { lesson: LessonCode; theorem: TheoremCode }) {
+function Proof({ lesson, theorem }: ProofScreenProps) {
   const proof = useMemo(() => {
     const source = loadLesson(lesson);
     return source ? proofsOfLesson(source).find((entry) => entry.theorem === theorem) : undefined;

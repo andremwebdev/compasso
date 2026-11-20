@@ -1,41 +1,42 @@
-// Elenco dei generatori dell'app: ogni generatore nuovo si aggiunge QUI, in una riga.
-// Da questo elenco l'app trova un generatore dal suo codice, e la verifica dei contenuti sa quali
-// generatori (e con quali livelli) una lezione può citare. Un test controlla che ogni file di
-// src/generatori/ sia in elenco e stia nel posto che corrisponde al suo codice.
+// I generatori dell'app. L'elenco non sta più qui: ogni generatore si aggiunge nel file del suo modulo
+// (src/moduli/vN/mNN.ts). Da qui si leggono:
+//   - i dati leggeri di ogni generatore (codice, abilità, lezione, titolo, livelli, errori), dall'indice:
+//     bastano per elenchi, Oggi, «Lo so già» e diario, senza caricare nulla;
+//   - il generatore vero (con generate), solo se il suo modulo è caricato (ensureModules).
 
-import type { GeneratorCode, SkillCode } from "../codici";
+import { moduleOf, type GeneratorCode, type SkillCode } from "../codici";
 import type { GeneratorDefinition } from "../esercizi";
-import v1m04a07g1 from "./v1/m04/a07-g1";
-import v1m06a04g1 from "./v1/m06/a04-g1";
-import v2m03a01g1 from "./v2/m03/a01-g1";
-import v2m04a01g1 from "./v2/m04/a01-g1";
-import v2m06a03g1 from "./v2/m06/a03-g1";
-import v2m08a01g1 from "./v2/m08/a01-g1";
-import v2m09a01g1 from "./v2/m09/a01-g1";
-import v2m09a02g1 from "./v2/m09/a02-g1";
-import v2m10a01g1 from "./v2/m10/a01-g1";
-import v2m11a01g1 from "./v2/m11/a01-g1";
-import v2m12a01g1 from "./v2/m12/a01-g1";
-import v2m12a02g1 from "./v2/m12/a02-g1";
-import v3m02a01g1 from "./v3/m02/a01-g1";
-import v3m03a01g1 from "./v3/m03/a01-g1";
+import { loadedModule, loadedModules } from "../moduli/caricamento";
+import { contentIndex, type GeneratorInfo } from "../moduli/indice";
 
-/** Tutti i generatori, nell'ordine del programma (volume, modulo, abilità). */
-export const generators: readonly GeneratorDefinition[] = [v1m04a07g1, v1m06a04g1, v2m03a01g1, v2m04a01g1, v2m06a03g1, v2m08a01g1, v2m09a01g1, v2m09a02g1, v2m10a01g1, v2m11a01g1, v2m12a01g1, v2m12a02g1, v3m02a01g1, v3m03a01g1];
+export type { GeneratorInfo } from "../moduli/indice";
 
-const byCode: ReadonlyMap<string, GeneratorDefinition> = new Map(generators.map((generator) => [generator.code, generator]));
+/** I dati leggeri di tutti i generatori, nell'ordine del programma (volume, modulo, abilità). */
+export const generatorInfos: readonly GeneratorInfo[] = contentIndex.flatMap((module) => module.generators);
 
-/** Il generatore con questo codice, oppure undefined. */
+const infoByCode: ReadonlyMap<string, GeneratorInfo> = new Map(generatorInfos.map((info) => [info.code, info]));
+
+/** I dati leggeri del generatore con questo codice, oppure undefined. */
+export const findGeneratorInfo = (code: string): GeneratorInfo | undefined => infoByCode.get(code);
+
+/** I dati leggeri dei generatori di un'abilità (di norma uno solo). */
+export const generatorInfosOfSkill = (skill: SkillCode): GeneratorInfo[] => generatorInfos.filter((info) => info.skill === skill);
+
+/** Il generatore con questo codice, se il suo modulo è caricato; altrimenti undefined. */
 export function findGenerator(code: string): GeneratorDefinition | undefined {
-  return byCode.get(code);
+  if (!infoByCode.has(code)) return undefined;
+  return loadedModule(moduleOf(code as GeneratorCode))?.generators.find((generator) => generator.code === code);
 }
 
-/** I generatori di un'abilità (di norma uno solo). */
-export function generatorsOfSkill(skill: SkillCode): GeneratorDefinition[] {
-  return generators.filter((generator) => generator.skill === skill);
+/** I generatori dei moduli caricati finora, nell'ordine del programma. */
+export function loadedGenerators(): GeneratorDefinition[] {
+  const order = new Map(generatorInfos.map((info, index) => [info.code, index]));
+  return loadedModules()
+    .flatMap((module) => module.generators)
+    .sort((a, b) => (order.get(a.code) ?? 0) - (order.get(b.code) ?? 0));
 }
 
 /** Per la verifica dei contenuti: codice del generatore → livelli che supporta. */
 export function generatorLevels(): Record<GeneratorCode, readonly number[]> {
-  return Object.fromEntries(generators.map((generator) => [generator.code, generator.levels]));
+  return Object.fromEntries(generatorInfos.map((info) => [info.code, info.levels]));
 }

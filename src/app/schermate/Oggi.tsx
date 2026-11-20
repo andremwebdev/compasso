@@ -7,9 +7,9 @@ import { useEffect, useState } from "preact/hooks";
 import type { LessonCode } from "../../codici";
 import { findPlannedLesson, findVolume, lessonsOfVolume } from "../../contenuti/programma";
 import { backupDue, dueSkills, SESSION_MINUTES, streakInfo, weakestErrors, type SessionMinutes, type TodaySession, type TrackId } from "../../dati";
-import type { GeneratorDefinition, Level } from "../../esercizi";
+import type { Level } from "../../esercizi";
 import { findError } from "../../errori";
-import { generators } from "../../generatori";
+import { generatorInfos as generators, type GeneratorInfo } from "../../generatori";
 import { Choice, GroupTitle } from "../componenti/Common";
 import { ExerciseSeries } from "../componenti/ExerciseSeries";
 import { CLOSING_PHASE, exerciseCount, PHASE_NAMES, phaseMinutes, rampLevels, reviewPlan, trackForToday } from "../oggi/plan";
@@ -35,7 +35,7 @@ function hasLessonInProgress(track: TrackId): boolean {
 }
 
 /** Il generatore più vicino al livello voluto tra quelli che offre. */
-const clampLevel = (generator: GeneratorDefinition, level: Level): Level =>
+const clampLevel = (generator: GeneratorInfo, level: Level): Level =>
   (generator.levels.includes(level) ? level : ([...generator.levels].sort((a, b) => Math.abs(a - level) - Math.abs(b - level))[0] ?? 1)) as Level;
 
 // ───────────────────────────── contenuto delle fasi ─────────────────────────────
@@ -63,7 +63,7 @@ function lessonExercises(session: TodaySession, budget: number): PracticeItem[] 
     const planned = findPlannedLesson(lesson);
     const pool = [...new Set([...(planned ? generatorsOfLesson(planned) : []), ...generators.filter((g) => g.lesson === lesson)])];
     if (pool.length > 0) return rampLevels(n).map((level, i) => {
-      const generator = pool[i % pool.length] as GeneratorDefinition;
+      const generator = pool[i % pool.length] as GeneratorInfo;
       return { generator: generator.code, level: clampLevel(generator, level) };
     });
   }
@@ -74,7 +74,7 @@ function lessonExercises(session: TodaySession, budget: number): PracticeItem[] 
     .sort((a, b) => (lessonProgress.value[b.code]?.completedAt ?? "").localeCompare(lessonProgress.value[a.code]?.completedAt ?? ""));
   let pool = completed.flatMap((l) => generatorsOfLesson(l));
   if (pool.length === 0) pool = (findVolume(track)?.modules ?? []).flatMap((m) => generatorsOfModule(m.code));
-  return Array.from({ length: pool.length === 0 ? 0 : n }, (_, i) => ({ generator: (pool[i % pool.length] as GeneratorDefinition).code, level: "auto" as const }));
+  return Array.from({ length: pool.length === 0 ? 0 : n }, (_, i) => ({ generator: (pool[i % pool.length] as GeneratorInfo).code, level: "auto" as const }));
 }
 
 /** Punti deboli: esercizi dai generatori che producono gli errori di concetto più frequenti del diario. */
@@ -85,7 +85,7 @@ function weakExercises(budget: number): PracticeItem[] {
   if (pools.length === 0) return [];
   return Array.from({ length: exerciseCount(budget) }, (_, i) => {
     const pool = pools[i % pools.length] ?? [];
-    const generator = pool[Math.floor(Math.random() * pool.length)] as GeneratorDefinition;
+    const generator = pool[Math.floor(Math.random() * pool.length)] as GeneratorInfo;
     return { generator: generator.code, level: "auto" as const };
   });
 }

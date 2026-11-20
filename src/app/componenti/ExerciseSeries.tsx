@@ -8,6 +8,7 @@ import type { GeneratorCode, SkillCode } from "../../codici";
 import { masteryOf, nextAutoLevel, startingLevel, type AttemptContext } from "../../dati";
 import { generateExercise, type Evaluation, type GeneratorDefinition, type Level } from "../../esercizi";
 import { findGenerator } from "../../generatori";
+import { modulesOf, WithModules } from "../caricamento";
 import { isWritten } from "../programma";
 import { freshSeed } from "../risposta/seeds";
 import { masteries, open, randomSeed, type PracticeItem } from "../state";
@@ -41,7 +42,12 @@ function autoStart(generator: GeneratorDefinition): Level {
   return nextAutoLevel(wanted, [], generator.levels);
 }
 
-export function ExerciseSeries({ items, endless, context, startAt = 0, onAnswered, onFinished, finishLabel = "Fine della serie" }: ExerciseSeriesProps) {
+/** La serie, dopo aver caricato i moduli dei suoi generatori (versione telefono: un modulo alla volta). */
+export function ExerciseSeries(props: ExerciseSeriesProps) {
+  return <WithModules modules={modulesOf(props.items.map((item) => item.generator))}>{() => <Series {...props} />}</WithModules>;
+}
+
+function Series({ items, endless, context, startAt = 0, onAnswered, onFinished, finishLabel = "Fine della serie" }: ExerciseSeriesProps) {
   // Stato della difficoltà automatica per generatore: livello attuale ed esiti dall'ultimo cambio.
   const auto = useRef(new Map<string, { level: Level; recent: boolean[] }>());
   const levelFor = (item: PracticeItem, generator: GeneratorDefinition): Level => {

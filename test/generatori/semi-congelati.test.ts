@@ -9,7 +9,10 @@
 
 import { describe, expect, it } from "vitest";
 import { generateExercise, type Level } from "../../src/esercizi";
-import { findGenerator, generators } from "../../src/generatori";
+import { findGenerator, loadedGenerators } from "../../src/generatori";
+
+// Tutti i generatori: test/setup.ts carica tutti i moduli prima di ogni file di test.
+const generators = loadedGenerators();
 
 const frozen: readonly (readonly [code: string, level: Level, seed: number, prompt: string])[] = [
   ["V1.M04.A07.g1", 1, 1, "Scomponi completamente in fattori il polinomio $x^{2} + 2x + 1$."],

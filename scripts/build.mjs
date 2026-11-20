@@ -1,5 +1,7 @@
 // Compila Compasso in due versioni dallo stesso codice:
-//   telefono → dist/telefono/   PWA a più file (manifest, service worker, caratteri, icone)
+//   telefono → dist/telefono/   PWA a più file (manifest, service worker, caratteri, icone); il
+//              contenuto di ogni modulo (lezioni e generatori) è un file a parte, moduli/vN/mNN.js,
+//              che l'app legge solo quando serve
 //   pc       → dist/pc/compasso.html   file unico con tutto incorporato
 //
 // Uso: node scripts/build.mjs [telefono|pc]   (senza argomenti compila entrambe)
@@ -9,6 +11,7 @@ import { createHash } from "node:crypto";
 import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { contentIndexDefine } from "./indice-contenuti.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const srcApp = path.join(root, "src", "app");
@@ -63,14 +66,19 @@ const MANIFEST = {
   ],
 };
 
-/** Codice dell'app in un solo file JavaScript (IIFE), già minimizzato. */
-async function bundleApp(target) {
-  const result = await build({
-    entryPoints: [path.join(srcApp, "main.tsx")],
+// L'indice leggero dei contenuti (src/moduli/indice.ts), calcolato una volta dai file dei moduli.
+let contentIndex = null;
+async function contentIndexOnce() {
+  contentIndex ??= await contentIndexDefine();
+  return contentIndex;
+}
+
+/** Opzioni comuni alle due versioni. */
+async function appOptions(target) {
+  return {
     tsconfig: path.join(root, "tsconfig.json"),
     bundle: true,
     minify: true,
-    format: "iife",
     target: "es2020",
     write: false,
     legalComments: "none",
@@ -79,10 +87,44 @@ async function bundleApp(target) {
     loader: { ".md": "text" },
     define: {
       __TARGET__: JSON.stringify(target),
+      __CONTENT_INDEX__: await contentIndexOnce(),
       "process.env.NODE_ENV": '"production"',
     },
-  });
+  };
+}
+
+/** Versione PC: tutto il codice in un solo file JavaScript (IIFE); gli import() dei moduli restano dentro. */
+async function bundleAppSingle() {
+  const result = await build({ ...(await appOptions("pc")), entryPoints: [path.join(srcApp, "main.tsx")], format: "iife" });
   return result.outputFiles[0].text;
+}
+
+/** I file dei moduli (src/moduli/vN/mNN.ts), come percorsi di uscita «moduli/vN/mNN» → file sorgente. */
+async function moduleEntries() {
+  const entries = {};
+  for (const volume of (await readdir(path.join(root, "src", "moduli"), { withFileTypes: true })).filter((entry) => entry.isDirectory())) {
+    for (const file of (await readdir(path.join(root, "src", "moduli", volume.name))).filter((name) => name.endsWith(".ts"))) {
+      entries[`moduli/${volume.name}/${file.replace(/\.ts$/, "")}`] = path.join(root, "src", "moduli", volume.name, file);
+    }
+  }
+  return entries;
+}
+
+/**
+ * Versione telefono: moduli ES divisi. app.js è l'avvio (interfaccia, motore, indice leggero);
+ * ogni modulo dei contenuti è un file moduli/vN/mNN.js caricato con import() solo quando serve;
+ * il codice in comune tra più file sta in chunks/. Restituisce [percorso relativo, testo].
+ */
+async function bundleAppSplit(outDir) {
+  const result = await build({
+    ...(await appOptions("telefono")),
+    entryPoints: { app: path.join(srcApp, "main.tsx"), ...(await moduleEntries()) },
+    format: "esm",
+    splitting: true,
+    outdir: outDir,
+    chunkNames: "chunks/[name]-[hash]",
+  });
+  return result.outputFiles.map((file) => [path.relative(outDir, file.path).split(path.sep).join("/"), file.text]);
 }
 
 /** CSS di KaTeX senza i formati woff e ttf: i browser moderni leggono tutti woff2. */
@@ -125,7 +167,7 @@ async function buildPc() {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 
-  const js = await bundleApp("pc");
+  const js = await bundleAppSingle();
   const css = await inlineFonts((await katexCss()) + (await appCss()));
   // Dentro un <script> la sequenza "</script" chiuderebbe il tag prima del tempo.
   const safeJs = js.replaceAll("</script", "<\\/script").replaceAll("<!--", "<\\!--");
@@ -165,7 +207,10 @@ async function buildTelefono() {
   }
   await cp(path.join(root, "public", "icons"), path.join(outDir, "icons"), { recursive: true });
 
-  await writeFile(path.join(outDir, "app.js"), await bundleApp("telefono"));
+  for (const [name, text] of await bundleAppSplit(outDir)) {
+    await mkdir(path.dirname(path.join(outDir, name)), { recursive: true });
+    await writeFile(path.join(outDir, name), text);
+  }
   await writeFile(path.join(outDir, "app.css"), css);
   await writeFile(path.join(outDir, "manifest.webmanifest"), JSON.stringify(MANIFEST, null, 2) + "\n");
 
@@ -180,7 +225,8 @@ async function buildTelefono() {
   const html = await renderHtml({
     head,
     style: '<link rel="stylesheet" href="app.css">',
-    script: '<script src="app.js" defer></script>',
+    // Modulo ES: si avvia dopo la lettura della pagina, come con defer.
+    script: '<script type="module" src="app.js"></script>',
   });
   await writeFile(path.join(outDir, "index.html"), html);
 
@@ -234,7 +280,10 @@ for (const target of requested ? [requested] : TARGETS) {
   const built = target === "pc" ? await buildPc() : await buildTelefono();
   const total = built.reduce((sum, f) => sum + f.bytes, 0);
   console.log(`\n${target}: ${built.length} file, ${formatKb(total)}`);
-  for (const f of built.filter((f) => !f.file.includes(`${path.sep}fonts${path.sep}`))) {
+  const quiet = (file) => [`${path.sep}fonts${path.sep}`, `${path.sep}moduli${path.sep}`, `${path.sep}chunks${path.sep}`].some((dir) => file.includes(dir));
+  const modules = built.filter((f) => f.file.includes(`${path.sep}moduli${path.sep}`));
+  if (modules.length > 0) console.log(`  ${modules.length} moduli in dist/telefono/moduli, ${formatKb(modules.reduce((sum, f) => sum + f.bytes, 0))}`);
+  for (const f of built.filter((f) => !quiet(f.file))) {
     console.log(`  ${f.file}  ${formatKb(f.bytes)}`);
   }
 }

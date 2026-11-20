@@ -7,10 +7,12 @@ import { useState } from "preact/hooks";
 import type { GeneratorCode, LessonCode, ModuleCode, SkillCode } from "../../codici";
 import { findModule, lessonOfSkill, programme } from "../../contenuti/programma";
 import { cardSchedules, dueCards } from "../../dati";
-import type { GeneratorDefinition, Level } from "../../esercizi";
-import { generators } from "../../generatori";
+import type { Level } from "../../esercizi";
+import { generatorInfos as generators, type GeneratorInfo } from "../../generatori";
+import { contentIndex } from "../../moduli/indice";
+import { modulesWithLessons, WithModules } from "../caricamento";
 import { Choice, GroupTitle, Tabs } from "../componenti/Common";
-import { allCards, allProofs } from "../ripasso/cards";
+import { allProofs } from "../ripasso/cards";
 import { DRILL_MODES } from "../ripasso/drill";
 import { generatorsOfModule, isWritten, knownModules, lessonCovered, lessonTitle } from "../programma";
 import { open, reviews, today, type PracticeItem, type PracticePlan } from "../state";
@@ -67,7 +69,7 @@ function shuffle<T>(items: readonly T[]): T[] {
  * Gli esercizi di una serie: i generatori a turno (mescolati a ogni giro, così due esercizi di fila
  * sono di tipo diverso quando si può), al livello scelto o con la difficoltà automatica.
  */
-export function seriesItems(pool: readonly GeneratorDefinition[], count: number, difficulty: Difficulty): PracticeItem[] {
+export function seriesItems(pool: readonly GeneratorInfo[], count: number, difficulty: Difficulty): PracticeItem[] {
   const items: PracticeItem[] = [];
   while (items.length < count && pool.length > 0) {
     for (const generator of shuffle(pool)) {
@@ -272,18 +274,19 @@ export function skillPlan(skill: SkillCode, generator: GeneratorCode, title: str
 
 // ───────────────────────────── Flashcard ─────────────────────────────
 
+/** Le flashcard di ogni lezione scritta, dall'indice (senza caricare i moduli). */
+const lessonCards = contentIndex.flatMap((module) => module.lessons.filter((lesson) => lesson.cards.length > 0).map((lesson) => ({ lesson: lesson.code, cards: lesson.cards })));
+
 /** Le flashcard da ripassare oggi: quelle delle lezioni completate (o dei moduli «Lo so già»). */
 export function dueFlashcards(): string[] {
   const known = knownModules();
-  const ready = allCards().filter((card) => lessonCovered(card.lesson, known)).map((card) => card.id);
+  const ready = lessonCards.filter((item) => lessonCovered(item.lesson, known)).flatMap((item) => item.cards);
   return dueCards(ready, cardSchedules(reviews.value), today());
 }
 
 function FlashcardChooser() {
-  const cards = allCards();
   const due = dueFlashcards();
-  const byLesson = [...new Set(cards.map((card) => card.lesson))];
-  if (cards.length === 0) return <p class="muted">Le flashcard arrivano con le lezioni.</p>;
+  if (lessonCards.length === 0) return <p class="muted">Le flashcard arrivano con le lezioni.</p>;
   return (
     <>
       <div class="card">
@@ -297,8 +300,7 @@ function FlashcardChooser() {
       </div>
       <GroupTitle>Per lezione</GroupTitle>
       <div class="list">
-        {byLesson.map((lesson) => {
-          const ofLesson = cards.filter((card) => card.lesson === lesson).map((card) => card.id);
+        {lessonCards.map(({ lesson, cards: ofLesson }) => {
           return (
             <button key={lesson} type="button" class="list-row" onClick={() => open({ kind: "flashcards", title: lessonTitle(lesson), cards: ofLesson })}>
               <span>{lessonTitle(lesson)}</span>
@@ -313,7 +315,12 @@ function FlashcardChooser() {
 
 // ───────────────────────────── Dimostrazioni ─────────────────────────────
 
+/** Le dimostrazioni sono dentro le lezioni: servono i moduli che ne hanno. */
 function ProofChooser() {
+  return <WithModules modules={modulesWithLessons}>{() => <ProofList />}</WithModules>;
+}
+
+function ProofList() {
   const proofs = allProofs();
   if (proofs.length === 0) {
     return (

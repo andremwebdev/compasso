@@ -6,7 +6,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import katex from "katex";
 import { describe, expect, it } from "vitest";
-import { lessonCodes, lessonSources, loadLesson } from "../../src/contenuti";
+import { moduleOf } from "../../src/codici";
+import { lessonCodes, lessonInfo, lessonSource, loadLesson } from "../../src/contenuti";
+import { loadedModules } from "../../src/moduli/caricamento";
 import { blockTexts, formatContentReport, lessonPath, splitInline, verifyContents, type ContentFile } from "../../src/contenuti/formato";
 import { findGenerator, generatorLevels } from "../../src/generatori";
 
@@ -31,11 +33,15 @@ describe("lezioni dell'app", () => {
     expect(report.lessons).toBe(files.length);
   });
 
-  it("ogni file è nell'elenco src/contenuti/index.ts, con lo stesso testo", () => {
+  it("ogni file è nell'elenco del suo modulo (src/moduli/vN/mNN.ts), con lo stesso testo", () => {
     expect(files.map((file) => file.path).sort()).toEqual(lessonCodes.map((code) => `src/contenuti/${lessonPath(code)}`).sort());
+    for (const module of loadedModules()) {
+      for (const code of Object.keys(module.lessons)) expect(moduleOf(code as never), `${code} nell'elenco di ${module.code}`).toBe(module.code);
+    }
     for (const code of lessonCodes) {
       const file = files.find((item) => item.path.endsWith(lessonPath(code)));
-      expect(lessonSources[code]).toBe(file?.text);
+      expect(lessonSource(code)).toBe(file?.text);
+      expect(lessonInfo(code)?.title).toBe(loadLesson(code)?.meta.title);
       expect(loadLesson(code)?.meta.code).toBe(code);
     }
     expect(loadLesson("V9.M99.L99")).toBeNull();

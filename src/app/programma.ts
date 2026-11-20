@@ -2,11 +2,10 @@
 // segnati «Lo so già», quali prerequisiti mancano, qual è la prossima lezione di un binario.
 
 import type { LessonCode, ModuleCode, SkillCode } from "../codici";
-import { lessonCodes, loadLesson } from "../contenuti";
+import { lessonCodes, lessonInfo } from "../contenuti";
 import { findPlannedLesson, lessonsOfVolume, moduleOfLesson, skillsOfModule, type PlannedLesson } from "../contenuti/programma";
 import { aggregateLevel, masteryOf, type MasteryLevel, type SkillMastery, type TrackId } from "../dati";
-import type { GeneratorDefinition } from "../esercizi";
-import { generators } from "../generatori";
+import { generatorInfos as generators, type GeneratorInfo } from "../generatori";
 import { checks, lessonProgress } from "./state";
 
 /** Lo stato di una lezione nella navigazione di Teoria. */
@@ -40,7 +39,7 @@ export function lessonCovered(code: LessonCode, known: ReadonlySet<ModuleCode> =
 /** I prerequisiti di una lezione: quelli della scaletta più quelli dell'intestazione del file. */
 export function prerequisitesOf(code: LessonCode): LessonCode[] {
   const planned = findPlannedLesson(code)?.prerequisites ?? [];
-  const declared = loadLesson(code)?.meta.prerequisites ?? [];
+  const declared = lessonInfo(code)?.prerequisites ?? [];
   return [...new Set([...planned, ...declared])];
 }
 
@@ -51,22 +50,22 @@ export function missingPrerequisites(code: LessonCode): LessonCode[] {
 }
 
 /** Il titolo di una lezione, scritta o prevista. */
-export const lessonTitle = (code: LessonCode): string => loadLesson(code)?.meta.title ?? findPlannedLesson(code)?.title ?? code;
+export const lessonTitle = (code: LessonCode): string => lessonInfo(code)?.title ?? findPlannedLesson(code)?.title ?? code;
 
 /** I generatori delle abilità di un modulo, nell'ordine delle abilità. */
-export function generatorsOfModule(code: ModuleCode): GeneratorDefinition[] {
+export function generatorsOfModule(code: ModuleCode): GeneratorInfo[] {
   const skills = skillsOfModule(code);
   return generators.filter((generator) => skills.includes(generator.skill)).sort((a, b) => skills.indexOf(a.skill) - skills.indexOf(b.skill));
 }
 
 /** I generatori delle abilità di una lezione prevista. */
-export function generatorsOfLesson(lesson: PlannedLesson): GeneratorDefinition[] {
+export function generatorsOfLesson(lesson: PlannedLesson): GeneratorInfo[] {
   const skills = lesson.skills.map((skill) => skill.code);
   return generators.filter((generator) => skills.includes(generator.skill));
 }
 
 /** Il primo generatore di un'abilità (di norma l'unico). */
-export const generatorOfSkill = (skill: SkillCode): GeneratorDefinition | undefined => generators.find((generator) => generator.skill === skill);
+export const generatorOfSkill = (skill: SkillCode): GeneratorInfo | undefined => generators.find((generator) => generator.skill === skill);
 
 /**
  * La prossima lezione di un binario: prima una lezione già cominciata, poi la prima scritta e non

@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
-import { isLessonCode, type LessonCode } from "../../codici";
+import { isLessonCode, moduleOf, type LessonCode } from "../../codici";
 import { loadLesson } from "../../contenuti";
 import { moduleOfLesson } from "../../contenuti/programma";
 import type { LessonBlock, QuestionOption } from "../../contenuti/formato";
 import { findError } from "../../errori";
 import { generateExercise } from "../../esercizi";
-import { findGenerator } from "../../generatori";
+import { findGenerator, findGeneratorInfo } from "../../generatori";
+import { modulesOf, WithModules } from "../caricamento";
 import { BackButton } from "../componenti/Common";
 import { ExerciseView } from "../componenti/ExerciseView";
 import { RichText } from "../componenti/RichText";
 import { lessonChunks } from "../lezione/chunks";
-import { glossaryItem, type GlossaryItem } from "../lezione/glossary";
+import { loadGlossaryItem, type GlossaryItem } from "../lezione/glossary";
 import { isWritten, lessonTitle, missingPrerequisites } from "../programma";
 import { freshSeed } from "../risposta/seeds";
 import { lessonProgress, newId, open, randomSeed, recordAttempt, saveLessonProgress } from "../state";
@@ -26,7 +27,12 @@ interface LessonViewProps {
 }
 
 /** Una lezione letta dal suo file Markdown, a tratti: ogni tratto finisce con una domanda lampo. */
-export function LessonView({ code, embedded }: LessonViewProps) {
+export function LessonView(props: LessonViewProps) {
+  // Prima arriva il modulo della lezione (versione telefono: un modulo alla volta).
+  return <WithModules modules={[moduleOf(props.code)]}>{() => <LessonContent key={props.code} {...props} />}</WithModules>;
+}
+
+function LessonContent({ code, embedded }: LessonViewProps) {
   const lesson = useMemo(() => loadLesson(code), [code]);
   const chunks = useMemo(() => (lesson ? lessonChunks(lesson) : []), [lesson]);
   const saved = lessonProgress.value[code];
@@ -85,15 +91,20 @@ export function LessonView({ code, embedded }: LessonViewProps) {
   const atEnd = reached >= chunks.length;
   const completed = saved?.completed ?? false;
   const skill = lesson.meta.skills[0];
-  const generator = skill ? findGenerator(`${skill}.g1`) : undefined;
+  const generator = skill ? findGeneratorInfo(`${skill}.g1`) : undefined;
 
   // Un rimando toccato: un termine del glossario apre la sua definizione, una lezione si apre.
   const onRef = (event: MouseEvent): void => {
     const target = (event.target as HTMLElement | null)?.closest?.("[data-ref]")?.getAttribute("data-ref");
     if (!target) return;
-    const item = glossaryItem(target);
-    if (item) setTerm(item);
-    else if (isLessonCode(target) && loadLesson(target)) open({ kind: "lesson", code: target }, "teoria");
+    if (isLessonCode(target)) {
+      if (isWritten(target)) open({ kind: "lesson", code: target }, "teoria");
+      return;
+    }
+    // Il termine può essere definito in una lezione di un altro modulo: si carica quel modulo.
+    void loadGlossaryItem(target).then((item) => {
+      if (item) setTerm(item);
+    });
   };
 
   return (
@@ -293,8 +304,19 @@ function BlockView({ block, lesson, onAnswered }: { block: LessonBlock; lesson: 
   }
 }
 
+interface GeneratorQuestionProps {
+  generator: string;
+  level: 1 | 2 | 3;
+  onAnswered: () => void;
+}
+
+/** Una domanda lampo presa da un generatore, anche di un altro modulo (che si carica prima). */
+function GeneratorQuestion(props: GeneratorQuestionProps) {
+  return <WithModules modules={modulesOf([props.generator])}>{() => <GeneratorQuestionContent {...props} />}</WithModules>;
+}
+
 /** Una domanda lampo presa da un generatore: se può, si mostra come scelta multipla. */
-function GeneratorQuestion({ generator, level, onAnswered }: { generator: string; level: 1 | 2 | 3; onAnswered: () => void }) {
+function GeneratorQuestionContent({ generator, level, onAnswered }: GeneratorQuestionProps) {
   const [seed, setSeed] = useState(randomSeed);
   const definition = findGenerator(generator);
   const exercise = useMemo(() => (definition ? generateExercise(definition, level, seed) : null), [definition, level, seed]);

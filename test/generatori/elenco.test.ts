@@ -1,10 +1,16 @@
-// L'elenco dei generatori (src/generatori/index.ts): completo, senza doppioni, ogni file al suo posto.
+// Gli elenchi dei generatori (uno per modulo, in src/moduli/vN/mNN.ts): completi, senza doppioni,
+// ogni file al suo posto e ogni generatore nel file del suo modulo.
 
 import { readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { findGenerator, generatorLevels, generators } from "../../src/generatori";
+import { moduleOf } from "../../src/codici";
+import { findGenerator, findGeneratorInfo, generatorInfos, generatorLevels, loadedGenerators } from "../../src/generatori";
+import { loadedModules } from "../../src/moduli/caricamento";
+
+// Tutti i generatori: test/setup.ts carica tutti i moduli prima di ogni file di test.
+const generators = loadedGenerators();
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const folder = path.join(root, "src", "generatori");
@@ -29,8 +35,17 @@ describe("elenco dei generatori", () => {
     const codes = generators.map((generator) => generator.code);
     expect(new Set(codes).size).toBe(codes.length);
     for (const generator of generators) expect(findGenerator(generator.code)).toBe(generator);
+    // L'indice leggero ha gli stessi generatori, nello stesso ordine.
+    expect(generatorInfos.map((info) => info.code)).toEqual(codes);
+    for (const generator of generators) expect(findGeneratorInfo(generator.code)?.levels).toEqual(generator.levels);
     expect(findGenerator("V9.M99.A99.g9")).toBeUndefined();
     expect(Object.keys(generatorLevels()).sort()).toEqual([...codes].sort());
+  });
+
+  it("ogni generatore è nell'elenco del suo modulo", () => {
+    for (const module of loadedModules()) {
+      for (const generator of module.generators) expect(moduleOf(generator.code), `${generator.code} in src/moduli per ${module.code}`).toBe(module.code);
+    }
   });
 
   it("ogni file di src/generatori è in elenco, nel posto che corrisponde al suo codice", () => {

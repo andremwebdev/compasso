@@ -9,7 +9,7 @@ import {
   mergeData, readBackupFile, SESSION_MINUTES, streakInfo, TRACKS, type DiaryEntry, type DiaryView, type StoredData, type ThemeChoice, type Trend,
 } from "../../dati";
 import { errorCategories, findError, type ErrorCategory } from "../../errori";
-import { generators } from "../../generatori";
+import { generatorInfos as generators } from "../../generatori";
 import { BackButton, Choice, GroupTitle, MasteryBadge, Tabs } from "../componenti/Common";
 import { RichText } from "../componenti/RichText";
 import { generatorOfSkill, groupLevel, isWritten, lessonTitle } from "../programma";
