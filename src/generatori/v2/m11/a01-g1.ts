@@ -600,7 +600,7 @@ function signsHold(plan: Plan): boolean {
 export default defineGenerator({
   code: "V2.M11.A01.g1",
   skill: "V2.M11.A01",
-  lesson: "V2.M11.L03",
+  lesson: "V2.M11.L05",
   title: "Convergenza delle serie numeriche: il criterio giusto",
   levels: [1, 2, 3],
   errors: [TERMINE, SOGLIA, INCONCLUDENTE, VERSO, LEIBNIZ, ASSOLUTA, INFINITI, "AN.TAYLOR_SVILUPPO"],

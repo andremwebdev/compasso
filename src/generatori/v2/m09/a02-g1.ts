@@ -582,7 +582,7 @@ function simpson(f: (t: number) => number, a: number, b: number, n = 2000): numb
 export default defineGenerator({
   code: "V2.M09.A02.g1",
   skill: "V2.M09.A02",
-  lesson: "V2.M09.L05",
+  lesson: "V2.M09.L08",
   title: "Integrali definiti con il teorema fondamentale del calcolo",
   levels: [1, 2, 3],
   errors: [ESTREMI, PRIM, SOST, PARTI, PROD, FRATTI, "ALG.SEGNI_FATTORI", "CALC.MENO_PARENTESI"],

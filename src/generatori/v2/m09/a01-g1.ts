@@ -835,7 +835,7 @@ function slope(primitive: Expr, at: number): number {
 export default defineGenerator({
   code: "V2.M09.A01.g1",
   skill: "V2.M09.A01",
-  lesson: "V2.M09.L04",
+  lesson: "V2.M09.L07",
   title: "Integrali indefiniti: sostituzione, parti, funzioni razionali",
   levels: [1, 2, 3],
   errors: [

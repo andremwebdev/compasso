@@ -85,10 +85,10 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V2.M04.A01`, `V2.M04.L03` | Abilità: limiti notevoli e forme indeterminate — generatore `V2.M04.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M04.L03` «Limiti notevoli e forme indeterminate» (da scrivere) |
 | `V2.M06.L03`, `V2.M06.A03` | Lezione (da scrivere) e abilità: regole di derivazione — generatore `V2.M06.A03.g1` |
 | `V2.M08.A01`, `V2.M08.L03` | Abilità: sviluppi di Taylor nei limiti — generatore `V2.M08.A01.g1` (sessione E1); lezione di riferimento proposta `V2.M08.L03` «Sviluppi di Taylor nel calcolo dei limiti» (da scrivere) |
-| `V2.M09.A01`, `V2.M09.L04` | Abilità: integrali indefiniti — generatore `V2.M09.A01.g1` (E2); lezione proposta `V2.M09.L04` |
-| `V2.M09.A02`, `V2.M09.L05` | Abilità: integrali definiti — generatore `V2.M09.A02.g1` (E2); lezione proposta `V2.M09.L05` |
+| `V2.M09.A01`, `V2.M09.L07` | Abilità: integrali indefiniti — generatore `V2.M09.A01.g1` (E2); lezione `V2.M09.L07` (spostata da L04 in E4) |
+| `V2.M09.A02`, `V2.M09.L08` | Abilità: integrali definiti — generatore `V2.M09.A02.g1` (E2); lezione `V2.M09.L08` (spostata da L05 in E4) |
 | `V2.M10.A01`, `V2.M10.L02` | Abilità: convergenza di integrali impropri — generatore `V2.M10.A01.g1` (E2); lezione proposta `V2.M10.L02` |
-| `V2.M11.A01`, `V2.M11.L03` | Abilità: convergenza delle serie — generatore `V2.M11.A01.g1` (E2); lezione proposta `V2.M11.L03` |
+| `V2.M11.A01`, `V2.M11.L05` | Abilità: convergenza delle serie — generatore `V2.M11.A01.g1` (E2); lezione `V2.M11.L05` (spostata da L03 in E4) |
 | `V2.M12.A01`, `V2.M12.L02` | Abilità: equazioni del primo ordine — generatore `V2.M12.A01.g1` (E2); lezione proposta `V2.M12.L02` |
 | `V2.M12.A02`, `V2.M12.L04` | Abilità: equazioni lineari del secondo ordine — generatore `V2.M12.A02.g1` (E2); lezione proposta `V2.M12.L04` |
 | `V3.M02.L01`, `V3.M02.A01` | Lezione (da scrivere) e abilità: metodo di Gauss — generatore `V3.M02.A01.g1` |
@@ -96,7 +96,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 | `V2.M05.T01`, `V2.M05.T02` | Teorema degli zeri, teorema di Weierstrass (in `src/riserva/v2/m05/`) |
 | `V2.M06.T01`, `V2.M06.T02`, `V2.M06.T03` | Teoremi di Fermat, Rolle, Lagrange (in `src/riserva/v2/m06/`); `T03` per Lagrange è quello degli esempi della specifica |
 
-**Rimandi da spostare** (proposta E4, da fare quando si scrive la lezione, cambiando il campo `lesson`): `V2.M09.A01.g1` → `V2.M09.L07`, `V2.M09.A02.g1` → `V2.M09.L08`, `V2.M11.A01.g1` → `V2.M11.L05`. Gli altri rimandi restano come sotto.
+**Rimandi spostati** (E4, approvati da Andrea): il campo `lesson` di `V2.M09.A01.g1` è ora `V2.M09.L07`, di `V2.M09.A02.g1` `V2.M09.L08`, di `V2.M11.A01.g1` `V2.M11.L05`. Nessun esercizio cambia.
 
 Per i generatori delle sessioni E1 ed E2 i codici di **abilità** (`V2.M03.A01`, `V2.M04.A01`, `V2.M08.A01`) sono fissi; le **lezioni** indicate sono il campo `lesson` dei generatori (dove porta «Torna alla lezione»): la scaletta può mantenerle oppure spostare il rimando a un'altra lezione, purché quella lezione spieghi tutti i casi del livello 3 (numero `e` e fattori oscillanti per le successioni; limiti laterali per le funzioni; prodotti di sviluppi per Taylor). Le altre abilità di quei moduli partono da `A02`.
 
@@ -248,7 +248,7 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 
 *Scalette (E4)*
 
-68. Rimandi di tre generatori spostati alla lezione che spiega tutti i casi del livello 3: `V2.M09.A01.g1` → L07, `V2.M09.A02.g1` → L08, `V2.M11.A01.g1` → L05 (E4).
+68. Rimandi di tre generatori spostati alla lezione che spiega tutti i casi del livello 3: `V2.M09.A01.g1` → L07, `V2.M09.A02.g1` → L08, `V2.M11.A01.g1` → L05 (E4; fatto, scelta lasciata da Andrea al modello).
 69. `V1.M06.L04` prende anche il prerequisito `V1.M05.L05` (equazioni fratte), da cui arriva `condizione-di-esistenza` (E4).
 70. Goniometria (V1.M10) usa Pitagora prima della sua dimostrazione (V1.M11.L04) e definisce `circonferenza`, `raggio`, `angolo`, `triangolo-rettangolo`, `cateto`, `ipotenusa`; il piano cartesiano nasce in V1.M07.L04 (E4).
 71. Equazioni irrazionali e con valore assoluto (V1.M05) risolte con la verifica, perché le disequazioni vengono dopo (E4).

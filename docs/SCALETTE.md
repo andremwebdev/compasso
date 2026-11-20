@@ -23,16 +23,16 @@ Tutti i codici di `STATO.md` e del codice sono rispettati.
 | `V2.M04.A01` | V2.M04.L03 | rimando mantenuto; i limiti laterali sono in L01, prerequisito |
 | `V2.M06.A03` | V2.M06.L03 | rimando mantenuto |
 | `V2.M08.A01` | V2.M08.L03 | rimando mantenuto; i prodotti di sviluppi sono in L03 |
-| `V2.M09.A01` | **V2.M09.L07** | rimando proposto `L04` **da spostare**: il livello 3 (fratti semplici, parti ripetute) chiede sostituzione, parti e funzioni razionali, che non stanno in una sola lezione di 20 minuti |
-| `V2.M09.A02` | **V2.M09.L08** | rimando proposto `L05` **da spostare**, per lo stesso motivo |
+| `V2.M09.A01` | **V2.M09.L07** | rimando spostato da `L04`: il livello 3 (fratti semplici, parti ripetute) chiede sostituzione, parti e funzioni razionali, che non stanno in una sola lezione di 20 minuti |
+| `V2.M09.A02` | **V2.M09.L08** | rimando spostato da `L05`, per lo stesso motivo |
 | `V2.M10.A01` | V2.M10.L02 | rimando mantenuto |
-| `V2.M11.A01` | **V2.M11.L05** | rimando proposto `L03` **da spostare**: il generatore usa anche Leibniz e la convergenza assoluta, che vengono dopo rapporto e radice |
+| `V2.M11.A01` | **V2.M11.L05** | rimando spostato da `L03`: il generatore usa anche Leibniz e la convergenza assoluta, che vengono dopo rapporto e radice |
 | `V2.M12.A01`, `V2.M12.A02` | V2.M12.L02, V2.M12.L04 | rimandi mantenuti |
 | `V3.M02.A01`, `V3.M03.A01` | V3.M02.L01, V3.M03.L01 | rimandi mantenuti; L01 di V3.M03 spiega lo sviluppo di Laplace (livello 3: ordine 4) |
 | `V2.M05.T01`, `T02` | V2.M05.L03, L04 | teorema degli zeri, Weierstrass (in `src/riserva/`) |
 | `V2.M06.T01`, `T02`, `T03` | V2.M06.L06, L07 | Fermat, Rolle, Lagrange (in `src/riserva/`) |
 
-Spostare un rimando vuol dire cambiare il campo `lesson` del generatore: una riga, nessun esercizio cambia (i semi congelati guardano solo il testo). Si fa quando si scrive la lezione.
+I tre spostamenti sono già fatti nel campo `lesson` dei generatori (20 novembre 2026): nessun esercizio cambia, i test restano verdi.
 
 ---
 
@@ -1111,12 +1111,12 @@ Prerequisiti: V2.M09.L04
 
 #### V2.M09.L07 · Integrazione delle funzioni razionali · 20 min
 Prerequisiti: V2.M09.L05, V2.M09.L06, V1.M04.L07
-- Abilità V2.M09.A01: integrali indefiniti con tutte le tecniche (fratti semplici, divisione, parti ripetute). **Esiste**: `V2.M09.A01.g1` (rimando da spostare qui).
+- Abilità V2.M09.A01: integrali indefiniti con tutte le tecniche (fratti semplici, divisione, parti ripetute). **Esiste**: `V2.M09.A01.g1` (rimando già qui).
 - Termini: fratti-semplici
 
 #### V2.M09.L08 · Integrali definiti e aree · 20 min
 Prerequisiti: V2.M09.L07
-- Abilità V2.M09.A02: integrali definiti, anche con cambio degli estremi. **Esiste**: `V2.M09.A02.g1` (rimando da spostare qui).
+- Abilità V2.M09.A02: integrali definiti, anche con cambio degli estremi. **Esiste**: `V2.M09.A02.g1` (rimando già qui).
 - Abilità V2.M09.A09: area della regione tra due curve.
 
 #### V2.M09.L09 · Studio della funzione integrale · 15 min
@@ -1176,7 +1176,7 @@ Prerequisiti: V2.M11.L02
 
 #### V2.M11.L05 · Serie a segni alterni e convergenza assoluta · 20 min
 Prerequisiti: V2.M11.L03, V2.M11.L04
-- Abilità V2.M11.A01: verdetto di convergenza con il criterio giusto. **Esiste**: `V2.M11.A01.g1` (rimando da spostare qui).
+- Abilità V2.M11.A01: verdetto di convergenza con il criterio giusto. **Esiste**: `V2.M11.A01.g1` (rimando già qui).
 - Termini: serie-a-segni-alterni, serie-assolutamente-convergente
 - Teorema V2.M11.T11 Criterio di Leibniz — dim.
 - Teorema V2.M11.T12 Una serie assolutamente convergente converge — dim.
@@ -1569,7 +1569,7 @@ Dal motore e dall'app (punti ⚙ di `STATO.md`):
 
 ## Scelte da confermare (anche in `STATO.md`, «Decisioni da rivedere»)
 
-1. **Rimandi spostati** di tre generatori: `V2.M09.A01.g1` → `V2.M09.L07`, `V2.M09.A02.g1` → `V2.M09.L08`, `V2.M11.A01.g1` → `V2.M11.L05` (motivi nella tabella in cima).
+1. **Rimandi spostati** (fatto) di tre generatori: `V2.M09.A01.g1` → `V2.M09.L07`, `V2.M09.A02.g1` → `V2.M09.L08`, `V2.M11.A01.g1` → `V2.M11.L05` (motivi nella tabella in cima).
 2. **Prerequisito in più per V1.M06.L04**: `V1.M05.L05` (equazioni fratte), perché `condizione-di-esistenza` nasca lungo la catena dei prerequisiti.
 3. **Pitagora prima della sua dimostrazione**: V1.M10.L02 usa il teorema di Pitagora (noto dalla scuola media) per sin² + cos² = 1; la dimostrazione è in V1.M11.L04, che nell'ordine dei moduli viene dopo. Per lo stesso motivo `circonferenza`, `raggio`, `angolo`, `triangolo-rettangolo`, `cateto`, `ipotenusa` nascono nel modulo di goniometria.
 4. **Piano cartesiano in V1.M07.L04**: nasce con la lettura geometrica dei sistemi, perché serve già a funzioni (M08) e goniometria (M10), che vengono prima della geometria analitica (M12).
