@@ -1,7 +1,9 @@
 import { TabBar } from "./componenti/TabBar";
 import { LessonView } from "./schermate/LessonView";
 import { Practice } from "./schermate/Practice";
-import { Esercizi, Oggi, Test, Tu } from "./schermate/Sections";
+import { Esercizi } from "./schermate/Esercizi";
+import { FlashcardsScreen, ProofScreen } from "./schermate/Ripasso";
+import { Oggi, Test, Tu } from "./schermate/Sections";
 import { GlossaryView, ModuleView, TeoriaHome, VolumeView } from "./schermate/Teoria";
 import { currentSection, dataProblem, screen } from "./state";
 
@@ -38,7 +40,9 @@ function CurrentScreen() {
     case "practice":
       return <Practice key={current.key} plan={current.plan} />;
     case "flashcards":
+      return <FlashcardsScreen key={current.cards.join(",")} title={current.title} cards={current.cards} />;
     case "proof":
+      return <ProofScreen key={current.theorem} lesson={current.lesson} theorem={current.theorem} />;
     case "mastery":
     case "diary":
       return <SectionHome />;

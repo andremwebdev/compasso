@@ -68,12 +68,19 @@ async function expectAppWorks(doc: Doc) {
   expect(doc.querySelector(".box-example")).not.toBeNull();
   expect(doc.querySelector(".lesson-position")?.textContent).toContain("Tratto 2 di 5");
 
-  // Esercizi → disequazioni fratte, livello 1: campo, anteprima, tastiera; «Non lo so» mostra la soluzione.
+  // Esercizi: tre schede; le flashcard della lezione; poi disequazioni fratte con la difficoltà
+  // automatica (abilità nuova: livello 1): campo, anteprima, tastiera; «Non lo so» mostra la soluzione.
   button(doc, "nav.tab-bar button", "Esercizi").click();
   await settle();
-  const card = [...doc.querySelectorAll(".card")].find((element) => element.textContent?.includes("Disequazioni fratte"));
-  button(card as unknown as Doc, "button", "Livello 1").click();
+  expect([...doc.querySelectorAll(".tabs-item")].map((b) => b.textContent)).toEqual(["Esercizi", "Flashcard", "Dimostrazioni"]);
+  button(doc, ".tabs-item", "Flashcard").click();
   await settle();
+  expect(doc.querySelector("main")?.textContent).toContain("4 flashcard");
+  button(doc, ".tabs-item", "Esercizi").click();
+  await settle();
+  button(doc, ".list-row", "Disequazioni fratte").click();
+  await settle();
+  expect(doc.querySelector(".series-position")?.textContent).toContain("livello 1 (automatico)");
   expect(doc.querySelector(".exercise-prompt .katex")).not.toBeNull();
   expect(doc.querySelector(".answer-input")?.getAttribute("inputmode")).toBe("none");
   expect(doc.querySelector('.keyboard-level[aria-selected="true"]')?.textContent).toBe("Insiemi");

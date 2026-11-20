@@ -43,38 +43,6 @@ export function Oggi() {
   );
 }
 
-export function Esercizi() {
-  const summaries = new Map(skillSummaries(attempts.value).map((summary) => [summary.skill, summary]));
-  return (
-    <section class="section" aria-labelledby="section-title">
-      <h1 id="section-title">Esercizi</h1>
-      <p class="muted">Scegli un argomento e un livello: 1 applicazione diretta, 2 da verifica, 3 casi particolari.</p>
-      {generators.map((generator) => {
-        const summary = summaries.get(generator.skill);
-        return (
-          <div key={generator.code} class="card">
-            <span class="eyebrow">{generator.skill}</span>
-            <span class="card-title">{generator.title}</span>
-            <span class="card-text">{summary ? `Giuste ${summary.correct} su ${summary.attempts}` : "Ancora nessun tentativo"}</span>
-            <div class="level-buttons" role="group" aria-label={`Livello per ${generator.title}`}>
-              {generator.levels.map((level) => (
-                <button
-                  key={level}
-                  type="button"
-                  class="button"
-                  onClick={() => open({ kind: "practice", key: `${generator.code}-${level}-${Date.now()}`, plan: { title: generator.title, items: [{ generator: generator.code, level: level as Level }], endless: true, context: "esercizi", lesson: null, check: null } })}
-                >
-                  Livello {level}
-                </button>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-    </section>
-  );
-}
-
 export function Test() {
   return (
     <section class="section" aria-labelledby="section-title">
