@@ -43,7 +43,7 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | `npm ci` | installa le dipendenze esattamente come da `package-lock.json` |
 | `npm run typecheck` | controlla i tipi (app e service worker) |
 | `npm run build` | produce `dist/telefono/` (PWA a più file) e `dist/pc/compasso.html` (file unico) |
-| `npm test` | esegue tutti i test (Vitest); il test di build ricostruisce e apre le due versioni in jsdom |
+| `npm test` | esegue tutti i test (Vitest); il test di build ricostruisce le due versioni, apre la PC in jsdom e la telefono in Chrome senza finestra (schermo di iPhone XR, anche offline) |
 | `npm run icone` | rigenera le icone PNG in `public/icons/` |
 | `python3 scripts/verifica-esempi-errori.py` | verifica con sympy la matematica degli esempi del catalogo errori (serve `pip install sympy`; non fa parte del controllo su GitHub) |
 
@@ -57,8 +57,9 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | `src/errori/` | catalogo unico degli errori | niente |
 | `src/motore/` | matematica pura: numeri, espressioni, parser, equivalenza, forma, insiemi, matrici | solo se stesso |
 | `src/esercizi/` | schema dei generatori, creazione dell'esercizio, valutazione delle risposte | `motore`, `errori`, `codici` |
-| `src/generatori/` | un file per generatore, `index.ts` con l'elenco, `comuni/` con gli strumenti condivisi | `esercizi`, `motore`, `errori`, `codici` |
-| `src/contenuti/` | lezioni in Markdown (`v1/m06/l04.md`), `index.ts` con l'elenco; in `formato/` il codice che le legge e le controlla | `codici`, `errori` |
+| `src/generatori/` | un file per generatore, `comuni/` con gli strumenti condivisi; `index.ts` legge i generatori (dati leggeri dall'indice, generatore vero dai moduli caricati) | `esercizi`, `motore`, `errori`, `codici`, `moduli` |
+| `src/contenuti/` | lezioni in Markdown (`v1/m06/l04.md`); `index.ts` legge le lezioni (codici e titoli dall'indice, testo dai moduli caricati); in `formato/` il codice che le legge e le controlla | `codici`, `errori`, `moduli` |
+| `src/moduli/` | **gli elenchi**: un file per modulo (`v1/m06.ts`) con le sue lezioni e i suoi generatori; `index.ts` registro fisso dei 35 moduli; `indice.ts` indice leggero; `caricamento.ts` moduli caricati (`ensureModules`) | `codici`, `contenuti`, `generatori`, `esercizi` |
 | `src/riserva/` | teoremi con dimostrazione già scritti, in attesa della lezione (`LEGGIMI.md` dice come usarli); non entra nell'app | — |
 | `src/dati/` | progressi, ripasso, registro, backup | `codici`, `errori`, `esercizi` (solo tipi) |
 | `src/app/` | interfaccia | tutto |
@@ -257,7 +258,7 @@ Gli **avvisi** (`report.warnings`) non bocciano da soli, ma un generatore finito
 - [ ] il test del generatore chiama `verifyGenerator` e non trova problemi né avvisi;
 - [ ] il generatore ha la sua `verify`, indipendente dalla costruzione;
 - [ ] il testo dice che forma è richiesta e, se serve un'approssimazione, con quale arrotondamento;
-- [ ] il generatore è in `src/generatori/index.ts` e il suo test sta nel percorso corrispondente (lo controlla `test/generatori/elenco.test.ts`);
+- [ ] il generatore è nell'elenco del suo modulo (`src/moduli/vN/mNN.ts`) e il suo test sta nel percorso corrispondente (lo controlla `test/generatori/elenco.test.ts`);
 - [ ] il test controlla anche il numero di risposte sbagliate e il riconoscimento degli errori scritti a mano;
 - [ ] una ventina di esercizi per livello sono stati letti a occhio;
 - [ ] il generatore non ha toccato `src/motore/` né `src/esercizi/`.
@@ -300,7 +301,7 @@ Per vero o falso e riordini non c'è ancora un riferimento (per la scelta multip
 5. Passa i candidati a `distinctWrongSets`, `distinctWrongExpressions` o `distinctWrongMatrices` (`src/generatori/comuni/wrong.ts`): tengono solo le risposte diverse dalla giusta e tra loro. Un candidato che per certi numeri non ha senso vale `null`. L'ordine conta: i primi quattro diventano le opzioni della scelta multipla, quindi gli errori più importanti vanno per primi.
 6. Scrivi passaggi e indizi. Dove il motore sa già scrivere i passaggi (`factorPolynomial`, `gaussElimination`, `signStudySteps`, `solveQuadratic`, `ruffini`), si usano i suoi.
 7. Scrivi `verify` (vedi sotto «Come scrivere `verify`»).
-8. Aggiungi il generatore a `src/generatori/index.ts` (una riga di `import` e il nome nell'elenco).
+8. Aggiungi il generatore all'elenco **del suo modulo**, `src/moduli/<volume>/<modulo>.ts` (per `V1.M06.A04.g1`: `src/moduli/v1/m06.ts`): una riga di `import` (`import a04g1 from "../../generatori/v1/m06/a04-g1";`) e il nome in `generators`, in ordine di abilità. Nessun altro file da toccare: il registro dei moduli è fisso e l'indice leggero lo calcola la compilazione. Un generatore nell'elenco di un altro modulo fa fallire `test/generatori/elenco.test.ts`.
 9. Esegui il test. Poi **leggi una ventina di esercizi** per livello, con risposte sbagliate e passaggi: la verifica automatica non vede un testo goffo, un esercizio banale o un errore poco credibile. Basta un test provvisorio che stampa `generateExercise(generator, livello, seme)` per i semi da 0 a 20.
 10. Aggiungi le righe del generatore a `test/generatori/semi-congelati.test.ts` (due semi per livello): il test fallisce finché mancano.
 
@@ -363,7 +364,7 @@ La sintassi è fissa; la legge e la controlla `src/contenuti/formato/` (`parseLe
 - **Durata ricalcolata** dopo ogni aggiunta: tra 10 e 20 minuti. Se si sfora, la lezione va divisa in due.
 - **Controlla ogni numero**: gli esempi e le domande lampo scritte a mano si rifanno a parte (a mano o con sympy). Un esempio sbagliato insegna l'errore.
 
-**Per aggiungere una lezione**: il file `.md` al suo posto, una riga in `src/contenuti/index.ts`, e `npm test` (il test `test/contenuti/lezioni.test.ts` esegue la verifica dei contenuti su tutte le lezioni vere, prova ogni formula con KaTeX e controlla che l'elenco sia completo). Le abilità dichiarate in `abilita` devono avere il loro generatore `…g1`, che rimanda a quella lezione.
+**Per aggiungere una lezione**: il file `.md` al suo posto, due righe nell'elenco **del suo modulo** `src/moduli/vN/mNN.ts` (per `V1.M06.L04`: `src/moduli/v1/m06.ts`, con `import l04 from "../../contenuti/v1/m06/l04.md";` e `"V1.M06.L04": l04,` in `lessons`), e `npm test` (il test `test/contenuti/lezioni.test.ts` esegue la verifica dei contenuti su tutte le lezioni vere, prova ogni formula con KaTeX e controlla che l'elenco sia completo). Le abilità dichiarate in `abilita` devono avere il loro generatore `…g1`, che rimanda a quella lezione.
 
 **Dove**: `src/contenuti/<volume>/<modulo>/<lezione>.md`, in minuscolo: la lezione `V1.M06.L04` sta in `src/contenuti/v1/m06/l04.md`.
 
@@ -519,7 +520,7 @@ Le visualizzazioni sono undici, con codici fissi (specifica, sezione 11): non se
 **Dove**
 
 - `src/visualizzazioni/<nome>.tsx` (il codice senza `VIS.`: `VIS.disequazioni-grafico` → `disequazioni-grafico.tsx`) per il componente; la matematica (campionamento, coordinate, trasformazioni) in un file `.ts` accanto, senza Preact, così si prova da sola.
-- `src/visualizzazioni/index.ts`: l'elenco `codice → componente e parametri`, come `src/generatori/index.ts`. Da qui la verifica dei contenuti riceve i codici esistenti (al posto di `visualizations: []`) e `LessonView` sceglie il componente.
+- `src/visualizzazioni/index.ts`: l'elenco `codice → componente e parametri` (le visualizzazioni sono poche e restano nel file principale, non nei moduli). Da qui la verifica dei contenuti riceve i codici esistenti (al posto di `visualizations: []`) e `LessonView` sceglie il componente.
 - Test in `test/visualizzazioni/<nome>.test.ts`.
 
 **Regole**
@@ -583,6 +584,11 @@ Il lavoro si salva su GitHub (commit e push) dopo ogni parte completata, non sol
 - GitHub Pages serve l'app sotto `/compasso/`: nell'app si usano solo percorsi relativi.
 - `src/app/sw.ts` ha un suo `tsconfig.sw.json` (libreria WebWorker) ed è escluso dal `tsconfig.json` principale.
 - I file `.md` delle lezioni si importano come testo: `loader: { ".md": "text" }` in `scripts/build.mjs`, un piccolo plugin in `vitest.config.ts`, la dichiarazione in `src/contenuti/markdown.d.ts`.
+- **Contenuti per modulo** (specifica, sezione 12). Ogni modulo ha un file `src/moduli/vN/mNN.ts` con le sue lezioni e i suoi generatori; il registro `src/moduli/index.ts` li carica con `import()` ed è **fisso** (35 righe, una per modulo: non si tocca). Versione telefono: moduli ES (`<script type="module">`, `splitting`), ogni modulo diventa `dist/telefono/moduli/vN/mNN.js` e si legge solo quando serve; il codice in comune sta in `chunks/`; il service worker salva tutto per l'uso offline. Versione PC: gli `import()` restano dentro il file unico.
+- **Indice leggero** (`src/moduli/indice.ts`): per ogni modulo codici e titoli delle lezioni, prerequisiti dichiarati, termini del glossario, codici delle flashcard, e dei generatori codice, abilità, lezione, titolo, livelli, errori. Non si scrive a mano: lo calcola `scripts/indice-contenuti.mjs` (con `indexModule` di `src/moduli/indicizza.ts`) e la compilazione e Vitest lo inseriscono come costante `__CONTENT_INDEX__`. Se serve un dato nuovo senza caricare i moduli, si aggiunge lì (con il test in `test/moduli/moduli.test.ts`).
+- **Due modi di leggere i contenuti**. Senza caricare nulla (indice): `lessonCodes`, `lessonInfo`, `generatorInfos`, `findGeneratorInfo`, `isWritten`, `generatorsOfModule`… bastano per navigazione, Oggi, Esercizi, diario, «Lo so già». Con il modulo caricato: `loadLesson`, `lessonSource`, `findGenerator`, `loadedGenerators` restituiscono `null`/`undefined` finché il modulo non c'è. Una schermata che ha bisogno del testo di una lezione o di generare esercizi si avvolge in `<WithModules modules={…}>{() => …}</WithModules>` (`src/app/caricamento.tsx`, mostra «Caricamento…»), come fanno `LessonView`, `ExerciseSeries`, il mazzo di flashcard, glossario e dimostrazioni. Il codice di una lezione, di un generatore, di una definizione o di una flashcard dice il suo modulo (`moduleOf`, `modulesOf`).
+- Nei test `test/setup.ts` carica tutti i moduli prima di ogni file: lì `loadLesson` e `findGenerator` funzionano sempre. Il caricamento a richiesta vero lo provano `test/moduli/moduli.test.ts` e la prova in Chrome di `test/build.test.ts` (all'avvio nessun file `moduli/`, poi solo quelli usati, e tutto anche senza rete).
+- La prova in Chrome usa il protocollo DevTools da `test/chrome.ts` (nessuna dipendenza): Chrome si cerca in `CHROME_PATH` o tra i nomi soliti; su GitHub c'è sempre, in locale senza Chrome quella prova si salta con un avviso.
 
 ## L'app in breve
 

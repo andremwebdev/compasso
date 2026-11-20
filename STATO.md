@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: involucro parte 2, aspetto definitivo e tastiera (20 novembre 2026). Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: involucro parte 3, caricamento dei contenuti per modulo (20 novembre 2026). Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -34,7 +34,12 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - **Aspetto definitivo** (specifica 10): colori esatti dei due temi in `styles.css`, contrasto AA di ogni coppia testo/fondo e 3:1 dei contorni controllato da `test/app/aspetto.test.ts`; codice colore dei blocchi; caratteri IBM Plex Sans e Mono incorporati (4 file woff2, circa 85 KB); spaziature a passi di 4 px; quota sotto i titoli e quadrettatura da disegno tecnico; stato delle lezioni disegnato in CSS (niente più «◐»); barra del telefono col colore del tema scelto; icone PNG 180, 192, 512 definitive (compasso su tavola blu).
   - **Tastiera completa** (specifica 7): sei livelli, apertura sul livello del tipo di esercizio, frazioni/potenze/radici/funzioni a modello con ⇥, «non esiste», `±`, `k`, `π`, `∀x`, `∄x`, cifre anche in Funzioni; matrici e vettori con caselle tra parentesi, passaggio di casella e anteprima della matrice intera.
   - Provata in Chrome a 414×896 e 320 px, nei due temi: niente scorrimento orizzontale.
-- **Test**: 1.220 in 50 file, verdi in locale e su GitHub.
+- **Involucro, parte 3** (caricamento per modulo, specifica 12):
+  - **Elenchi per modulo**: `src/moduli/vN/mNN.ts`, 35 file (uno per modulo, quelli senza contenuti con elenchi vuoti) con le lezioni e i generatori del modulo; `src/contenuti/index.ts` e `src/generatori/index.ts` non sono più elenchi. Registro fisso `src/moduli/index.ts`. Come aggiungere le righe: `REGOLE.md`.
+  - **Indice leggero** calcolato dalla compilazione (`__CONTENT_INDEX__`, circa 6 KB oggi): codici, titoli, livelli, errori, termini, flashcard. Navigazione, Oggi, Esercizi, diario e «Lo so già» lavorano su questo; lezione, serie di esercizi, mazzo di flashcard, glossario e dimostrazioni caricano prima i loro moduli («Caricamento…»).
+  - **Telefono**: moduli ES; `moduli/vN/mNN.js` letto solo quando serve, codice comune in `chunks/`. All'avvio si leggono `app.js` più tre file comuni (circa 640 KB, prima 853 KB), nessun modulo. **PC**: file unico come prima.
+  - **Prova in Chrome senza finestra** (schermo 414×896, tocco) dentro `test/build.test.ts`: lo stesso percorso della prova PC, all'avvio nessun file di modulo, poi solo `moduli/v1/m06.js`; poi a server spento si riapre dal service worker, la lezione si legge e un esercizio di V2.M06 (mai aperto) carica il suo modulo dalla copia salvata.
+- **Test**: 1.232 in 51 file, verdi in locale.
 
 ## In corso
 
@@ -52,14 +57,14 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 6. ~~Flashcard, glossario, diario~~: fatti (involucro parte 1).
 7. ⚙ **Risposta `ordering`** nella schermata di esercizio (le tre modalità delle dimostrazioni e la scheda esistono già, fuori da `ExerciseView`, e non registrano tentativi).
 8. ⚙ **Impalcatura delle visualizzazioni** con la prima, `VIS.disequazioni-grafico`, e la sua scheda in `docs/VISUALIZZAZIONI.md` (`REGOLE.md`, «Come aggiungere una visualizzazione»); poi aggiungerla alla lezione `V1.M06.L04`.
-9. ⚙ **Caricamento dei contenuti per modulo** nella versione telefono (specifica, sezione 12): `src/contenuti/index.ts` diviso per modulo.
+9. ~~Caricamento dei contenuti per modulo~~: fatto (involucro parte 3).
    - Fase finita quando: tutte le sezioni funzionano con i contenuti presenti, e l'app è installata su iPhone e funziona offline.
 
 **Fase 5 — Volume 1, Fondamenta** (moduli V1.M01-M14). Piano deciso con Andrea il 20 novembre 2026. Andrea ha l'ordine delle lezioni e dei generatori, uno per sessione, **prima la lezione e poi il suo generatore**. Scalette del Volume 1 approvate: i codici sono fissi.
 
 *Prima di cominciare* (sessioni tecniche ⚙, in quest'ordine; nessuna dipende dai contenuti):
 
-1. ⚙ **Caricamento dei contenuti per modulo** (punto 9 della fase 4): cambia dove ogni sessione aggiunge le sue righe.
+1. ~~Caricamento dei contenuti per modulo~~: fatto (involucro parte 3). Lezioni e generatori nuovi si aggiungono nel file del loro modulo, `src/moduli/vN/mNN.ts`.
 2. ⚙ **Figure e grafici nelle lezioni**: grafici statici di funzioni dal motore (specifica 6, «Cosa deve mostrare») con un blocco delle lezioni, e figure SVG scritte a mano (diagrammi di Venn in V1.M01, figure di geometria in V1.M11) con un blocco proprio; colori dalle variabili del tema. Sintassi in `REGOLE.md`.
 3. ⚙ **Impalcatura delle visualizzazioni** con `VIS.disequazioni-grafico`, inserita nella lezione `V1.M06.L04` (punto 8 della fase 4).
 4. ⚙ **Le altre quattro visualizzazioni del Volume 1**: `VIS.trasformazioni-funzioni`, `VIS.esponenziale-logaritmo`, `VIS.circonferenza-goniometrica`, `VIS.coniche-parametri` (scheda in `docs/VISUALIZZAZIONI.md`, poi codice). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08).
@@ -89,7 +94,7 @@ In parallelo, senza bloccare niente: la prova sull'iPhone della versione su Page
 
 **Fase 8 — strato adattivo**: formula della padronanza (oggi solo conteggi), ripasso a intervalli, test d'ingresso, Oggi composto da padronanza ed errori.
 
-**Fase 9 — rifinitura**: prestazioni misurate su iPhone XR (`app.js` oggi circa 560 KB), versione PC provata in Safari e Firefox, ritocchi.
+**Fase 9 — rifinitura**: prestazioni misurate su iPhone XR (all'avvio oggi circa 640 KB di JavaScript, senza contenuti), versione PC provata in Safari e Firefox, ritocchi.
 
 ## Codici assegnati (la scaletta deve rispettarli)
 
@@ -203,6 +208,14 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 90. ⚙ Parser: `()` vuota = casella da riempire (□, incompleto) invece di «parentesi chiusa in più»; anche dentro `root(3; )`.
 91. Matrici: Invio conferma anche dalle caselle (come prima); il passaggio di casella è sui tasti «◂ casella», «casella ▸» e sul tasto Tab della tastiera fisica.
 92. ⚙ Parser: i simboli che servono solo agli insiemi (∀, ∄, ∅, ℝ, ∪, ∨, ∧) scritti in un'espressione danno un messaggio che dice che cosa vogliono dire e che lì la risposta non è un insieme (decisione di Andrea, 20 novembre 2026: la tastiera continua a mostrare tutti i livelli in ogni esercizio, riconoscere quale simbolo usare fa parte dello studio).
+*Involucro, parte 3 (I3)*
+
+93. Elenchi dei moduli in una cartella nuova, `src/moduli/` (la specifica non la prevede); i 35 file esistono già, anche vuoti, così il registro non si tocca più.
+94. L'indice leggero non è un file nel repository: lo calcolano la compilazione e Vitest a ogni avvio (niente file generato da tenere allineato).
+95. Versione telefono a moduli ES (`<script type="module">`) invece di un solo script: iOS li supporta da anni; il codice comune lo divide esbuild in `chunks/`.
+96. Il test della versione telefono non gira più in jsdom (che non sa eseguire moduli ES) ma in Chrome senza finestra, guidato con il protocollo DevTools da `test/chrome.ts`, senza dipendenze nuove; su GitHub c'è sempre, in locale senza Chrome si salta con un avviso.
+97. Il glossario, le dimostrazioni e il glossario toccato in una lezione caricano i moduli che servono quando si aprono; le flashcard in scadenza e i loro elenchi vengono dall'indice.
+
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 
 *Scrittura e lettura*
