@@ -2,6 +2,7 @@
 // lezione nuova, esercizi sulla lezione, punti deboli, chiusura). La sessione in corso è salvata:
 // se l'app si chiude a metà, si riprende dalla fase e dall'esercizio dove si era arrivati.
 
+import { signal } from "@preact/signals";
 import { useEffect, useState } from "preact/hooks";
 import type { LessonCode } from "../../codici";
 import { findPlannedLesson, findVolume, lessonsOfVolume } from "../../contenuti/programma";
@@ -19,6 +20,12 @@ import {
 import { dueFlashcards } from "./Esercizi";
 import { LessonView } from "./LessonView";
 import { FlashcardDeck } from "./Ripasso";
+
+/**
+ * Vero mentre Andrea sta facendo la sessione. Si esce con «Esci e riprendi dopo» (o riaprendo l'app):
+ * i progressi restano salvati e Oggi mostra da dove si riparte invece di rientrare subito nella fase.
+ */
+const sessionActive = signal(false);
 
 const trackName = (track: TrackId | null): string => (track ? (findVolume(track)?.title ?? track) : "nessuno");
 
@@ -125,7 +132,10 @@ export function Oggi() {
       </section>
     );
   }
-  if (session && session.date === t) return <SessionView session={session} />;
+  if (session && session.date === t) {
+    if (session.phase < CLOSING_PHASE && !sessionActive.value) return <SessionPaused session={session} />;
+    return <SessionView session={session} />;
+  }
   return <SessionStart />;
 }
 
@@ -177,12 +187,35 @@ function SessionStart() {
           onClick={() => {
             const session: TodaySession = { date: t, minutes, track, lesson, phase: 0, doneInPhase: 0, startedAt: new Date().toISOString() };
             saveTodaySession({ ...session, phase: phaseHasWork(0, session) ? 0 : nextPhase(session, 0) });
+            sessionActive.value = true;
           }}
         >
           Inizia la sessione
         </button>
       </div>
       {streak.current > 0 && !doneToday && <p class="muted">Serie in corso: {streak.current} giorni. Completa la sessione di oggi per allungarla.</p>}
+    </section>
+  );
+}
+
+/** La sessione di oggi lasciata a metà: dove si è arrivati e il pulsante per riprendere. */
+function SessionPaused({ session }: { session: TodaySession }) {
+  const lesson = session.lesson;
+  const progress = lesson ? lessonProgress.value[lesson] : undefined;
+  return (
+    <section class="section" aria-labelledby="section-title">
+      <h1 id="section-title">Oggi</h1>
+      <div class="card">
+        <span class="card-title">Sessione in pausa</span>
+        <p class="card-text">
+          Sessione da {session.minutes} minuti, arrivata alla fase «{PHASE_NAMES[session.phase]}»
+          {session.phase === 1 && lesson ? `: ${lessonTitle(lesson)}, tratto ${progress?.reached ?? 1}` : session.doneInPhase > 0 ? `, ${session.doneInPhase} esercizi fatti` : ""}. I
+          progressi sono salvati.
+        </p>
+        <button type="button" class="button button-primary" onClick={() => (sessionActive.value = true)}>
+          Riprendi la sessione
+        </button>
+      </div>
     </section>
   );
 }
@@ -215,6 +248,9 @@ function SessionView({ session }: { session: TodaySession }) {
       {session.phase >= CLOSING_PHASE && <Closing session={session} />}
       {session.phase < CLOSING_PHASE && (
         <div class="exercise-actions">
+          <button type="button" class="button" onClick={() => (sessionActive.value = false)}>
+            Esci e riprendi dopo
+          </button>
           <button type="button" class="button" onClick={advance}>
             Salta questa fase
           </button>

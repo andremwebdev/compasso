@@ -45,6 +45,14 @@ async function expectAppWorks(doc: Doc) {
   await settle();
   expect(doc.querySelector(".phase-current")?.textContent).toContain("Lezione nuova");
   expect(doc.querySelector(".lesson-header h1")?.textContent).toBe("Disequazioni fratte");
+  // Si esce dalla lezione del giorno senza perdere nulla, e si riprende dallo stesso punto.
+  button(doc, "main button", "Esci e riprendi dopo").click();
+  await settle();
+  expect(doc.querySelector("main")?.textContent).toContain("Sessione in pausa");
+  expect(doc.querySelector("main")?.textContent).toContain("Lezione nuova");
+  button(doc, "main button", "Riprendi la sessione").click();
+  await settle();
+  expect(doc.querySelector(".phase-current")?.textContent).toContain("Lezione nuova");
 
   // Teoria → volume → modulo → la lezione, letta dal file Markdown: titolo, riquadri, formule.
   button(doc, "nav.tab-bar button", "Teoria").click();

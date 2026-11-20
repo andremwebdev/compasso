@@ -183,6 +183,7 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 81. Diario: le domande lampo non entrano (come per la padronanza); `NON_CLASSIFICATO` sta negli errori di concetto ma non alimenta i punti deboli.
 82. Backup: file JSON `compasso-backup-AAAA-MM-GG.json`; importare sostituisce tutto (con conferma) tranne la sessione di Oggi; unire somma i registri, prende il punto più avanti di ogni lezione e tiene impostazioni e sessione del dispositivo; promemoria anche se il backup non è mai stato fatto, appena c'è una lezione o una sessione completata.
 83. Riordino delle dimostrazioni con le frecce su/giù invece del trascinamento (più sicuro sul telefono); le dimostrazioni interattive non registrano tentativi.
+85. Oggi: «Esci e riprendi dopo» lascia la sessione in pausa (fase, esercizi fatti e tratto della lezione restano salvati); riaprendo l'app la sessione di oggi parte sempre dalla schermata «Sessione in pausa», non dentro la fase. Della lezione si salva l'ultimo tratto aperto: la domanda lampo del tratto torna senza risposta (decisione 35).
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 
 *Scrittura e lettura*
