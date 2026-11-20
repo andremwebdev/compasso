@@ -587,6 +587,7 @@ p {
   justify-content: start;
 }
 
+
 .answer-row-label {
   justify-self: end;
 }
@@ -653,10 +654,11 @@ p {
   margin: var(--s-2) 0;
 }
 
+/* La tastiera matematica: un cassetto di tasti sotto il campo, con le linguette dei livelli. */
 .keyboard {
-  margin-top: var(--s-4);
+  margin-top: var(--s-3);
   padding: var(--s-2);
-  border: 1px solid var(--linea);
+  border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--carta-alta);
 }
@@ -665,44 +667,51 @@ p {
   display: flex;
   gap: var(--s-1);
   margin-bottom: var(--s-2);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
 
 .keyboard-level {
-  flex: 1;
+  flex: 1 0 auto;
   min-height: var(--tocco);
+  padding: 0 var(--s-2);
   border: 0;
   border-bottom: 3px solid transparent;
   background: transparent;
   color: var(--inchiostro-secondario);
   font: inherit;
-  font-size: 0.95rem;
+  font-size: var(--testo-piccolo);
   cursor: pointer;
 }
 
+/* Il livello aperto: barra arancione e grassetto, non solo il colore. */
 .keyboard-level-active {
   border-bottom-color: var(--arancio);
   color: var(--inchiostro);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .keyboard-keys {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: var(--s-1);
+  gap: 5px;
 }
 
 .key {
   min-width: 0;
   min-height: 46px;
-  padding: 0;
+  padding: 0 2px;
   border: 1px solid var(--bordo);
   border-radius: var(--raggio);
   background: var(--carta);
   color: var(--inchiostro);
   font: 1.15rem var(--font-ui);
+  line-height: 1.1;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .key:active {
@@ -710,10 +719,45 @@ p {
   border-color: var(--blu);
 }
 
+/* Nomi lunghi (arcsin, «non esiste», «casella ▸»): più piccoli, anche su due righe. */
+.key-word {
+  /* Su un telefono stretto (320 px) «arcsin» deve stare in una riga sola. */
+  font-size: clamp(0.6875rem, 3.2vw, 0.875rem);
+  letter-spacing: -0.01em;
+}
+
 .key-service {
   background: var(--dim-fondo);
   color: var(--blu);
-  font-weight: 700;
+  font-weight: 600;
+}
+
+/* Le caselle di una matrice o di un vettore, tra due parentesi tonde disegnate. */
+.answer-grid {
+  position: relative;
+  width: max-content;
+  max-width: 100%;
+  padding: var(--s-1) var(--s-3);
+  overflow-x: auto;
+  border-left: 2px solid var(--inchiostro);
+  border-right: 2px solid var(--inchiostro);
+  border-radius: 14px;
+}
+
+/* Un vettore soluzione ha le etichette (x =, y =): niente parentesi. */
+.answer-vector {
+  padding: 0;
+  border: 0;
+}
+
+.answer-cell {
+  text-align: center;
+  padding: var(--s-2) var(--s-1);
+}
+
+.answer-cell-active {
+  border-color: var(--blu);
+  box-shadow: inset 0 0 0 1px var(--blu);
 }
 
 .hints,

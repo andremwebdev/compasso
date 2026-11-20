@@ -1,6 +1,7 @@
 import { useRef, useState } from "preact/hooks";
-import { pressKey, type Key, type KeyboardLevel } from "../risposta/keys";
-import { previewText, type FieldKind, type Preview } from "../risposta/preview";
+import { pressKey, type Key } from "../risposta/keys";
+import type { KeyboardSetup } from "../risposta/levels";
+import { gridPreview, previewText, type FieldKind, type Preview } from "../risposta/preview";
 import { renderMath } from "../testo/render";
 import { MathKeyboard } from "./MathKeyboard";
 import { RichText } from "./RichText";
@@ -15,6 +16,8 @@ const MAX_LENGTH = 200;
 interface AnswerEditorProps {
   /** Che cosa si scrive in ogni casella. */
   field: FieldKind;
+  /** I livelli della tastiera e quello da aprire per primo (dipendono dal tipo di risposta). */
+  keyboard: KeyboardSetup;
   /** Il testo delle caselle, per righe. Una risposta normale è una griglia 1×1. */
   cells: readonly (readonly string[])[];
   /** Etichette delle righe (per i vettori soluzione: x, y, z). */
@@ -29,18 +32,37 @@ interface AnswerEditorProps {
 }
 
 /** Il campo (o la griglia di caselle) in cui si scrive la risposta, con l'anteprima e la tastiera matematica. */
-export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, problem, children }: AnswerEditorProps) {
+export function AnswerEditor({ field, keyboard, cells, rowLabels, onChange, onConfirm, problem, children }: AnswerEditorProps) {
   const inputs = useRef(new Map<string, HTMLInputElement>());
   const [active, setActive] = useState("0-0");
   const single = cells.length === 1 && cells[0]?.length === 1;
 
   const setCell = (row: number, col: number, text: string): void => onChange(cells.map((line, r) => line.map((value, c) => (r === row && c === col ? text : value))));
 
+  // Le caselle in ordine di lettura: riga per riga.
+  const order = cells.flatMap((line, row) => line.map((_, col) => `${row}-${col}`));
+  const current = inputs.current.has(active) ? active : "0-0";
+
+  /** Porta il cursore nella casella `id`, alla fine del testo. */
+  const focusCell = (id: string): void => {
+    const input = inputs.current.get(id);
+    if (!input) return;
+    input.focus();
+    input.setSelectionRange(input.value.length, input.value.length);
+    setActive(id);
+  };
+
   // Un tasto della tastiera matematica scrive nella casella attiva, dove sta il cursore.
   const onKey = (key: Key): void => {
-    const input = inputs.current.get(active) ?? inputs.current.get("0-0");
+    if (key.action === "prevCell" || key.action === "nextCell") {
+      const index = order.indexOf(current);
+      const next = order[Math.min(order.length - 1, Math.max(0, index + (key.action === "nextCell" ? 1 : -1)))];
+      if (next) focusCell(next);
+      return;
+    }
+    const input = inputs.current.get(current);
     if (!input) return;
-    const [row = 0, col = 0] = (inputs.current.has(active) ? active : "0-0").split("-").map(Number);
+    const [row = 0, col = 0] = current.split("-").map(Number);
     const next = pressKey({ text: input.value, start: input.selectionStart ?? input.value.length, end: input.selectionEnd ?? input.value.length }, key);
     if (next.text.length > MAX_LENGTH) return;
     input.value = next.text;
@@ -48,12 +70,16 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
     setCell(row, col, next.text);
   };
 
-  const preview: Preview = single ? previewText(field, cells[0]?.[0] ?? "") : { kind: "empty" };
-  const level: KeyboardLevel = field.kind === "set" ? "insiemi" : "base";
+  const preview: Preview = single ? previewText(field, cells[0]?.[0] ?? "") : gridPreview(field, cells);
 
   return (
     <div class="answer-editor">
-      <div class={single ? "answer-fields" : "answer-fields answer-grid"} style={single ? undefined : { gridTemplateColumns: `${rowLabels ? "auto " : ""}repeat(${cells[0]?.length ?? 1}, minmax(3.5rem, 6rem))` }}>
+      <div
+        class={single ? "answer-fields" : rowLabels ? "answer-fields answer-grid answer-vector" : "answer-fields answer-grid"}
+        style={single ? undefined : { gridTemplateColumns: `${rowLabels ? "auto " : ""}repeat(${cells[0]?.length ?? 1}, minmax(3.25rem, 5.5rem))` }}
+        role={single ? undefined : "group"}
+        aria-label={single ? undefined : rowLabels ? "Vettore soluzione, una casella per incognita" : `Matrice ${cells.length} per ${cells[0]?.length ?? 1}, una casella per elemento`}
+      >
         {cells.map((line, row) => (
           <>
             {!single && rowLabels && <span class="answer-row-label" dangerouslySetInnerHTML={{ __html: renderMath(`${rowLabels[row] ?? ""} =`) }} />}
@@ -66,7 +92,7 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
                     if (element) inputs.current.set(id, element);
                     else inputs.current.delete(id);
                   }}
-                  class="answer-input"
+                  class={single ? "answer-input" : id === current ? "answer-input answer-cell answer-cell-active" : "answer-input answer-cell"}
                   type="text"
                   // La tastiera del telefono non serve: si scrive con quella matematica qui sotto.
                   inputMode="none"
@@ -88,14 +114,14 @@ export function AnswerEditor({ field, cells, rowLabels, onChange, onConfirm, pro
           </>
         ))}
       </div>
-      {single && <PreviewLine preview={preview} field={field} />}
+      <PreviewLine preview={preview} field={field} />
       {problem && (
         <p class="answer-problem" role="alert">
           <RichText text={problem} inline untrusted />
         </p>
       )}
       {children}
-      <MathKeyboard initialLevel={level} onKey={onKey} />
+      <MathKeyboard levels={keyboard.levels} initialLevel={keyboard.initial} onKey={onKey} />
     </div>
   );
 }
@@ -130,3 +156,4 @@ function PreviewLine({ preview, field }: { preview: Preview; field: FieldKind })
       );
   }
 }
+

@@ -156,6 +156,18 @@ describe("parser: testo incompleto o sbagliato", () => {
     if (result.ok) expect(toLatex(result.value)).toContain("\\square");
   });
 
+  it.each(["()/()", "(x+1)/()", "x^()", "√()", "sin()", "e^()", "root(3; )", "2()"])("«%s»: una casella vuota tra parentesi è incompleta, non sbagliata", (text) => {
+    const result = parseExpression(text);
+    expect(result.ok && !result.complete).toBe(true);
+    if (result.ok) expect(toLatex(result.value)).toContain("\\square");
+  });
+
+  it("le caselle riempite si leggono come le parentesi normali", () => {
+    expect(tex("(x+1)/(x-2)")).toBe("\\frac{x + 1}{x - 2}");
+    expect(tex("x^(2)")).toBe("x^{2}");
+    expect(tex("sin(x)")).toBe(tex("sin x"));
+  });
+
   it("parentesi e barre lasciate aperte si chiudono da sole", () => {
     const group = parseExpression("2(x+1");
     expect(group.ok && !group.complete && toLatex(group.value)).toBe("2\\left(x + 1\\right)");

@@ -8,6 +8,7 @@ import { EngineError } from "../../motore/errors";
 import { toLatex } from "../../motore/expr";
 import { matrixSize, matrixToLatex } from "../../motore/linalg";
 import { setToInequalityLatex, setToLatex } from "../../motore/sets";
+import { keyboardFor } from "../risposta/levels";
 import { fieldKindOf, previewText } from "../risposta/preview";
 import { markDistraction, newId, recordAttempt } from "../state";
 import { AnswerEditor } from "./AnswerEditor";
@@ -232,6 +233,7 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
           ) : field ? (
             <AnswerEditor
               field={field}
+              keyboard={keyboardFor(answer)}
               cells={cells}
               rowLabels={answer.kind === "matrix" && size.cols === 1 ? NAMES.slice(0, size.rows) : undefined}
               onChange={(next) => {

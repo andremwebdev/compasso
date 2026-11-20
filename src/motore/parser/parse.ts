@@ -7,7 +7,7 @@
 // - funzioni con o senza parentesi: sin(x), sin x, sin 2x (= sin(2x)), sin^2 x, sin x cos x;
 // - radici: √2, sqrt(2), ∛x, root(3; x); logaritmi: ln x, log x (base 10), log_2 x, log(2; x);
 // - valore assoluto: |x| oppure abs(x); percentuali: 20% vale 20/100;
-// - testo incompleto ("2+", "(x+1"): si completa con il segnaposto □ e si segnala `complete: false`,
+// - testo incompleto ("2+", "(x+1", "()/()"): si completa con il segnaposto □ e si segnala `complete: false`,
 //   così l'anteprima in tempo reale può disegnare anche quello che non è ancora finito.
 
 import { EngineError } from "../errors";
@@ -78,6 +78,16 @@ class Parser {
   takeRelationOp(): RelationOp {
     const token = this.advance();
     return (token as { op: RelationOp }).op;
+  }
+
+  /**
+   * Dentro una parentesi: la somma, oppure una casella vuota. La tastiera matematica scrive le
+   * frazioni, le potenze e le funzioni «a modello» (`()/()`, `^()`, `sin()`): finché una casella è
+   * vuota il testo è incompleto (□), non sbagliato.
+   */
+  private slotOrSum(): Expr {
+    if (this.isOp(")") || this.isOp(";")) return this.placeholder();
+    return this.parseSum();
   }
 
   /** Segnaposto per un operando che manca perché il testo non è finito. */
@@ -253,7 +263,7 @@ class Parser {
     this.advance();
     const outerBars = this.barDepth;
     this.barDepth = 0;
-    const inner = this.parseSum();
+    const inner = this.slotOrSum();
     this.barDepth = outerBars;
     this.closeGroup();
     return inner;
@@ -350,10 +360,10 @@ class Parser {
     this.advance();
     const outerBars = this.barDepth;
     this.barDepth = 0;
-    const args = [this.parseSum()];
+    const args = [this.slotOrSum()];
     while (this.isOp(";")) {
       this.advance();
-      args.push(this.parseSum());
+      args.push(this.slotOrSum());
     }
     this.barDepth = outerBars;
     this.closeGroup();

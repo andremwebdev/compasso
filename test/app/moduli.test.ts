@@ -2,13 +2,15 @@
 
 import { describe, expect, it } from "vitest";
 import { lessonChunks } from "../../src/app/lezione/chunks";
-import { KEYBOARD, KEYBOARD_LEVELS, pressKey, type FieldState, type Key } from "../../src/app/risposta/keys";
-import { fieldKindOf, previewText } from "../../src/app/risposta/preview";
+import { KEYBOARD, KEYBOARD_LEVELS, pressKey, type FieldState, type Key, type KeyboardLevel } from "../../src/app/risposta/keys";
+import { keyboardFor } from "../../src/app/risposta/levels";
+import { fieldKindOf, gridPreview, previewText } from "../../src/app/risposta/preview";
 import { freshSeed } from "../../src/app/risposta/seeds";
 import { renderRichText } from "../../src/app/testo/render";
 import { loadLesson } from "../../src/contenuti";
 import { choiceOptions, generateExercise } from "../../src/esercizi";
 import { generators } from "../../src/generatori";
+import { parseLimitValue } from "../../src/motore/calculus/limit";
 import { parseExpression } from "../../src/motore/parser";
 import { parseSolutionSet } from "../../src/motore/parser/sets";
 import { setToInequalityLatex, setToLatex } from "../../src/motore/sets";
@@ -112,52 +114,104 @@ describe("anteprima della risposta", () => {
 describe("tastiera matematica", () => {
   const empty: FieldState = { text: "", start: 0, end: 0 };
   const type = (keys: readonly Key[], labels: string, from = empty): FieldState =>
-    labels.split(" ").reduce((field, label) => {
-      const key = keys.find((item) => item.label === label);
+    // «non esiste» è un tasto solo: lo spazio dentro l'etichetta non separa due tasti.
+    labels.replaceAll("non esiste", "non\u00a0esiste").split(" ").reduce((field, label) => {
+      const key = keys.find((item) => item.label === label.replaceAll("\u00a0", " "));
       if (!key) throw new Error(`tasto «${label}» non trovato`);
       return pressKey(field, key);
     }, from);
 
-  it("ogni livello è una griglia piena di sei colonne, con cancella e frecce", () => {
-    expect(KEYBOARD_LEVELS).toEqual(["base", "insiemi", "funzioni"]);
+  it("ogni livello è una griglia piena, con cancella e frecce, senza tasti doppi", () => {
+    expect(KEYBOARD_LEVELS).toEqual(["base", "funzioni", "insiemi", "analisi", "lineare", "complessi"]);
     for (const level of KEYBOARD_LEVELS) {
-      const { keys } = KEYBOARD[level];
-      expect(keys.length % 6, level).toBe(0);
-      expect(keys.filter((key) => key.action).map((key) => key.action)).toEqual(["backspace", "left", "right"]);
+      const { keys, columns } = KEYBOARD[level];
+      const cells = keys.reduce((sum, key) => sum + (key.span ?? 1), 0);
+      expect(cells % columns, level).toBe(0);
+      const actions = keys.filter((key) => key.action).map((key) => key.action);
+      for (const needed of ["backspace", "left", "right"] as const) expect(actions, `${level}: ${needed}`).toContain(needed);
       expect(new Set(keys.map((key) => key.label)).size, level).toBe(keys.length);
+      // Ogni tasto o inserisce un testo o fa un'azione, mai tutte e due.
+      for (const key of keys) expect((key.insert === undefined) !== (key.action === undefined), `${level}: ${key.label}`).toBe(true);
     }
   });
 
-  it("livello base: cifre, virgola, operazioni, frazione, potenza, radici, parentesi, x e y", () => {
-    const labels = KEYBOARD.base.keys.map((key) => key.label);
+  it("i tasti della specifica ci sono tutti, ognuno nel suo livello", () => {
+    const labels = (level: KeyboardLevel): string[] => KEYBOARD[level].keys.map((key) => key.label);
+    // Base: cifre, virgola, + − · :, frazione, potenza, radice quadrata e n-esima, parentesi, x e y, cancella, frecce.
     for (const needed of ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "+", "−", "·", ":", "a⁄b", "xⁿ", "√", "ⁿ√", "(", ")", "x", "y", "⌫", "←", "→"]) {
-      expect(labels, needed).toContain(needed);
+      expect(labels("base"), needed).toContain(needed);
     }
+    // Funzioni: sin, cos, tan, le inverse, log, ln, eˣ, π, e, valore assoluto; e anche le cifre.
+    for (const needed of ["sin", "cos", "tan", "arcsin", "arccos", "arctan", "log", "ln", "eˣ", "π", "e", "|x|", "0", "5", "9", ","]) {
+      expect(labels("funzioni"), needed).toContain(needed);
+    }
+    // Insiemi: quadre e tonde, ∪, ∅, ℝ, ∞, ±, punto e virgola, k intero.
+    for (const needed of ["[", "]", "(", ")", "∪", "∅", "ℝ", "∞", "±", ";", "k", "<", "≤", ">", "≥", "π"]) expect(labels("insiemi"), needed).toContain(needed);
+    // Analisi: i valori di un limite. Complessi: i.
+    for (const needed of ["+∞", "−∞", "non esiste", "e"]) expect(labels("analisi"), needed).toContain(needed);
+    expect(labels("complessi")).toContain("i");
+    expect(KEYBOARD.lineare.keys.map((key) => key.action)).toEqual(expect.arrayContaining(["prevCell", "nextCell"]));
   });
 
-  it("livello insiemi: parentesi tonde e quadre, punto e virgola, unione, infinito, vuoto, ℝ, disuguaglianze", () => {
-    const labels = KEYBOARD.insiemi.keys.map((key) => key.label);
-    for (const needed of ["[", "]", "(", ")", ";", "∪", "∞", "∅", "ℝ", "<", "≤", ">", "≥"]) expect(labels, needed).toContain(needed);
+  it("frazione a modello: dopo un numero quello è il numeratore, altrimenti due caselle; ⇥ passa al denominatore", () => {
+    expect(type(KEYBOARD.base.keys, "3 a⁄b 4")).toEqual({ text: "3/(4)", start: 4, end: 4 });
+    let field = type(KEYBOARD.base.keys, "a⁄b");
+    expect(field).toEqual({ text: "()/()", start: 1, end: 1 });
+    expect(parseExpression(field.text)).toMatchObject({ ok: true, complete: false });
+    field = type(KEYBOARD.base.keys, "x + 1 ⇥ x − 2 ⇥ x²", field);
+    expect(field.text).toBe("(x+1)/(x-2)^2");
+    expect(parseExpression(field.text)).toMatchObject({ ok: true, complete: true });
+    // Con una selezione, la selezione va al numeratore.
+    expect(type(KEYBOARD.base.keys, "a⁄b", { text: "x+1", start: 0, end: 3 })).toEqual({ text: "(x+1)/()", start: 7, end: 7 });
+    // Dopo una parentesi chiusa, la parentesi è il numeratore.
+    expect(type(KEYBOARD.base.keys, "( x + 1 ) a⁄b 2").text).toBe("(x+1)/(2)");
   });
 
-  it("quello che si scrive con i tasti si legge: un insieme, una disuguaglianza, una frazione con potenza", () => {
-    const interval = type(KEYBOARD.insiemi.keys, "( − ∞ ; − 2 ) ∪ [ 1 ; + ∞ )");
-    expect(interval.text).toBe("(-∞; -2) ∪ [1; +∞)");
-    expect(parseSolutionSet(interval.text)).toMatchObject({ ok: true, complete: true });
-    const inequality = type(KEYBOARD.insiemi.keys, "x < − 2 ∨ x ≥ 1");
-    expect(inequality.text).toBe("x < -2 ∨ x ≥ 1");
-    expect(parseSolutionSet(inequality.text)).toMatchObject({ ok: true, complete: true });
-    const fraction = type(KEYBOARD.base.keys, "( x + 1 ) a⁄b ( x − 2 ) x²");
-    expect(fraction.text).toBe("(x+1)/(x-2)^2");
-    expect(parseExpression(fraction.text)).toMatchObject({ ok: true, complete: true });
-    const root = type(KEYBOARD.base.keys, "ⁿ√ 3 ; x )");
+  it("potenze, radici e funzioni a modello: si scrive dentro, ⇥ porta fuori", () => {
+    const power = type(KEYBOARD.base.keys, "x xⁿ 2 x ⇥ + 1");
+    expect(power.text).toBe("x^(2x)+1");
+    expect(parseExpression(power.text)).toMatchObject({ ok: true, complete: true });
+    const root = type(KEYBOARD.base.keys, "ⁿ√ 3 ⇥ x ⇥ − 1");
+    expect(root.text).toBe("root(3; x)-1");
     expect(parseExpression(root.text)).toMatchObject({ ok: true, complete: true });
-    const functions = type(KEYBOARD.funzioni.keys, "sin x ) · eˣ x )");
+    const functions = type(KEYBOARD.funzioni.keys, "sin x ⇥ · eˣ 2 x ⇥");
+    expect(functions.text).toBe("sin(x)·e^(2x)");
     expect(parseExpression(functions.text)).toMatchObject({ ok: true, complete: true });
     // Le costanti arbitrarie delle equazioni differenziali: c₁ e c₂ si leggono come due lettere distinte.
-    const constants = type(KEYBOARD.funzioni.keys, "c₁ · eˣ x ) + c₂ · x · eˣ x )");
+    const constants = type(KEYBOARD.funzioni.keys, "c₁ · eˣ x ⇥ + c₂ · x · eˣ x ⇥");
     expect(constants.text).toBe("c_1·e^(x)+c_2·x·e^(x)");
     expect(parseExpression(constants.text)).toMatchObject({ ok: true, complete: true });
+    // A metà, le caselle vuote sono pezzi che mancano, non errori.
+    for (const half of ["sin", "√", "xⁿ"]) {
+      const keys = half === "sin" ? KEYBOARD.funzioni.keys : KEYBOARD.base.keys;
+      expect(parseExpression(type(keys, `2 ${half}`).text), half).toMatchObject({ ok: true, complete: false });
+    }
+  });
+
+  it("livelli Analisi e Complessi: valori di un limite e numeri complessi si scrivono e si leggono", () => {
+    for (const [labels, expected] of [["+∞", "+∞"], ["−∞", "-∞"], ["non esiste", "non esiste"], ["e xⁿ 2", "e^(2)"]] as const) {
+      const field = type(KEYBOARD.analisi.keys, labels);
+      expect(field.text).toBe(expected);
+      expect(parseLimitValue(field.text), labels).toMatchObject({ ok: true, complete: true });
+    }
+    const algebraic = type(KEYBOARD.complessi.keys, "3 − 2 · i");
+    expect(parseExpression(algebraic.text, { complex: true })).toMatchObject({ ok: true, complete: true });
+    const exponential = type(KEYBOARD.complessi.keys, "2 eⁱ π a⁄b 3 ⇥ ⇥");
+    expect(exponential.text).toBe("2e^(iπ/(3))");
+    expect(parseExpression(exponential.text, { complex: true })).toMatchObject({ ok: true, complete: true });
+  });
+
+  it("livello Insiemi: intervalli, disuguaglianze, soluzioni periodiche, «per ogni x» e «non esiste x»", () => {
+    const interval = type(KEYBOARD.insiemi.keys, "( − ∞ ; − 2 ) ∪ [ 1 / 3 ; + ∞ )");
+    expect(interval.text).toBe("(-∞; -2) ∪ [1/3; +∞)");
+    expect(parseSolutionSet(interval.text)).toMatchObject({ ok: true, complete: true });
+    const inequality = type(KEYBOARD.insiemi.keys, "x < − √ 2 ∨ x ≥ 1");
+    expect(inequality.text).toBe("x < -√2 ∨ x ≥ 1");
+    expect(parseSolutionSet(inequality.text)).toMatchObject({ ok: true, complete: true });
+    const periodic = type(KEYBOARD.insiemi.keys, "x = ± π / 3 + 2 k π");
+    expect(periodic.text).toBe("x = ±π/3+2kπ");
+    expect(parseSolutionSet(periodic.text)).toMatchObject({ ok: true, complete: true });
+    for (const words of ["∀x", "∄x", "∅", "ℝ"]) expect(parseSolutionSet(type(KEYBOARD.insiemi.keys, words).text), words).toMatchObject({ ok: true, complete: true });
   });
 
   it("il cursore: si scrive in mezzo, si cancella un tasto intero alla volta, la selezione viene sostituita", () => {
@@ -166,14 +220,51 @@ describe("tastiera matematica", () => {
     field = type(KEYBOARD.base.keys, "⌫ ⌫ ⌫ ⌫", field);
     expect(field).toEqual({ text: "2", start: 0, end: 0 });
     expect(type(KEYBOARD.base.keys, "→ → →", field)).toEqual({ text: "2", start: 1, end: 1 });
-    // «√(» e « ∪ » sono un tasto solo: si cancellano in un colpo.
+    // Un modello vuoto («√()», «sin()», «()/()») e « ∪ » sono un tasto solo: si cancellano in un colpo.
     expect(type(KEYBOARD.base.keys, "√ ⌫").text).toBe("");
+    expect(type(KEYBOARD.base.keys, "a⁄b ⌫").text).toBe("");
+    expect(type(KEYBOARD.base.keys, "3 a⁄b ⌫").text).toBe("3");
+    expect(type(KEYBOARD.base.keys, "x xⁿ ⌫").text).toBe("x");
     expect(type(KEYBOARD.insiemi.keys, "] ∪ ⌫").text).toBe("]");
     expect(type(KEYBOARD.funzioni.keys, "sin ⌫").text).toBe("");
+    expect(type(KEYBOARD.analisi.keys, "non esiste ⌫").text).toBe("");
+    expect(type(KEYBOARD.funzioni.keys, "c₁ ⌫").text).toBe("");
     expect(pressKey({ text: "abc", start: 0, end: 3 }, KEYBOARD.base.keys[0] as Key)).toEqual({ text: "7", start: 1, end: 1 });
     // Solo i nomi di funzione se ne vanno con la parentesi: in «2x(» si cancella la parentesi, la x resta.
     expect(type(KEYBOARD.base.keys, "2 x ( ⌫").text).toBe("2x");
     expect(type(KEYBOARD.funzioni.keys, "x arctan ⌫").text).toBe("x");
+    // Dentro una casella piena si cancella un carattere alla volta.
+    expect(type(KEYBOARD.funzioni.keys, "sin x ⌫").text).toBe("sin()");
+  });
+
+  it("la tastiera si apre sul livello che serve al tipo di esercizio", () => {
+    const opened = (code: string): string => {
+      const generator = generators.find((item) => item.code === code);
+      if (!generator) throw new Error(code);
+      return keyboardFor(generateExercise(generator, 2, 0).answer).initial;
+    };
+    expect(opened("V1.M06.A04.g1")).toBe("insiemi");
+    expect(opened("V1.M04.A07.g1")).toBe("base");
+    expect(opened("V2.M06.A03.g1")).toBe("funzioni");
+    expect(opened("V2.M09.A01.g1")).toBe("funzioni");
+    expect(opened("V2.M03.A01.g1")).toBe("analisi");
+    expect(opened("V3.M02.A01.g1")).toBe("lineare");
+    expect(opened("V3.M03.A01.g1")).toBe("base");
+    // Ogni livello di apertura è tra quelli mostrati; «Matrici» solo con le caselle.
+    for (const generator of generators) {
+      const setup = keyboardFor(generateExercise(generator, 1, 0).answer);
+      expect(setup.levels, generator.code).toContain(setup.initial);
+      expect(setup.levels.includes("lineare"), generator.code).toBe(generator.code.startsWith("V3.M02"));
+    }
+  });
+
+  it("l'anteprima di una matrice: □ nelle caselle vuote, il motivo con riga e colonna", () => {
+    const field = { kind: "expression", complex: false } as const;
+    expect(gridPreview(field, [["", ""], ["", ""]])).toEqual({ kind: "empty" });
+    expect(gridPreview(field, [["1", ""], ["", "2/3"]])).toEqual({ kind: "ok", latex: "\\begin{pmatrix} 1 & \\square \\\\ \\square & \\frac{2}{3} \\end{pmatrix}", complete: false });
+    expect(gridPreview(field, [["1", "0"], ["0", "1"]])).toMatchObject({ kind: "ok", complete: true });
+    expect(gridPreview(field, [["1", "0"], ["2+*3", "1"]])).toEqual({ kind: "error", message: "Riga 2, colonna 1: Qui manca un numero o una lettera." });
+    expect(gridPreview(field, [["1"], ["x+1)"]])).toEqual({ kind: "error", message: "Casella 2: C'è una parentesi chiusa in più." });
   });
 });
 

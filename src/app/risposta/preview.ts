@@ -77,3 +77,34 @@ export function previewText(field: FieldKind, text: string): Preview {
     }
   }
 }
+
+/**
+ * L'anteprima di una griglia: la matrice (o il vettore) intera, con □ nelle caselle vuote o non
+ * ancora leggibili. Se una casella non si legge, il motivo dice quale.
+ */
+export function gridPreview(field: FieldKind, cells: readonly (readonly string[])[]): Preview {
+  if (cells.every((line) => line.every((cell) => cell.trim() === ""))) return { kind: "empty" };
+  let complete = true;
+  const rows: string[] = [];
+  for (const [r, line] of cells.entries()) {
+    const entries: string[] = [];
+    for (const [c, cell] of line.entries()) {
+      const preview = previewText(field, cell);
+      switch (preview.kind) {
+        case "ok":
+          entries.push(preview.latex);
+          complete &&= preview.complete;
+          break;
+        case "error":
+          return { kind: "error", message: cells.length === 1 || line.length === 1 ? `Casella ${(line.length === 1 ? r : c) + 1}: ${preview.message}` : `Riga ${r + 1}, colonna ${c + 1}: ${preview.message}` };
+        case "empty":
+        case "typing":
+          entries.push("\\square");
+          complete = false;
+          break;
+      }
+    }
+    rows.push(entries.join(" & "));
+  }
+  return { kind: "ok", latex: `\\begin{pmatrix} ${rows.join(" \\\\ ")} \\end{pmatrix}`, complete };
+}
