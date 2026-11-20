@@ -258,6 +258,12 @@ export async function currentData(): Promise<StoredData> {
   };
 }
 
+/**
+ * Il colore della carta nei due temi (`--carta` in styles.css; un test controlla che coincidano):
+ * colora la barra di stato del telefono, attraverso i meta «theme-color» della pagina.
+ */
+export const THEME_COLORS = { light: "#f4efe0", dark: "#0d1a31" } as const;
+
 /** Il tema scelto nelle impostazioni, applicato alla pagina (con «sistema» decide il telefono). */
 export function connectTheme(): void {
   effect(() => {
@@ -265,6 +271,13 @@ export function connectTheme(): void {
     try {
       if (theme === "system") delete document.documentElement.dataset["theme"];
       else document.documentElement.dataset["theme"] = theme;
+      // I due meta valgono uno per il tema chiaro e uno per lo scuro del telefono: con un tema scelto
+      // a mano, tutti e due prendono il colore di quel tema.
+      for (const meta of document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')) {
+        const media = meta.getAttribute("media") ?? "";
+        const systemTheme = media.includes("dark") ? "dark" : "light";
+        meta.content = THEME_COLORS[theme === "system" ? systemTheme : theme];
+      }
     } catch {
       // Senza documento (prove automatiche) non serve.
     }

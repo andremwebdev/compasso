@@ -161,9 +161,10 @@ describe("versione PC (file unico)", () => {
     expect(urls.filter((u) => !u.startsWith("data:"))).toEqual([]);
   });
 
-  it("incorpora i caratteri di KaTeX (funziona offline)", () => {
+  it("incorpora i caratteri di KaTeX e dell'interfaccia (funziona offline)", () => {
     const html = readFileSync(pcFile, "utf8");
-    expect(html.match(/data:font\/woff2;base64,/g)?.length).toBe(20);
+    // 20 di KaTeX più 4 dell'interfaccia (Plex Sans 400, 400 corsivo, 600; Plex Mono 400).
+    expect(html.match(/data:font\/woff2;base64,/g)?.length).toBe(24);
   });
 });
 
@@ -214,13 +215,13 @@ describe("versione telefono (PWA)", () => {
     for (const file of precache.filter((f) => f !== "./")) {
       expect(existsSync(path.join(telefonoDir, file)), `manca ${file}`).toBe(true);
     }
-    expect(precache.filter((f) => f.endsWith(".woff2")).length).toBe(20);
+    expect(precache.filter((f) => f.endsWith(".woff2")).length).toBe(24);
   });
 
   it("il CSS cita solo caratteri che esistono nella cartella fonts", () => {
     const css = readFileSync(path.join(telefonoDir, "app.css"), "utf8");
     const urls = [...css.matchAll(/url\(([^)]*)\)/g)].map((m) => m[1] ?? "");
-    expect(urls.length).toBe(20);
+    expect(urls.length).toBe(24);
     for (const url of urls) {
       expect(url).toMatch(/^fonts\/[^/]+\.woff2$/);
       expect(existsSync(path.join(telefonoDir, url)), `manca ${url}`).toBe(true);

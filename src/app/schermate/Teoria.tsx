@@ -9,7 +9,7 @@ import type { TrackId } from "../../dati";
 import { BackButton, GroupTitle, MasteryBadge } from "../componenti/Common";
 import { RichText } from "../componenti/RichText";
 import { allGlossaryItems, type GlossaryItem } from "../lezione/glossary";
-import { generatorsOfModule, groupLevel, isWritten, knownModules, lessonState, LESSON_STATE_MARKS, lessonTitle } from "../programma";
+import { generatorsOfModule, groupLevel, isWritten, knownModules, lessonState, lessonTitle } from "../programma";
 import { checks, masteries, open } from "../state";
 import { knownCheckPlan } from "./checks";
 
@@ -105,7 +105,7 @@ export function ModuleView({ code }: { code: ModuleCode }) {
             </span>
             <span class="card-title">{lessonTitle(lesson.code)}</span>
             <span class="status">
-              <span aria-hidden="true">{LESSON_STATE_MARKS[state]}</span> {state === "in arrivo" ? "In arrivo" : state[0]?.toUpperCase() + state.slice(1)}
+              <span class={`state-mark state-${state.replace(" ", "-")}`} aria-hidden="true" /> {state === "in arrivo" ? "In arrivo" : state[0]?.toUpperCase() + state.slice(1)}
             </span>
           </>
         );

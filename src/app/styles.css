@@ -1,88 +1,134 @@
-/* Stile Compasso, primo abbozzo (specifica, sezione 10): carta color avorio, linee di costruzione
-   sottili, blu progetto e inchiostro scuro, accenti arancioni. Le rifiniture (caratteri definitivi,
-   icone, animazioni, modalità lettura) sono della fase dell'involucro. */
+/* Aspetto Compasso (specifica, sezione 10): il tavolo da disegno tecnico. Carta avorio con una
+   quadrettatura di costruzione appena visibile, inchiostro blu scuro, blu da cianografia e accenti
+   arancioni; nel tema scuro la tavola blu notte con linee e testo chiari.
+
+   I valori qui sotto sono quelli definitivi (fase dell'involucro). Contrasto: ogni coppia testo/fondo
+   usata dall'app supera 4,5:1 (livello AA) in entrambi i temi, e i bordi dei comandi 3:1; lo controlla
+   test/app/aspetto.test.ts leggendo questo file. Se cambi un colore, il test dice quale coppia non va.
+
+   Caratteri: «Compasso Sans» (IBM Plex Sans 400, 400 corsivo, 600) e «Compasso Mono» (IBM Plex Mono
+   400), incorporati dalla build (scripts/build.mjs); le formule usano i caratteri di KaTeX.
+   Spaziature: una scala a passi di 4 px (--s-1 … --s-7); margini laterali della pagina 16 px. */
 
 :root {
   color-scheme: light dark;
-  --carta: #f6f1e4;
+
+  /* Colori, tema chiaro: carta avorio, inchiostro blu scuro. */
+  --carta: #f4efe0;
   --carta-alta: #fbf8ef;
-  --inchiostro: #14284b;
-  --inchiostro-secondario: #4a5a78;
-  --blu: #1f4f8f;
-  --arancio: #b34f0e;
-  --linea: #cfc9b6;
-  --griglia: rgba(31, 79, 143, 0.07);
-  /* Colori dei riquadri: definizione, teorema, dimostrazione, esempio, attenzione. */
-  --def: #1f4f8f;
-  --def-fondo: #e6edf7;
-  --teo: #b34f0e;
-  --teo-fondo: #f8e9dc;
-  --dim: #4a5f7d;
-  --dim-fondo: #e9edf2;
-  --ese: #2f6b3a;
-  --ese-fondo: #e6f1e4;
-  --att: #a52a23;
-  --att-fondo: #f8e4e1;
-  --giusto: #2f6b3a;
-  --giusto-fondo: #e6f1e4;
-  --sbagliato: #a52a23;
-  --sbagliato-fondo: #f8e4e1;
-  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-titoli: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --inchiostro: #132a4c;
+  --inchiostro-secondario: #4b5872;
+  --blu: #1c4d87;
+  --arancio: #a3460a;
+  /* Linee decorative (separatori, quadrettatura); --bordo per i contorni dei comandi (3:1). */
+  --linea: #d3ccb8;
+  --bordo: #8a8470;
+  --griglia: rgba(28, 77, 135, 0.06);
+  --griglia-forte: rgba(28, 77, 135, 0.11);
+  /* Codice colore dei blocchi, uguale ovunque: definizione blu, teorema arancione, dimostrazione
+     grigio-blu, esempio verde, attenzione rosso. Ogni colore ha il suo fondo chiaro. */
+  --def: #1c4d87;
+  --def-fondo: #e4ebf4;
+  --teo: #a3460a;
+  --teo-fondo: #f6e6d7;
+  --dim: #4e5c74;
+  --dim-fondo: #e7eaef;
+  --ese: #2b6634;
+  --ese-fondo: #e3eee0;
+  --att: #a12520;
+  --att-fondo: #f6e0dc;
+  --giusto: #2b6634;
+  --giusto-fondo: #e3eee0;
+  --sbagliato: #a12520;
+  --sbagliato-fondo: #f6e0dc;
+  --velo: rgba(10, 18, 35, 0.45);
+
+  /* Caratteri. */
+  --font-ui: "Compasso Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-titoli: var(--font-ui);
+  --font-mono: "Compasso Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --testo: 1.0625rem; /* 17 px: corpo del testo */
+  --testo-piccolo: 0.875rem; /* 14 px: note, etichette */
+  --testo-minimo: 0.75rem; /* 12 px: codice dell'esercizio, quote */
+  --titolo-1: 1.75rem;
+  --titolo-2: 1.3125rem;
+  --titolo-scheda: 1.1875rem;
+  --interlinea: 1.55;
+
+  /* Spaziature: passi di 4 px. */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --margine: 16px;
+  --raggio: 6px;
+  --raggio-grande: 10px;
+  /* Area minima di tocco. */
+  --tocco: 44px;
+  --durata: 140ms;
 }
 
 /* Tema scuro: segue il telefono, salvo scelta diversa nelle impostazioni (data-theme sulla pagina). */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --carta: #0f1c33;
-    --carta-alta: #16264a;
-    --inchiostro: #e8eefc;
-    --inchiostro-secondario: #a9b8d6;
-    --blu: #8bb8ff;
-    --arancio: #ffa45c;
-    --linea: #2c3d5e;
-    --griglia: rgba(139, 184, 255, 0.06);
-    --def: #8bb8ff;
-    --def-fondo: #16294d;
-    --teo: #ffa45c;
-    --teo-fondo: #33261c;
-    --dim: #a9b8d6;
-    --dim-fondo: #1a2740;
-    --ese: #86d394;
-    --ese-fondo: #16301f;
-    --att: #ff9a92;
-    --att-fondo: #3a1d1c;
-    --giusto: #86d394;
-    --giusto-fondo: #16301f;
-    --sbagliato: #ff9a92;
-    --sbagliato-fondo: #3a1d1c;
+    --carta: #0d1a31;
+    --carta-alta: #152648;
+    --inchiostro: #e9eef9;
+    --inchiostro-secondario: #a9b7d2;
+    --blu: #8fbbff;
+    --arancio: #ffa862;
+    --linea: #2b3d63;
+    --bordo: #6a7fa6;
+    --griglia: rgba(143, 187, 255, 0.07);
+    --griglia-forte: rgba(143, 187, 255, 0.13);
+    --def: #8fbbff;
+    --def-fondo: #172c52;
+    --teo: #ffa862;
+    --teo-fondo: #36281c;
+    --dim: #aebbd3;
+    --dim-fondo: #1c2943;
+    --ese: #8ad599;
+    --ese-fondo: #15301f;
+    --att: #ff9e96;
+    --att-fondo: #3c1e1d;
+    --giusto: #8ad599;
+    --giusto-fondo: #15301f;
+    --sbagliato: #ff9e96;
+    --sbagliato-fondo: #3c1e1d;
+    --velo: rgba(3, 8, 18, 0.6);
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --carta: #0f1c33;
-  --carta-alta: #16264a;
-  --inchiostro: #e8eefc;
-  --inchiostro-secondario: #a9b8d6;
-  --blu: #8bb8ff;
-  --arancio: #ffa45c;
-  --linea: #2c3d5e;
-  --griglia: rgba(139, 184, 255, 0.06);
-  --def: #8bb8ff;
-  --def-fondo: #16294d;
-  --teo: #ffa45c;
-  --teo-fondo: #33261c;
-  --dim: #a9b8d6;
-  --dim-fondo: #1a2740;
-  --ese: #86d394;
-  --ese-fondo: #16301f;
-  --att: #ff9a92;
-  --att-fondo: #3a1d1c;
-  --giusto: #86d394;
-  --giusto-fondo: #16301f;
-  --sbagliato: #ff9a92;
-  --sbagliato-fondo: #3a1d1c;
+  --carta: #0d1a31;
+  --carta-alta: #152648;
+  --inchiostro: #e9eef9;
+  --inchiostro-secondario: #a9b7d2;
+  --blu: #8fbbff;
+  --arancio: #ffa862;
+  --linea: #2b3d63;
+  --bordo: #6a7fa6;
+  --griglia: rgba(143, 187, 255, 0.07);
+  --griglia-forte: rgba(143, 187, 255, 0.13);
+  --def: #8fbbff;
+  --def-fondo: #172c52;
+  --teo: #ffa862;
+  --teo-fondo: #36281c;
+  --dim: #aebbd3;
+  --dim-fondo: #1c2943;
+  --ese: #8ad599;
+  --ese-fondo: #15301f;
+  --att: #ff9e96;
+  --att-fondo: #3c1e1d;
+  --giusto: #8ad599;
+  --giusto-fondo: #15301f;
+  --sbagliato: #ff9e96;
+  --sbagliato-fondo: #3c1e1d;
+  --velo: rgba(3, 8, 18, 0.6);
 }
 
 :root[data-theme="light"] {
@@ -100,15 +146,20 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  /* Le linee di costruzione: una quadrettatura appena visibile sulla carta. */
+  /* Le linee di costruzione: quadretti da 24 px e una linea più marcata ogni cinque, come sul
+     foglio da disegno tecnico. Restano sullo sfondo: il testo sta sempre su un fondo pieno o sulla carta. */
   background:
-    linear-gradient(var(--griglia) 1px, transparent 1px) 0 0 / 100% 28px,
-    linear-gradient(90deg, var(--griglia) 1px, transparent 1px) 0 0 / 28px 100%,
+    linear-gradient(var(--griglia-forte) 1px, transparent 1px) 0 0 / 100% 120px,
+    linear-gradient(90deg, var(--griglia-forte) 1px, transparent 1px) 0 0 / 120px 100%,
+    linear-gradient(var(--griglia) 1px, transparent 1px) 0 0 / 100% 24px,
+    linear-gradient(90deg, var(--griglia) 1px, transparent 1px) 0 0 / 24px 100%,
     var(--carta);
   color: var(--inchiostro);
   font-family: var(--font-ui);
-  font-size: 1.0625rem;
-  line-height: 1.55;
+  font-size: var(--testo);
+  line-height: var(--interlinea);
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
   /* Niente scorrimento orizzontale della pagina (specifica, sezione 10). */
   overflow-x: hidden;
 }
@@ -117,30 +168,48 @@ body {
   max-width: 44rem;
   margin: 0 auto;
   /* Margini laterali di 16 px; in basso lo spazio per la barra delle sezioni. */
-  padding: 1.25rem 16px calc(5.5rem + env(safe-area-inset-bottom));
+  padding: var(--s-5) var(--margine) calc(88px + env(safe-area-inset-bottom));
 }
 
 h1,
 h2,
 .card-title {
   font-family: var(--font-titoli);
-  letter-spacing: 0.005em;
+  font-weight: 600;
+  letter-spacing: -0.005em;
 }
 
+/* Il titolo della pagina ha sotto una quota: una linea sottile con le due tacche agli estremi. */
 h1 {
-  margin: 0 0 0.5rem;
-  font-size: 1.8rem;
+  position: relative;
+  margin: 0 0 var(--s-4);
+  padding-bottom: var(--s-2);
+  font-size: var(--titolo-1);
   line-height: 1.2;
 }
 
+h1::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: min(100%, 12rem);
+  height: 7px;
+  background:
+    linear-gradient(var(--blu), var(--blu)) 0 50% / 100% 1px no-repeat,
+    linear-gradient(var(--blu), var(--blu)) 0 0 / 1px 100% no-repeat,
+    linear-gradient(var(--blu), var(--blu)) 100% 0 / 1px 100% no-repeat;
+  opacity: 0.7;
+}
+
 h2 {
-  margin: 1.75rem 0 0.5rem;
-  font-size: 1.3rem;
+  margin: var(--s-5) 0 var(--s-2);
+  font-size: var(--titolo-2);
   line-height: 1.25;
 }
 
 p {
-  margin: 0 0 0.85rem;
+  margin: 0 0 var(--s-3);
 }
 
 .muted {
@@ -152,12 +221,14 @@ p {
   font-size: 0.9em;
 }
 
+/* Le etichette sopra i titoli: maiuscolo spaziato, come le scritte di un cartiglio. */
 .eyebrow {
   display: block;
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--s-1);
   color: var(--inchiostro-secondario);
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
+  font-size: var(--testo-minimo);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -180,12 +251,12 @@ p {
 .card {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: var(--s-1);
   width: 100%;
-  margin-top: 1rem;
-  padding: 1rem;
+  margin-top: var(--s-4);
+  padding: var(--s-4);
   border: 1px solid var(--linea);
-  border-radius: 6px;
+  border-radius: var(--raggio);
   background: var(--carta-alta);
   color: inherit;
   font: inherit;
@@ -216,7 +287,7 @@ p {
 }
 
 .status {
-  margin-top: 0.35rem;
+  margin-top: var(--s-1);
   font-size: 0.9rem;
   font-weight: 600;
 }
@@ -228,15 +299,24 @@ p {
 }
 
 .button {
-  min-height: 44px;
-  padding: 0.5rem 0.9rem;
+  min-height: var(--tocco);
+  padding: var(--s-2) var(--s-4);
   border: 1px solid var(--blu);
-  border-radius: 6px;
+  border-radius: var(--raggio);
   background: transparent;
   color: var(--blu);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
+}
+
+.button,
+.choice-item,
+.option,
+.key,
+.tabs-item,
+.tab {
+  transition: background-color var(--durata) ease, border-color var(--durata) ease, color var(--durata) ease;
 }
 
 .button-primary {
@@ -252,9 +332,9 @@ p {
 }
 
 .back {
-  min-height: 44px;
-  margin: -0.5rem 0 0.25rem -0.5rem;
-  padding: 0.25rem 0.5rem;
+  min-height: var(--tocco);
+  margin: -0.5rem 0 var(--s-1) -0.5rem;
+  padding: var(--s-1) var(--s-2);
   border: 0;
   background: transparent;
   color: var(--blu);
@@ -267,8 +347,8 @@ p {
 .exercise-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
 }
 
 /* ───────────── formule ───────────── */
@@ -285,8 +365,8 @@ p {
 /* Le formule lunghe scorrono di lato invece di rimpicciolirsi. */
 .formula-display {
   display: block;
-  margin: 0.6rem 0;
-  padding: 0.35rem 0;
+  margin: var(--s-2) 0;
+  padding: var(--s-1) 0;
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -297,12 +377,12 @@ p {
 
 .rich ul,
 .rich ol {
-  margin: 0 0 0.85rem;
-  padding-left: 1.3rem;
+  margin: 0 0 var(--s-3);
+  padding-left: var(--s-5);
 }
 
 .rich li {
-  margin-bottom: 0.35rem;
+  margin-bottom: var(--s-1);
 }
 
 .ref {
@@ -318,8 +398,8 @@ p {
 /* ───────────── lezione ───────────── */
 
 .lesson-header {
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.9rem;
+  margin-bottom: var(--s-4);
+  padding-bottom: var(--s-4);
   border-bottom: 1px solid var(--linea);
 }
 
@@ -338,18 +418,18 @@ p {
 }
 
 .box {
-  margin: 1.1rem 0;
-  padding: 0.85rem 0.9rem 0.9rem;
+  margin: var(--s-4) 0;
+  padding: var(--s-3) var(--s-4) var(--s-4);
   border: 1px solid var(--linea);
   border-left: 4px solid var(--colore, var(--linea));
-  border-radius: 4px;
+  border-radius: var(--raggio);
   background: var(--fondo, var(--carta-alta));
 }
 
 .box-label {
-  margin: 0 0 0.45rem;
+  margin: 0 0 var(--s-2);
   color: var(--colore, var(--inchiostro));
-  font-size: 0.8rem;
+  font-size: var(--testo-minimo);
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -403,8 +483,8 @@ p {
 }
 
 .lesson-footer {
-  margin-top: 1.5rem;
-  padding-top: 1rem;
+  margin-top: var(--s-5);
+  padding-top: var(--s-4);
   border-top: 1px solid var(--linea);
 }
 
@@ -416,7 +496,7 @@ p {
 /* ───────────── esercizio ───────────── */
 
 .exercise-prompt {
-  margin-bottom: 0.9rem;
+  margin-bottom: var(--s-4);
   font-size: 1.08rem;
 }
 
@@ -427,7 +507,7 @@ p {
 
 .options {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--s-2);
 }
 
 .options-two {
@@ -437,11 +517,11 @@ p {
 .option {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--s-2);
   min-height: 48px;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--linea);
-  border-radius: 6px;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
   background: var(--carta-alta);
   color: inherit;
   font: inherit;
@@ -458,7 +538,7 @@ p {
   height: 1.3rem;
   border: 2px solid var(--inchiostro-secondario);
   border-radius: 50%;
-  font-size: 0.8rem;
+  font-size: var(--testo-minimo);
   font-weight: 700;
 }
 
@@ -499,7 +579,7 @@ p {
 
 .answer-fields {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--s-2);
 }
 
 .answer-grid {
@@ -514,13 +594,13 @@ p {
 .answer-input {
   width: 100%;
   min-height: 48px;
-  padding: 0.5rem 0.7rem;
+  padding: var(--s-2) var(--s-3);
   border: 1px solid var(--inchiostro-secondario);
-  border-radius: 6px;
+  border-radius: var(--raggio);
   background: var(--carta-alta);
   color: var(--inchiostro);
   /* Almeno 16 px: sotto, il telefono ingrandisce la pagina quando si tocca il campo. */
-  font: 1.15rem ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font: 1.15rem var(--font-mono);
 }
 
 .answer-input:focus {
@@ -532,12 +612,12 @@ p {
 .preview {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--s-3);
   min-height: 3.2rem;
-  margin: 0.5rem 0;
-  padding: 0.4rem 0.7rem;
+  margin: var(--s-2) 0;
+  padding: var(--s-2) var(--s-3);
   border: 1px dashed var(--linea);
-  border-radius: 6px;
+  border-radius: var(--raggio);
   overflow-x: auto;
   overflow-y: hidden;
 }
@@ -545,7 +625,7 @@ p {
 .preview-label {
   flex: none;
   color: var(--inchiostro-secondario);
-  font-size: 0.75rem;
+  font-size: var(--testo-minimo);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -570,26 +650,26 @@ p {
 }
 
 .answer-problem {
-  margin: 0.5rem 0;
+  margin: var(--s-2) 0;
 }
 
 .keyboard {
-  margin-top: 0.9rem;
-  padding: 0.5rem;
+  margin-top: var(--s-4);
+  padding: var(--s-2);
   border: 1px solid var(--linea);
-  border-radius: 8px;
+  border-radius: var(--raggio);
   background: var(--carta-alta);
 }
 
 .keyboard-levels {
   display: flex;
-  gap: 0.25rem;
-  margin-bottom: 0.4rem;
+  gap: var(--s-1);
+  margin-bottom: var(--s-2);
 }
 
 .keyboard-level {
   flex: 1;
-  min-height: 44px;
+  min-height: var(--tocco);
   border: 0;
   border-bottom: 3px solid transparent;
   background: transparent;
@@ -608,15 +688,15 @@ p {
 .keyboard-keys {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
+  gap: var(--s-1);
 }
 
 .key {
   min-width: 0;
   min-height: 46px;
   padding: 0;
-  border: 1px solid var(--linea);
-  border-radius: 6px;
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
   background: var(--carta);
   color: var(--inchiostro);
   font: 1.15rem var(--font-ui);
@@ -638,14 +718,14 @@ p {
 
 .hints,
 .steps {
-  margin: 1rem 0 0;
-  padding-left: 1.4rem;
+  margin: var(--s-4) 0 0;
+  padding-left: var(--s-5);
 }
 
 .hints li,
 .steps li {
-  margin-bottom: 0.7rem;
-  padding-left: 0.2rem;
+  margin-bottom: var(--s-3);
+  padding-left: var(--s-1);
 }
 
 .hints li::marker {
@@ -659,15 +739,15 @@ p {
 }
 
 .verdict {
-  margin: 0.25rem 0 0.9rem;
-  padding: 0.75rem 0.9rem;
+  margin: var(--s-1) 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
   border: 1px solid var(--linea);
   border-left-width: 4px;
-  border-radius: 4px;
+  border-radius: var(--raggio);
 }
 
 .verdict-title {
-  margin: 0 0 0.3rem;
+  margin: 0 0 var(--s-1);
   font-size: 1.15rem;
   font-weight: 700;
 }
@@ -708,13 +788,13 @@ p {
 .answer-line {
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 0.2rem;
+  padding-bottom: var(--s-1);
 }
 
 .answer-line-label {
-  margin-right: 0.4rem;
+  margin-right: var(--s-2);
   color: var(--inchiostro-secondario);
-  font-size: 0.8rem;
+  font-size: var(--testo-minimo);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -722,8 +802,8 @@ p {
 .distraction {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  min-height: 44px;
+  gap: var(--s-2);
+  min-height: var(--tocco);
   cursor: pointer;
 }
 
@@ -734,9 +814,10 @@ p {
 }
 
 .exercise-code {
-  margin: 1.25rem 0 0;
+  margin: var(--s-4) 0 0;
   color: var(--inchiostro-secondario);
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--testo-minimo);
   text-align: right;
 }
 
@@ -757,9 +838,9 @@ p {
   max-width: 44rem;
   max-height: 70dvh;
   overflow-y: auto;
-  padding: 1rem 16px calc(1.25rem + env(safe-area-inset-bottom));
+  padding: var(--s-4) var(--margine) calc(var(--s-5) + env(safe-area-inset-bottom));
   border-top: 3px solid var(--blu);
-  border-radius: 12px 12px 0 0;
+  border-radius: var(--raggio-grande) var(--raggio-grande) 0 0;
   background: var(--carta-alta);
 }
 
@@ -784,7 +865,7 @@ p {
 
 .tab {
   min-height: 56px;
-  padding: 0.5rem 0.25rem;
+  padding: var(--s-2) var(--s-1);
   border: 0;
   border-top: 3px solid transparent;
   background: transparent;
@@ -816,8 +897,8 @@ p {
 /* ───────────── involucro: navigazione, schede, scelte, padronanza ───────────── */
 
 .group-title {
-  margin: 1.5rem 0 0.5rem;
-  font-size: 0.8rem;
+  margin: var(--s-5) 0 var(--s-2);
+  font-size: var(--testo-minimo);
   font-family: var(--font-ui);
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -825,9 +906,10 @@ p {
   color: var(--inchiostro-secondario);
 }
 
+/* Una lezione non ancora scritta: contorno tratteggiato, testo pieno (l'opacità abbasserebbe il contrasto). */
 .card-coming {
-  opacity: 0.62;
   border-style: dashed;
+  background: transparent;
 }
 
 .row-between {
@@ -835,16 +917,16 @@ p {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: var(--s-2);
 }
 
 .tag {
   display: inline-block;
-  padding: 0.1rem 0.5rem;
+  padding: 0.1rem var(--s-2);
   border: 1px solid var(--arancio);
   border-radius: 999px;
   color: var(--arancio);
-  font-size: 0.8rem;
+  font-size: var(--testo-minimo);
   font-weight: 600;
 }
 
@@ -861,16 +943,16 @@ p {
 }
 
 .notice {
-  margin: 0 0 1rem;
-  padding: 0.75rem 1rem;
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
   border: 1px solid var(--arancio);
   border-left-width: 4px;
-  border-radius: 6px;
+  border-radius: var(--raggio);
   background: var(--teo-fondo);
 }
 
 .notice-title {
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--s-1);
   font-weight: 600;
   color: var(--arancio);
 }
@@ -879,7 +961,7 @@ p {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--linea);
-  border-radius: 8px;
+  border-radius: var(--raggio);
   background: var(--carta-alta);
   overflow: hidden;
 }
@@ -888,9 +970,9 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: var(--s-3);
   min-height: 3rem;
-  padding: 0.6rem 1rem;
+  padding: var(--s-2) var(--s-4);
   border: 0;
   border-bottom: 1px solid var(--linea);
   background: none;
@@ -909,11 +991,11 @@ button.list-row {
 
 .tabs {
   display: flex;
-  gap: 0.25rem;
-  margin: 0 0 1rem;
-  padding: 0.25rem;
+  gap: var(--s-1);
+  margin: 0 0 var(--s-4);
+  padding: var(--s-1);
   border: 1px solid var(--linea);
-  border-radius: 8px;
+  border-radius: var(--raggio);
   background: var(--carta-alta);
 }
 
@@ -921,7 +1003,7 @@ button.list-row {
   flex: 1;
   min-height: 2.5rem;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--raggio);
   background: none;
   color: var(--inchiostro-secondario);
   font: inherit;
@@ -938,16 +1020,16 @@ button.list-row {
 .choice {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin: 0.25rem 0 0.75rem;
+  gap: var(--s-2);
+  margin: var(--s-1) 0 var(--s-3);
 }
 
 .choice-item {
   min-width: 3rem;
   min-height: 2.75rem;
-  padding: 0.4rem 0.9rem;
-  border: 1px solid var(--linea);
-  border-radius: 8px;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
   background: var(--carta-alta);
   color: var(--inchiostro);
   font: inherit;
@@ -969,7 +1051,7 @@ button.list-row {
 
 .field-label {
   display: block;
-  margin: 0.75rem 0 0;
+  margin: var(--s-3) 0 0;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--inchiostro-secondario);
@@ -978,10 +1060,10 @@ button.list-row {
 .select {
   width: 100%;
   min-height: 2.75rem;
-  margin: 0.25rem 0 0.5rem;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid var(--linea);
-  border-radius: 8px;
+  margin: var(--s-1) 0 var(--s-2);
+  padding: var(--s-2) var(--s-2);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
   background: var(--carta-alta);
   color: var(--inchiostro);
   font: inherit;
@@ -990,7 +1072,7 @@ button.list-row {
 .check-row {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: var(--s-2);
   min-height: 2.75rem;
 }
 
@@ -1003,7 +1085,7 @@ button.list-row {
 .mastery {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: var(--s-2);
   font-size: 0.85rem;
   color: var(--inchiostro-secondario);
 }
@@ -1029,15 +1111,55 @@ button.list-row {
   background: var(--arancio);
 }
 
+/* Stato di una lezione, disegnato e non affidato a un glifo (◐ in certi caratteri esce minuscolo):
+   cerchio vuoto (da iniziare), mezzo pieno (in corso), pieno con la spunta (completata), tratteggiato
+   (in arrivo). Accanto c'è sempre la parola. */
+.state-mark {
+  display: inline-block;
+  flex: none;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.3em;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+  vertical-align: -0.08em;
+}
+
+.state-in-corso {
+  background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+}
+
+.state-completata {
+  position: relative;
+  border-color: var(--giusto);
+  background: var(--giusto);
+}
+
+.state-completata::after {
+  content: "";
+  position: absolute;
+  left: 30%;
+  top: 12%;
+  width: 28%;
+  height: 52%;
+  border: solid var(--carta-alta);
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.state-in-arrivo {
+  border-style: dashed;
+}
+
 .series-position {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--s-2);
 }
 
 /* La quota di un tempo: una riga con le tacche, come un righello. */
 .ruler {
   position: relative;
   height: 0.5rem;
-  margin: 0.4rem 0 0.2rem;
+  margin: var(--s-2) 0 var(--s-1);
   border: 1px solid var(--blu);
   border-radius: 1px;
   background: repeating-linear-gradient(90deg, transparent 0 9.5%, var(--linea) 9.5% 10%);
@@ -1053,8 +1175,8 @@ button.list-row {
 .phases {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin: 0.5rem 0 1rem;
+  gap: var(--s-1);
+  margin: var(--s-2) 0 var(--s-4);
   padding: 0;
   list-style: none;
 }
@@ -1063,8 +1185,8 @@ button.list-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.35rem 0;
+  gap: var(--s-3);
+  padding: var(--s-1) 0;
   border-bottom: 1px dashed var(--linea);
   color: var(--inchiostro-secondario);
 }
@@ -1089,35 +1211,35 @@ button.list-row {
 .stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
-  gap: 0.75rem;
+  gap: var(--s-3);
 }
 
 .stat-label {
   display: block;
-  font-size: 0.8rem;
+  font-size: var(--testo-minimo);
   color: var(--inchiostro-secondario);
 }
 
 .flashcard-face {
   min-height: 8rem;
-  padding: 1rem;
+  padding: var(--s-4);
   border: 1px solid var(--linea);
-  border-radius: 8px;
+  border-radius: var(--raggio);
   background: var(--carta-alta);
 }
 
 .flashcard-back {
-  margin-top: 0.75rem;
+  margin-top: var(--s-3);
   border-color: var(--blu);
 }
 
 .proof-step {
   display: flex;
   align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--linea);
-  border-radius: 8px;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
   background: var(--carta-alta);
   color: var(--inchiostro);
   font: inherit;
@@ -1126,7 +1248,7 @@ button.list-row {
 }
 
 .proof-step + .proof-step {
-  margin-top: 0.5rem;
+  margin-top: var(--s-2);
 }
 
 .proof-step-fixed {
@@ -1141,7 +1263,7 @@ button.list-row {
 .proof-step-moves {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--s-1);
 }
 
 .proof-step-moves .key {
@@ -1150,15 +1272,15 @@ button.list-row {
 }
 
 .update-banner {
-  margin: 0 0 1rem;
-  padding: 0.6rem 1rem;
+  margin: 0 0 var(--s-4);
+  padding: var(--s-2) var(--s-4);
   border: 1px solid var(--blu);
-  border-radius: 8px;
+  border-radius: var(--raggio);
   background: var(--def-fondo);
 }
 
 .skill-row {
-  padding: 0.4rem 0;
+  padding: var(--s-2) 0;
   border-bottom: 1px dashed var(--linea);
 }
 

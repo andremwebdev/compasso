@@ -13,11 +13,40 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const srcApp = path.join(root, "src", "app");
 const katexDist = path.join(root, "node_modules", "katex", "dist");
+const fontsource = path.join(root, "node_modules", "@fontsource");
+
+// Caratteri dell'interfaccia (specifica, sezione 10): IBM Plex Sans per il testo, Plex Mono per i
+// codici e per il campo di risposta. Solo il sottoinsieme latino (basta per l'italiano) in woff2;
+// i simboli matematici fuori da questo insieme li disegna KaTeX o il carattere di sistema.
+const UI_FONTS = [
+  { family: "Compasso Sans", weight: "400", style: "normal", file: "ibm-plex-sans/files/ibm-plex-sans-latin-400-normal.woff2" },
+  { family: "Compasso Sans", weight: "400", style: "italic", file: "ibm-plex-sans/files/ibm-plex-sans-latin-400-italic.woff2" },
+  // Il 600 fa anche da grassetto: un file in meno da scaricare.
+  { family: "Compasso Sans", weight: "600 700", style: "normal", file: "ibm-plex-sans/files/ibm-plex-sans-latin-600-normal.woff2" },
+  { family: "Compasso Mono", weight: "400", style: "normal", file: "ibm-plex-mono/files/ibm-plex-mono-latin-400-normal.woff2" },
+];
+const UNICODE_LATIN =
+  "U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD";
+
+/** Le regole @font-face dei caratteri dell'interfaccia, con i file nella cartella fonts/. */
+function uiFontsCss() {
+  return UI_FONTS.map(
+    (font) =>
+      `@font-face{font-family:"${font.family}";font-style:${font.style};font-weight:${font.weight};font-display:swap;` +
+      `src:url(fonts/${path.basename(font.file)}) format("woff2");unicode-range:${UNICODE_LATIN}}`,
+  ).join("");
+}
+
+/** Dove sta il file di un carattere citato nel CSS: KaTeX oppure i caratteri dell'interfaccia. */
+function fontSource(name) {
+  const ui = UI_FONTS.find((font) => path.basename(font.file) === name);
+  return ui ? path.join(fontsource, ui.file) : path.join(katexDist, "fonts", name);
+}
 const dist = path.join(root, "dist");
 
 const TARGETS = ["telefono", "pc"];
 
-// Colori provvisori del manifest (vedi src/app/styles.css).
+// Colori del manifest: la carta del tema chiaro (--carta in src/app/styles.css).
 const MANIFEST = {
   name: "Compasso",
   short_name: "Compasso",
@@ -26,8 +55,8 @@ const MANIFEST = {
   start_url: "./",
   scope: "./",
   display: "standalone",
-  background_color: "#f6f1e4",
-  theme_color: "#f6f1e4",
+  background_color: "#f4efe0",
+  theme_color: "#f4efe0",
   icons: [
     { src: "icons/icon-192.png", sizes: "192x192", type: "image/png" },
     { src: "icons/icon-512.png", sizes: "512x512", type: "image/png" },
@@ -65,11 +94,11 @@ async function katexCss() {
 }
 
 async function appCss() {
-  const css = await readFile(path.join(srcApp, "styles.css"), "utf8");
+  const css = uiFontsCss() + (await readFile(path.join(srcApp, "styles.css"), "utf8"));
   return (await transform(css, { loader: "css", minify: true })).code;
 }
 
-/** Nomi dei file woff2 di KaTeX citati nel CSS. */
+/** Nomi dei file woff2 citati nel CSS (KaTeX e interfaccia). */
 function fontFiles(css) {
   return [...new Set([...css.matchAll(/url\(fonts\/([^)]+\.woff2)\)/g)].map((m) => m[1]))];
 }
@@ -78,7 +107,7 @@ function fontFiles(css) {
 async function inlineFonts(css) {
   let out = css;
   for (const name of fontFiles(css)) {
-    const data = await readFile(path.join(katexDist, "fonts", name));
+    const data = await readFile(fontSource(name));
     out = out.replaceAll(`url(fonts/${name})`, `url(data:font/woff2;base64,${data.toString("base64")})`);
   }
   return out;
@@ -97,7 +126,7 @@ async function buildPc() {
   await mkdir(outDir, { recursive: true });
 
   const js = await bundleApp("pc");
-  const css = (await inlineFonts(await katexCss())) + (await appCss());
+  const css = await inlineFonts((await katexCss()) + (await appCss()));
   // Dentro un <script> la sequenza "</script" chiuderebbe il tag prima del tempo.
   const safeJs = js.replaceAll("</script", "<\\/script").replaceAll("<!--", "<\\!--");
 
@@ -129,15 +158,15 @@ async function buildTelefono() {
   await rm(outDir, { recursive: true, force: true });
   await mkdir(path.join(outDir, "fonts"), { recursive: true });
 
-  // Caratteri KaTeX (solo woff2) e icone.
-  const css = await katexCss();
+  // Caratteri (KaTeX e interfaccia, solo woff2) e icone.
+  const css = (await katexCss()) + (await appCss());
   for (const name of fontFiles(css)) {
-    await cp(path.join(katexDist, "fonts", name), path.join(outDir, "fonts", name));
+    await cp(fontSource(name), path.join(outDir, "fonts", name));
   }
   await cp(path.join(root, "public", "icons"), path.join(outDir, "icons"), { recursive: true });
 
   await writeFile(path.join(outDir, "app.js"), await bundleApp("telefono"));
-  await writeFile(path.join(outDir, "app.css"), css + (await appCss()));
+  await writeFile(path.join(outDir, "app.css"), css);
   await writeFile(path.join(outDir, "manifest.webmanifest"), JSON.stringify(MANIFEST, null, 2) + "\n");
 
   const head = [

@@ -1,5 +1,6 @@
 // Genera le icone PNG dell'app in public/icons/ (180 per iOS, 192 e 512 per il manifest).
-// Disegno provvisorio: un compasso da disegno tecnico che traccia un cerchio, su carta avorio.
+// Disegno definitivo: un compasso da disegno tecnico che traccia un cerchio arancione, su una tavola
+// blu da cianografia quadrettata.
 // Uso: npm run icone
 //
 // Le icone sono PNG opachi (senza trasparenza): iOS riempie di nero le parti trasparenti.
@@ -12,9 +13,13 @@ import zlib from "node:zlib";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = path.join(root, "public", "icons");
 
-const CARTA = [246, 241, 228];
-const BLU = [31, 79, 143];
-const ARANCIO = [199, 91, 18];
+// Colori dell'aspetto definitivo (src/app/styles.css): tavola blu da cianografia, linee avorio,
+// accento arancione. Sono i colori del tema scuro e chiaro mescolati: l'icona deve riconoscersi
+// su qualunque sfondo della schermata Home.
+const TAVOLA = [23, 63, 112]; // blu cianografia scuro
+const TAVOLA_BASSO = [28, 77, 135]; // --blu del tema chiaro, verso il basso
+const AVORIO = [251, 248, 239]; // --carta-alta
+const ARANCIO = [255, 168, 98]; // --arancio del tema scuro: si legge bene sul blu
 
 /** Distanza di un punto da un segmento. */
 function distToSegment(px, py, ax, ay, bx, by) {
@@ -24,26 +29,46 @@ function distToSegment(px, py, ax, ay, bx, by) {
   return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
 }
 
-// Geometria in coordinate normalizzate (0..1). Le gambe del compasso partono dal perno A:
-// una arriva al centro C del cerchio (la punta), l'altra su un punto P del cerchio (la mina).
-const A = [0.5, 0.12];
-const C = [0.5, 0.62];
-const R = 0.26;
-const P = [C[0] + R * Math.cos((-15 * Math.PI) / 180), C[1] + R * Math.sin((-15 * Math.PI) / 180)];
+const mix = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
 
-/** Colore del punto (x, y) in coordinate normalizzate. */
+// Geometria in coordinate normalizzate (0..1), tutta dentro il cerchio centrale di raggio 0,4
+// (così l'icona resta intera anche dove il sistema la ritaglia a cerchio). Il compasso ha il
+// perno A in alto: una gamba finisce con la punta nel centro C del cerchio, l'altra con la mina
+// sul punto P del cerchio che sta tracciando.
+const A = [0.5, 0.17];
+const C = [0.5, 0.6];
+const R = 0.26;
+const ANGLE = (22 * Math.PI) / 180;
+const P = [C[0] + R * Math.cos(ANGLE), C[1] + R * Math.sin(ANGLE)];
+
+/** Colore del punto (x, y) in coordinate normalizzate: strati dal più alto al più basso. */
 function colorAt(x, y) {
-  if (Math.hypot(x - A[0], y - A[1]) < 0.055) return ARANCIO; // perno
-  if (Math.hypot(x - C[0], y - C[1]) < 0.025) return ARANCIO; // punta al centro
-  if (distToSegment(x, y, A[0], A[1], C[0], C[1]) < 0.022) return BLU; // gamba con la punta
-  if (distToSegment(x, y, A[0], A[1], P[0], P[1]) < 0.022) return BLU; // gamba con la mina
-  if (Math.abs(Math.hypot(x - C[0], y - C[1]) - R) < 0.018) return BLU; // cerchio
-  return CARTA;
+  // Perno: anello avorio con il centro arancione.
+  const dA = Math.hypot(x - A[0], y - A[1]);
+  if (dA < 0.024) return ARANCIO;
+  if (dA < 0.058) return AVORIO;
+  // Impugnatura sopra il perno.
+  if (Math.abs(x - A[0]) < 0.02 && y > 0.075 && y < A[1]) return AVORIO;
+  // Mina che traccia, sopra la sua gamba.
+  if (Math.hypot(x - P[0], y - P[1]) < 0.036) return ARANCIO;
+  // Gambe; la punta nel centro.
+  if (distToSegment(x, y, A[0], A[1], C[0], C[1]) < 0.022) return AVORIO;
+  if (distToSegment(x, y, A[0], A[1], P[0], P[1]) < 0.022) return AVORIO;
+  if (Math.hypot(x - C[0], y - C[1]) < 0.028) return AVORIO;
+  // Il cerchio tracciato, in arancione.
+  if (Math.abs(Math.hypot(x - C[0], y - C[1]) - R) < 0.017) return ARANCIO;
+  // Fondo: la tavola con la quadrettatura di costruzione (linea più marcata ogni quattro).
+  const base = mix(TAVOLA, TAVOLA_BASSO, y);
+  const cell = 1 / 16;
+  const near = (v, step) => Math.abs(v / step - Math.round(v / step)) * step;
+  if (near(x, cell * 4) < 0.004 || near(y, cell * 4) < 0.004) return mix(base, AVORIO, 0.22);
+  if (near(x, cell) < 0.0025 || near(y, cell) < 0.0025) return mix(base, AVORIO, 0.1);
+  return base;
 }
 
 /** Rasterizza con 4x4 campioni per pixel (bordi lisci). */
 function render(size) {
-  const samples = 4;
+  const samples = 5;
   const rgb = Buffer.alloc(size * size * 3);
   for (let py = 0; py < size; py++) {
     for (let px = 0; px < size; px++) {

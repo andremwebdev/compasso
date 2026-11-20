@@ -12,13 +12,6 @@ import { checks, lessonProgress } from "./state";
 /** Lo stato di una lezione nella navigazione di Teoria. */
 export type LessonState = "da iniziare" | "in corso" | "completata" | "in arrivo";
 
-export const LESSON_STATE_MARKS: Readonly<Record<LessonState, string>> = {
-  "da iniziare": "○",
-  "in corso": "◐",
-  completata: "✓",
-  "in arrivo": "…",
-};
-
 const written = new Set<string>(lessonCodes);
 
 /** Vero se la lezione è scritta (e quindi si può aprire). */
