@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <title>Diagrammi di Eulero-Venn: 1 unione, 2 intersezione, 3 differenza A meno B, 4 complementare di A</title>
+  <!-- Riquadro 1. -->
+  <path class="fig-area-1" d="M29 66A32 32 0 1 0 93 66A32 32 0 1 0 29 66ZM67 66A32 32 0 1 0 131 66A32 32 0 1 0 67 66Z"/>
+  <rect class="fig-linea" x="6" y="6" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="61" cy="66" r="32"/>
+  <circle class="fig-linea" cx="99" cy="66" r="32"/>
+  <text class="fig-testo" x="13" y="23">1</text>
+  <text class="fig-testo-corsivo" x="42" y="71">A</text>
+  <text class="fig-testo-corsivo" x="110" y="71">B</text>
+  <text class="fig-testo" x="136" y="23">U</text>
+  <!-- Riquadro 2. -->
+  <path class="fig-area-1" d="M240 40.25A32 32 0 0 1 240 91.75A32 32 0 0 1 240 40.25Z"/>
+  <rect class="fig-linea" x="166" y="6" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="221" cy="66" r="32"/>
+  <circle class="fig-linea" cx="259" cy="66" r="32"/>
+  <text class="fig-testo" x="173" y="23">2</text>
+  <text class="fig-testo-corsivo" x="202" y="71">A</text>
+  <text class="fig-testo-corsivo" x="270" y="71">B</text>
+  <text class="fig-testo" x="296" y="23">U</text>
+  <!-- Riquadro 3. -->
+  <path class="fig-area-1" fill-rule="evenodd" d="M29 184A32 32 0 1 0 93 184A32 32 0 1 0 29 184ZM80 158.25A32 32 0 0 1 80 209.75A32 32 0 0 1 80 158.25Z"/>
+  <rect class="fig-linea" x="6" y="124" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="61" cy="184" r="32"/>
+  <circle class="fig-linea" cx="99" cy="184" r="32"/>
+  <text class="fig-testo" x="13" y="141">3</text>
+  <text class="fig-testo-corsivo" x="42" y="189">A</text>
+  <text class="fig-testo-corsivo" x="110" y="189">B</text>
+  <text class="fig-testo" x="136" y="141">U</text>
+  <!-- Riquadro 4. -->
+  <path class="fig-area-1" fill-rule="evenodd" d="M166 124h148v110h-148ZM189 184A32 32 0 1 0 253 184A32 32 0 1 0 189 184Z"/>
+  <rect class="fig-linea" x="166" y="124" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="221" cy="184" r="32"/>
+  <text class="fig-testo" x="173" y="141">4</text>
+  <text class="fig-testo-corsivo" x="202" y="189">A</text>
+  <text class="fig-testo" x="296" y="141">U</text>
+</svg>
