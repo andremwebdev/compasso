@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: visualizzazioni parte 1, impalcatura e `VIS.disequazioni-grafico` (22 novembre 2026). Prima: involucro parte 4, figure e grafici. Prima: involucro parte 3, caricamento dei contenuti per modulo. Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: visualizzazioni parte 2, le altre quattro del Volume 1 (22 novembre 2026). Prima: visualizzazioni parte 1, impalcatura e `VIS.disequazioni-grafico`. Prima: involucro parte 4, figure e grafici. Prima: involucro parte 3, caricamento dei contenuti per modulo. Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -50,7 +50,14 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - **Nella lezione `V1.M06.L04`**, nuova sezione «La stessa cosa, vista sul grafico» dopo i tre esempi svolti, con le loro tre funzioni (durata 19 → 20).
   - **Prove**: matematica confrontata con i valori della funzione per ogni soglia del cursore, ogni verso e ogni funzione delle lezioni; componente in jsdom (pulsanti, cursori, trascinamento); Chrome col dito (`test/app/visualizzazioni-chrome.test.ts`, lezione vera) nei due temi, a 414 e 320 px, senza rete: maniglie da 45 px, la pagina non scorre mentre si trascina, nessuno scorrimento orizzontale, colori dal tema. Fotografie guardate a occhio.
   - `REGOLE.md`, «Come aggiungere una visualizzazione», riscritto con quello che la prima fissa; `docs/ARCHITETTURA.md` aggiornato.
-- **Test**: 1.311 in 58 file, verdi in locale.
+- **Visualizzazioni, parte 2** (le altre quattro del Volume 1, copiate da `VIS.disequazioni-grafico`; schede in `docs/VISUALIZZAZIONI.md`):
+  - `VIS.trasformazioni-funzioni`: $y = a\,f(b(x - c)) + d$ con cursori a passi di ½ ($a$, $b$ mai 0), punto $P'$ da trascinare (trasla), grafico di partenza tratteggiato, formula, $P \mapsto P'$ esatti, trasformazioni in ordine con il verso della traslazione a parole. Parametri `funzione` (1-4), `a`, `b`, `c`, `d`, `cursori`, `finestra`.
+  - `VIS.esponenziale-logaritmo`: base sul cursore (14 valori esatti, $e$ compreso, e $1$ con il suo messaggio), $a^x$, $\log_a x$ e $y = x$ con unità uguali, $P$ e $P'$ simmetrici, punti esatti, proprietà. Parametri `base`, `punto`, `logaritmo`.
+  - `VIS.circonferenza-goniometrica`: $P$ da trascinare (aggancio ai multipli di 15°), coseno, seno e tangente come segmenti con il nome, gradi e radianti affiancati, valori esatti ai multipli di 15°, tabella dei segni con il quadrante. Parametri `angolo`, `tangente`.
+  - `VIS.coniche-parametri`: circonferenza, parabola, ellisse, iperbole con i coefficienti sui cursori, vertici di ellisse e iperbole da trascinare; fuochi, assi, direttrice, asintoti; elementi esatti (radici semplificate) e casi particolari. Parametri `coniche`, `conica`, `coefficienti`.
+  - Comuni nuovi: `src/visualizzazioni/parametri.ts` (lettura dei parametri, numeri a passi esatti, finestra con unità uguali, piano vuoto).
+  - **Non inserite in lezioni** (lo faranno le lezioni). Prova in Chrome con la lezione finta `test/app/anteprima/visualizzazioni-prova.md` (`test/app/visualizzazioni-prova-chrome.test.ts`): due temi, 414 e 320 px, senza rete, col dito; fotografie guardate. Controlli a tappeto: trasformata = $a f(b(x-c)) + d$ per ogni posizione dei cursori; logaritmo simmetrico dell'esponenziale per ogni base; seno, coseno, tangente e segni per ogni grado; per ogni coefficiente delle coniche i punti disegnati soddisfano l'equazione e la definizione con i fuochi calcolati.
+- **Test**: 1.375, verdi in locale e su GitHub.
 
 ## In corso
 
@@ -78,7 +85,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 1. ~~Caricamento dei contenuti per modulo~~: fatto (involucro parte 3). Lezioni e generatori nuovi si aggiungono nel file del loro modulo, `src/moduli/vN/mNN.ts`.
 2. ~~Figure e grafici nelle lezioni~~: fatto (involucro parte 4). Sintassi in `REGOLE.md`, «Grafici e figure».
 3. ~~Impalcatura delle visualizzazioni con `VIS.disequazioni-grafico`~~: fatta (visualizzazioni parte 1). Le altre si copiano da questa (`REGOLE.md`).
-4. ⚙ **Le altre quattro visualizzazioni del Volume 1**: `VIS.trasformazioni-funzioni`, `VIS.esponenziale-logaritmo`, `VIS.circonferenza-goniometrica`, `VIS.coniche-parametri` (scheda in `docs/VISUALIZZAZIONI.md`, poi codice). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08).
+4. ~~Le altre quattro visualizzazioni del Volume 1~~: fatte (visualizzazioni parte 2). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08), con i parametri delle schede; quando una entra in una lezione vera, il suo blocco si toglie dalla lezione finta e il caso Chrome passa alla prova con la lezione vera.
 5. ⚙ **Parser e catalogo**: numeri periodici (V1.M02.L05), notazione scientifica (V1.M03.L07), gradi (V1.M10.L01), fattoriale (V1.M13.L01); voce di catalogo «√(x²) = x anche per x negativo» («Decisioni di Andrea», punto 1; le forme nuove di `V2.M04.A01.g1` restano alla fase 6).
 6. ⚙ **Risposta `ordering`** nella schermata di esercizio (punto 7 della fase 4): serve a V1.M11.A08 e alle dimostrazioni.
 
@@ -167,6 +174,8 @@ Generatori e lezione:
 - Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno (sotto la soglia).
 - `VIS.disequazioni-grafico` accetta solo funzioni razionali con numeratore e denominatore di grado al più 2 (perché gli zeri di $N - kD$ restino esatti per ogni soglia): niente valore assoluto, radici o esponenziali. Gli asintoti orizzontali non si disegnano (come nei grafici statici).
 - Le maniglie delle visualizzazioni non sono ancora provate su un iPhone vero (la prova è in Chrome con il tocco simulato).
+- `VIS.trasformazioni-funzioni`: la funzione di partenza deve avere un valore esatto in 1, 2, 0 o −1 (per il punto $P$); con funzioni non razionali gli asintoti verticali si vedono solo se il motore li trova (come nei grafici statici).
+- `VIS.coniche-parametri`: solo coniche in forma canonica (ellisse e iperbole con centro nell'origine, parabola con asse verticale); niente traslazioni né parabola con asse orizzontale.
 - Le cinque dimostrazioni di riserva seguono le strade classiche dei manuali di Analisi 1 (zeri per bisezione; Weierstrass con una successione che tende all'estremo superiore e Bolzano-Weierstrass; Fermat con il segno del rapporto incrementale; Rolle da Weierstrass e Fermat; Lagrange con la funzione ausiliaria), ma sono state scritte **senza un libro aperto**: il confronto con il libro di testo chiesto da `REGOLE.md` resta da fare quando entrano nelle lezioni.
 - Nelle dimostrazioni di riserva i risultati dei moduli non ancora scritti (successioni monotone, Bolzano-Weierstrass, permanenza del segno, continuità per successioni…) sono citati a parole: diventano rimandi `[[…]]` quando le lezioni esistono (elenco in `src/riserva/LEGGIMI.md`). Il teorema dei valori intermedi (V2.M05) e quello di Cauchy (V2.M06) non sono in riserva.
 - La prova con sympy dal testo mostrato non è nel repository né in CI: va rifatta a mano per ogni generatore nuovo (`REGOLE.md`).
@@ -247,6 +256,14 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 104. La tabella della visualizzazione mostra le righe di $N - kD$ e di $D$ ridotti a coefficienti interi (con $k = 0$ e le funzioni della lezione coincidono con le tabelle degli esempi); $D$ costante non ha riga.
 105. Nuova cartella `src/visualizzazioni/` nella tabella di `REGOLE.md`: importa da `motore`, `contenuti/formato` (per `readGraph`) e `app/componenti` (`RichText`); `index.ts` è scritto con `h()` per restare `.ts`.
 106. La verifica dei contenuti riceve anche il controllo dei parametri (`visualizationParams`, facoltativo): un parametro sbagliato è un problema con la riga.
+
+*Visualizzazioni, parte 2 (V1)*
+
+107. Intervalli dei cursori scelti qui: trasformazioni $a, b \in [-3; 3] \setminus \{0\}$, $c, d \in [-5; 5]$, passo ½; basi dell'esponenziale $\tfrac15 … 5$ più $e$ e $1$; angolo in gradi interi con aggancio ai multipli di 15° entro 4°; coniche: circonferenza $a, b \in [-6; 6]$, $c \in [-12; 12]$ interi, parabola $a$ a passi di ½ in $[-3; 3]$, $b, c$ interi in $[-6; 6]$, semiassi a passi di ½ in $[\tfrac12; 6]$.
+108. Esponenziale, circonferenza e coniche hanno la finestra fissa con unità uguali (niente parametro `finestra`): forme e simmetrie si vedono giuste.
+109. Parametri in più rispetto alla specifica: `cursori` (trasformazioni), `logaritmo` (esponenziale: V1.M09.L01 viene prima dei logaritmi), `tangente` (circonferenza: la tangente è in V1.M10.L03), `coniche` (quali coniche mostrare).
+110. Colori: curva trasformata e conica blu, fuochi e tangente arancioni, coseno blu e seno verde (sempre anche con il nome scritto), logaritmo arancione tratteggiato, $y = x$ verde a puntini.
+111. Sopra il disegno solo comandi che non cambiano altezza (le formule stanno sotto): regola aggiunta a `REGOLE.md`.
 
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 

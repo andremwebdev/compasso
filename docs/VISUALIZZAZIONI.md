@@ -7,10 +7,10 @@ Ogni scheda dice: che cosa si manipola, che cosa si vede, i parametri che una le
 | Codice | Modulo | Stato |
 | --- | --- | --- |
 | `VIS.disequazioni-grafico` | V1.M06 | fatta (visualizzazioni parte 1) |
-| `VIS.trasformazioni-funzioni` | V1.M08 | da fare |
-| `VIS.esponenziale-logaritmo` | V1.M09 | da fare |
-| `VIS.circonferenza-goniometrica` | V1.M10 | da fare |
-| `VIS.coniche-parametri` | V1.M12 | da fare |
+| `VIS.trasformazioni-funzioni` | V1.M08 | fatta (visualizzazioni parte 2; non ancora in una lezione) |
+| `VIS.esponenziale-logaritmo` | V1.M09 | fatta (visualizzazioni parte 2; non ancora in una lezione) |
+| `VIS.circonferenza-goniometrica` | V1.M10 | fatta (visualizzazioni parte 2; non ancora in una lezione) |
+| `VIS.coniche-parametri` | V1.M12 | fatta (visualizzazioni parte 2; non ancora in una lezione) |
 | `VIS.limite-epsilon-delta` | V2.M04 | da fare |
 | `VIS.secante-tangente` | V2.M06 | da fare |
 | `VIS.taylor` | V2.M08 | da fare |
