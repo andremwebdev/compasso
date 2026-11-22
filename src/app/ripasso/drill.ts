@@ -4,6 +4,7 @@
 // e quelle sbagliate). Il caso viene da `random`, così i test lo fissano.
 
 import type { ProofStep } from "../../contenuti/formato";
+import { moveItem } from "../risposta/ordering";
 
 export type DrillMode = "riordina" | "sbagliato" | "completa";
 
@@ -41,15 +42,9 @@ export function shuffledOrder(steps: readonly ProofStep[], random: () => number)
 /** Vero se l'ordine è quello giusto. */
 export const isInOrder = (order: readonly number[]): boolean => order.every((value, index) => value === index);
 
-/** Sposta l'elemento in posizione `from` di uno su o giù, saltando i passaggi fissi. */
-export function moveStep(order: readonly number[], steps: readonly ProofStep[], from: number, direction: -1 | 1): number[] {
-  const out = [...order];
-  let to = from + direction;
-  while (to >= 0 && to < out.length && steps[out[to] ?? 0]?.fixed) to += direction;
-  if (to < 0 || to >= out.length || steps[out[from] ?? 0]?.fixed) return out;
-  [out[from], out[to]] = [out[to] as number, out[from] as number];
-  return out;
-}
+/** Sposta l'elemento in posizione `from` di uno su o giù, saltando i passaggi fissi (come la risposta `ordering`). */
+export const moveStep = (order: readonly number[], steps: readonly ProofStep[], from: number, direction: -1 | 1): number[] =>
+  moveItem(order, steps, from, direction);
 
 /** Trova lo sbagliato: quale passaggio è sostituito e con quale versione sbagliata. */
 export interface WrongTask {

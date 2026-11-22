@@ -2058,9 +2058,43 @@ button.list-row {
   gap: var(--s-1);
 }
 
+/* Frecce del riordino: area di tocco piena, anche una sopra l'altra. */
 .proof-step-moves .key {
-  min-width: 2.5rem;
-  min-height: 2.25rem;
+  min-width: var(--tocco);
+  min-height: var(--tocco);
+}
+
+.proof-step-moves .key:disabled {
+  border-color: var(--linea);
+  background: transparent;
+  color: var(--inchiostro-secondario);
+  cursor: default;
+}
+
+/* Elenco da riordinare (risposta `ordering` e «riordina» delle dimostrazioni). */
+.reorder {
+  margin: 0 0 var(--s-4);
+  padding: 0;
+  list-style: none;
+}
+
+.reorder-place {
+  flex: none;
+}
+
+.reorder-mark {
+  flex: none;
+  min-width: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.reorder-right .reorder-mark {
+  color: var(--giusto);
+}
+
+.reorder-wrong .reorder-mark {
+  color: var(--sbagliato);
 }
 
 .update-banner {
@@ -2083,4 +2117,15 @@ details > summary {
 
 details.card > summary {
   min-height: 2.75rem;
+}
+
+/* Dopo la risposta: i posti giusti e sbagliati del riordino (sempre anche con ✓ e ✗). */
+.proof-step.reorder-right {
+  border-color: var(--giusto);
+  background: var(--giusto-fondo);
+}
+
+.proof-step.reorder-wrong {
+  border-color: var(--sbagliato);
+  background: var(--sbagliato-fondo);
 }

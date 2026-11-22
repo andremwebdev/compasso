@@ -2,16 +2,18 @@ import { useMemo, useRef, useState } from "preact/hooks";
 import { skillOf } from "../../codici";
 import type { AttemptContext } from "../../dati";
 import { findError, UNCLASSIFIED } from "../../errori";
-import { choiceOptions, evaluateResponse, type Evaluation, type Exercise, type Response } from "../../esercizi";
+import { choiceOptions, evaluateResponse, orderingStart, type Evaluation, type Exercise, type Response } from "../../esercizi";
 import { limitToLatex } from "../../motore/calculus/limit";
 import { EngineError } from "../../motore/errors";
 import { toLatex } from "../../motore/expr";
 import { matrixSize, matrixToLatex } from "../../motore/linalg";
 import { setToInequalityLatex, setToLatex } from "../../motore/sets";
 import { keyboardFor } from "../risposta/levels";
+import { rightPlaces } from "../risposta/ordering";
 import { fieldKindOf, previewText } from "../risposta/preview";
 import { markDistraction, newId, recordAttempt } from "../state";
 import { AnswerEditor } from "./AnswerEditor";
+import { ReorderList } from "./ReorderList";
 import { RichText } from "./RichText";
 
 interface ExerciseViewProps {
@@ -56,7 +58,8 @@ function correctAnswerText(exercise: Exercise): string {
     case "truefalse":
       return answer.correct ? "Vero" : "Falso";
     case "ordering":
-      return "l'ordine mostrato nella soluzione";
+      // L'ordine giusto si mostra come elenco, sotto l'esito.
+      return answer.items.map((item, index) => `${index + 1}. ${item.content}`).join(" ");
   }
 }
 
@@ -74,6 +77,8 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
   const [cells, setCells] = useState<string[][]>(() => Array.from({ length: size.rows }, () => Array.from({ length: size.cols }, () => "")));
   const [chosen, setChosen] = useState<number | null>(null);
   const [truth, setTruth] = useState<boolean | null>(null);
+  // Riordino: si parte dall'ordine mescolato (deterministico: stesso esercizio, stesso ordine di partenza).
+  const [order, setOrder] = useState<number[]>(() => orderingStart(exercise));
   const [hints, setHints] = useState(0);
   const [problem, setProblem] = useState<string | null>(null);
   const [done, setDone] = useState<Done | null>(null);
@@ -94,8 +99,10 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
       case "set":
       case "limit":
         return (cells[0]?.[0] ?? "").trim() === "" ? null : { kind: "text", text: cells[0]?.[0] ?? "" };
-      case "choice":
       case "ordering":
+        // Anche l'ordine di partenza è una risposta (mai quella giusta): si conferma quando si vuole.
+        return { kind: "ordering", order };
+      case "choice":
         return null;
     }
   };
@@ -245,10 +252,23 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
             >
               {controls}
             </AnswerEditor>
-          ) : (
-            <p class="muted">Questo tipo di esercizio (riordino) arriva con le dimostrazioni interattive.</p>
-          )}
-          {(options || answer.kind === "truefalse") && problem && (
+          ) : answer.kind === "ordering" ? (
+            <>
+              <p class="muted">
+                Rimetti in ordine con le frecce ↑ e ↓{answer.items.some((item) => item.fixed) ? "; quelli tratteggiati sono fissi" : ""}, poi conferma.
+              </p>
+              <ReorderList
+                items={answer.items}
+                order={order}
+                onChange={(next) => {
+                  setOrder(next);
+                  setProblem(null);
+                }}
+                label="Elementi da riordinare"
+              />
+            </>
+          ) : null}
+          {(options || answer.kind === "truefalse" || answer.kind === "ordering") && problem && (
             <p class="answer-problem" role="alert">
               <RichText text={problem} inline untrusted />
             </p>
@@ -266,9 +286,26 @@ export function ExerciseView({ exercise, context, preferChoice = false, onSimila
               <span class="answer-line-label">La tua risposta</span> <RichText text={done.given} inline />
             </p>
           )}
-          <p class="answer-line">
-            <span class="answer-line-label">Risposta giusta</span> <RichText text={correctAnswerText(exercise)} inline />
-          </p>
+          {answer.kind === "ordering" ? (
+            <>
+              {done.evaluation.outcome === "wrong" && (
+                <>
+                  <p class="answer-line">
+                    <span class="answer-line-label">Il tuo ordine</span> al posto giusto {rightPlaces(order)} su {order.length}
+                  </p>
+                  <ReorderList items={answer.items} order={order} marks label="Il tuo ordine" />
+                </>
+              )}
+              <p class="answer-line">
+                <span class="answer-line-label">Ordine giusto</span>
+              </p>
+              <ReorderList items={answer.items} order={answer.items.map((_, index) => index)} label="Ordine giusto" />
+            </>
+          ) : (
+            <p class="answer-line">
+              <span class="answer-line-label">Risposta giusta</span> <RichText text={correctAnswerText(exercise)} inline />
+            </p>
+          )}
 
           {done.evaluation.outcome === "wrong" && (
             <label class="distraction">
