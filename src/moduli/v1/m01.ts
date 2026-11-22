@@ -15,6 +15,7 @@ import l05 from "../../contenuti/v1/m01/l05.md";
 import l06 from "../../contenuti/v1/m01/l06.md";
 import l07 from "../../contenuti/v1/m01/l07.md";
 import l08 from "../../contenuti/v1/m01/l08.md";
+import a01g1 from "../../generatori/v1/m01/a01-g1";
 
 export default defineModule("V1.M01", {
   lessons: {
@@ -33,5 +34,5 @@ export default defineModule("V1.M01", {
     "v1/m01/l03-venn-lingue.svg": l03VennLingue,
     "v1/m01/l03-venn-sport.svg": l03VennSport,
   },
-  generators: [],
+  generators: [a01g1],
 });

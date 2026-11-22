@@ -271,7 +271,7 @@ Gli **avvisi** (`report.warnings`) non bocciano da soli, ma un generatore finito
 
 ## Come replicare un generatore
 
-I generatori di riferimento sono nove: cinque scritti nella sessione 3, quello dei limiti nella sessione E1, tre nella sessione E2 (primitive, equazioni differenziali, scelta multipla «verdetto: criterio»). Coprono i tipi di risposta più usati: ogni generatore nuovo parte da uno di loro.
+I generatori di riferimento sono dieci: cinque scritti nella sessione 3, quello dei limiti nella sessione E1, tre nella sessione E2 (primitive, equazioni differenziali, scelta multipla «verdetto: criterio»), quello vero o falso con i generatori di V1.M01. Coprono i tipi di risposta più usati: ogni generatore nuovo parte da uno di loro.
 
 | Se la risposta è… | Copia | Che cosa mostra |
 | --- | --- | --- |
@@ -284,8 +284,9 @@ I generatori di riferimento sono nove: cinque scritti nella sessione 3, quello d
 | una primitiva (vale qualunque costante abbia) | `src/generatori/v2/m09/a01-g1.ts` — integrali indefiniti | `check: { kind: "antiderivative" }`: la risposta si deriva; l'ultima sbagliata è la primitiva senza `+ c`; primitive sbagliate filtrate per derivata |
 | la soluzione di un'equazione differenziale | `src/generatori/v2/m12/a02-g1.ts` — secondo ordine | `check: { kind: "differentialEquation" }`: sostituzione, numero di costanti, condizioni di Cauchy; sbagliate filtrate con `checkVerdict` e `sameUnderCheck`; verifica simbolica con `solvesSymbolically` |
 | un verdetto con la sua giustificazione (convergenza, criteri) | `src/generatori/v2/m11/a01-g1.ts` — serie | `choice` «**Verdetto**: perché»; il modello dichiara il comportamento (esponente, rapporto) e `verify` lo controlla numericamente sulla funzione del testo |
+| un'affermazione vera o falsa (appartenenza, inclusione, logica) | `src/generatori/v1/m01/a01-g1.ts` — appartenenza e inclusione | si sceglie prima il valore di verità, poi l'affermazione che lo ha; `error` solo sulle affermazioni nate da un errore tipico (`{a} ∈ A`, `∅ ⊆ A`), le altre danno `NON_CLASSIFICATO`; verità ricalcolata dalla definizione dei simboli (`holds`, numero per numero, in `comuni/natural-sets.ts`); il test controlla che vere e false siano circa metà e metà |
 
-Per vero o falso e riordini non c'è ancora un riferimento (per la scelta multipla scritta a mano c'è `V2.M11.A01.g1`): il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella). Per il riordino il primo vero sarà **`V1.M11.A08.g1`** (passi delle costruzioni con riga e compasso). Indicazioni per quei tipi:
+Per i riordini non c'è ancora un riferimento (per la scelta multipla scritta a mano c'è `V2.M11.A01.g1`): il primo generatore di quel tipo segue lo stesso schema in cinque parti e diventa lui il riferimento (va aggiunto a questa tabella). Per il riordino il primo vero sarà **`V1.M11.A08.g1`** (passi delle costruzioni con riga e compasso). Indicazioni per quei tipi:
 
 - **`choice`** scritta a mano: solo quando la risposta non è un oggetto matematico (una proprietà, un metodo da scegliere). Ogni opzione sbagliata ha il suo codice di errore, come le risposte sbagliate previste.
 - **`truefalse`**: un'affermazione costruita all'indietro, vera o falsa con la stessa probabilità; l'affermazione falsa è quella che nasce da un errore tipico, e il codice di chi risponde il contrario va nel campo `error` della risposta. Due soli esiti: niente scelta multipla.

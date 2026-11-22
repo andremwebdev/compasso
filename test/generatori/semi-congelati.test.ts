@@ -15,6 +15,12 @@ import { findGenerator, loadedGenerators } from "../../src/generatori";
 const generators = loadedGenerators();
 
 const frozen: readonly (readonly [code: string, level: Level, seed: number, prompt: string])[] = [
+  ["V1.M01.A01.g1", 1, 1, "Sia $A = \\{2, 8, 10, 13, 15\\}$. L'affermazione $\\{10, 13, 17\\} \\subseteq A$ è vera o falsa?"],
+  ["V1.M01.A01.g1", 1, 2, "Sia $A = \\{3, 5, 11, 14, 15\\}$. L'affermazione $4 \\in A$ è vera o falsa?"],
+  ["V1.M01.A01.g1", 2, 1, "Sia $A = \\{x \\in \\mathbb{N} \\mid 2 \\le x < 6\\}$. L'affermazione $7 \\notin A$ è vera o falsa?"],
+  ["V1.M01.A01.g1", 2, 2, "Sia $A = \\{x \\in \\mathbb{N} \\mid x \\text{ è pari e } x < 13\\}$. L'affermazione $A = \\{0, 2, 4, 6, 8, 10, 12\\}$ è vera o falsa?"],
+  ["V1.M01.A01.g1", 3, 1, "Sia $A = \\{x \\in \\mathbb{N} \\mid x^2 < 5\\}$. L'affermazione $\\{0\\} \\in A$ è vera o falsa?"],
+  ["V1.M01.A01.g1", 3, 2, "Siano $A = \\{x \\in \\mathbb{N} \\mid x \\text{ è multiplo di } 3 \\text{ e } 0 < x < 25\\}$ e $B = \\{x \\in \\mathbb{N} \\mid x \\text{ è multiplo di } 6 \\text{ e } 0 < x < 25\\}$. L'affermazione $B \\subset A$ è vera o falsa?"],
   ["V1.M04.A07.g1", 1, 1, "Scomponi completamente in fattori il polinomio $x^{2} + 2x + 1$."],
   ["V1.M04.A07.g1", 1, 2, "Scomponi completamente in fattori il polinomio $10x^{2} + 25x$."],
   ["V1.M04.A07.g1", 2, 1, "Scomponi completamente in fattori il polinomio $2x^{2} - 5x + 3$."],
