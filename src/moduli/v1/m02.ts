@@ -19,6 +19,7 @@ import a05g1 from "../../generatori/v1/m02/a05-g1";
 import a06g1 from "../../generatori/v1/m02/a06-g1";
 import a07g1 from "../../generatori/v1/m02/a07-g1";
 import a08g1 from "../../generatori/v1/m02/a08-g1";
+import a09g1 from "../../generatori/v1/m02/a09-g1";
 
 export default defineModule("V1.M02", {
   lessons: {
@@ -31,5 +32,5 @@ export default defineModule("V1.M02", {
     "V1.M02.L07": l07,
     "V1.M02.L08": l08,
   },
-  generators: [a01g1, a02g1, a03g1, a04g1, a05g1, a06g1, a07g1, a08g1],
+  generators: [a01g1, a02g1, a03g1, a04g1, a05g1, a06g1, a07g1, a08g1, a09g1],
 });

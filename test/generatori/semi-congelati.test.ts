@@ -201,6 +201,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A08.g1", 2, 2, "Quale di questi numeri è il maggiore: $2{,}515$, $2{,}6$, $\\frac{32}{13}$, $\\sqrt{5}$?"],
   ["V1.M02.A08.g1", 3, 1, "Quale di questi numeri è il maggiore: $-2{,}5$, $-2{,}547$, $-\\frac{26}{7}$, $-\\sqrt{11}$?"],
   ["V1.M02.A08.g1", 3, 2, "Quale di questi numeri è il maggiore: $-2{,}9$, $-2{,}977$, $-\\frac{29}{12}$, $-\\sqrt{3}$?"],
+  ["V1.M02.A09.g1", 1, 1, "Quanto vale $170_{8}$ in base $10$? Rispondi con un numero naturale."],
+  ["V1.M02.A09.g1", 1, 2, "Quanto vale $377_{8}$ in base $10$? Rispondi con un numero naturale."],
+  ["V1.M02.A09.g1", 2, 1, "Come si scrive $18$ in base $16$?"],
+  ["V1.M02.A09.g1", 2, 2, "Quanto vale $374_{8}$ in base $10$? Rispondi con un numero naturale."],
+  ["V1.M02.A09.g1", 3, 1, "Come si scrive $10101110_{2}$ in base $16$?"],
+  ["V1.M02.A09.g1", 3, 2, "Come si scrive $232_{4}$ in base $8$?"],
 ];
 
 describe("semi congelati", () => {
