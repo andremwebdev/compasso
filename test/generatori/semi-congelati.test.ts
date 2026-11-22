@@ -153,6 +153,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V3.M03.A01.g1", 2, 2, "Calcola il determinante della matrice $A = \\begin{pmatrix} -1 & 1 & 2 \\\\ -3 & 4 & 0 \\\\ 1 & -4 & 1 \\end{pmatrix}$."],
   ["V3.M03.A01.g1", 3, 1, "Calcola il determinante della matrice $A = \\begin{pmatrix} 0 & -3 & -1 & 2 \\\\ 0 & -1 & 1 & 3 \\\\ -1 & 0 & 0 & -1 \\\\ 2 & 1 & 3 & -3 \\end{pmatrix}$."],
   ["V3.M03.A01.g1", 3, 2, "Calcola il determinante della matrice $A = \\begin{pmatrix} -1 & -1 & 3 & -3 \\\\ 3 & 0 & -1 & 2 \\\\ 3 & 0 & 0 & -1 \\\\ -1 & -2 & 3 & -1 \\end{pmatrix}$."],
+  ["V1.M02.A01.g1", 1, 1, "Calcola il valore dell'espressione $4 - \\left(-10\\right) : \\left(-2\\right)$. Rispondi con un numero intero."],
+  ["V1.M02.A01.g1", 1, 2, "Calcola il valore dell'espressione $-4 - \\left(-8\\right) + 9$. Rispondi con un numero intero."],
+  ["V1.M02.A01.g1", 2, 1, "Calcola il valore dell'espressione $\\left(-3\\right)^{3} - 24 : \\left(-6\\right) + 7 \\cdot 9$. Rispondi con un numero intero."],
+  ["V1.M02.A01.g1", 2, 2, "Calcola il valore dell'espressione $\\left(-2\\right)^{3} - 20 : \\left(-5\\right) + \\left(-8\\right) \\cdot 8$. Rispondi con un numero intero."],
+  ["V1.M02.A01.g1", 3, 1, "Calcola il valore dell'espressione $\\left(7 - 10\\right)^{2} - \\left(-7\\right) \\cdot \\left(-4\\right)$. Rispondi con un numero intero."],
+  ["V1.M02.A01.g1", 3, 2, "Calcola il valore dell'espressione $-\\left[-6 - \\left(8 - 9\\right) \\cdot \\left(-4\\right)\\right] + 15 : \\left(-5\\right)$. Rispondi con un numero intero."],
 ];
 
 describe("semi congelati", () => {

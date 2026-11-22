@@ -126,6 +126,14 @@ export const errorCatalog = [
     example: tex`$11 = 2\cdot5+1$, $5 = 2\cdot2+1$, $2 = 2\cdot1+0$, $1 = 2\cdot0+1$: i resti letti dall'ultimo danno $11 = 1011_2$. Letti dal primo danno $1101_2$, che vale $8+4+1 = 13$.`,
     reference: "V1.M02",
   },
+  {
+    code: "CALC.REGOLA_SEGNI",
+    name: "Regola dei segni sbagliata",
+    category: "CALC",
+    explanation: tex`In un prodotto o in un quoziente segni uguali danno $+$ e segni diversi danno $-$. In una somma di due numeri di segno diverso si fa la differenza dei due numeri senza segno e si tiene il segno di quello più grande senza segno. Conviene decidere il segno prima di fare il conto.`,
+    example: tex`$(-4)\cdot(-3) = 12$, non $-12$: due segni meno danno più. $(-12)+5 = -7$, non $7$: vince il $-12$, che senza segno è il più grande.`,
+    reference: "V1.M02",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

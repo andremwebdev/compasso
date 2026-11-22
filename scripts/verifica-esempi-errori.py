@@ -787,6 +787,12 @@ def _():
     assert int("1101", 2) == 8 + 4 + 1 == 13 != 11
 
 
+@check("CALC.REGOLA_SEGNI")
+def _():
+    assert (-4) * (-3) == 12 != -12
+    assert (-12) + 5 == -7 != 7
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)
