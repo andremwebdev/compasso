@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Diagramma di Eulero-Venn delle tre lingue, con il numero di studenti in ogni zona</title>
+  <!-- I = inglese, F = francese, S = spagnolo; il rettangolo sono i 50 studenti. -->
+  <rect class="fig-linea" x="8" y="8" width="304" height="204" rx="6"/>
+  <circle class="fig-area-1 fig-linea" cx="130" cy="90" r="55"/>
+  <circle class="fig-area-2 fig-linea" cx="190" cy="90" r="55"/>
+  <circle class="fig-area-3 fig-linea" cx="160" cy="140" r="55"/>
+  <text class="fig-testo-corsivo" x="62" y="48">I</text>
+  <text class="fig-testo-corsivo" x="250" y="48">F</text>
+  <text class="fig-testo-corsivo" x="232" y="190">S</text>
+  <text class="fig-testo" x="95" y="85" text-anchor="middle">12</text>
+  <text class="fig-testo" x="225" y="85" text-anchor="middle">5</text>
+  <text class="fig-testo" x="160" y="180" text-anchor="middle">7</text>
+  <text class="fig-testo" x="160" y="73" text-anchor="middle">4</text>
+  <text class="fig-testo" x="122" y="133" text-anchor="middle">6</text>
+  <text class="fig-testo" x="198" y="133" text-anchor="middle">2</text>
+  <text class="fig-testo" x="160" y="113" text-anchor="middle">3</text>
+  <text class="fig-testo" x="32" y="200" text-anchor="middle">11</text>
+</svg>

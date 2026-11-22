@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <title>Diagramma di Eulero-Venn della classe: 11 solo calcio, 4 calcio e pallavolo, 6 solo pallavolo, 7 nessuno dei due</title>
+  <!-- Il rettangolo è la classe (28 studenti); C = calcio, P = pallavolo. -->
+  <rect class="fig-linea" x="8" y="8" width="304" height="184" rx="6"/>
+  <circle class="fig-area-1 fig-linea" cx="125" cy="100" r="62"/>
+  <circle class="fig-area-2 fig-linea" cx="195" cy="100" r="62"/>
+  <text class="fig-testo-corsivo" x="70" y="44">C</text>
+  <text class="fig-testo-corsivo" x="240" y="44">P</text>
+  <text class="fig-testo" x="95" y="105" text-anchor="middle">11</text>
+  <text class="fig-testo" x="160" y="105" text-anchor="middle">4</text>
+  <text class="fig-testo" x="225" y="105" text-anchor="middle">6</text>
+  <text class="fig-testo" x="32" y="180" text-anchor="middle">7</text>
+</svg>

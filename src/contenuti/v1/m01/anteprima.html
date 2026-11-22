@@ -1,0 +1,163 @@
+<html><head><style>:root{--inchiostro:#132a4c;--blu:#1c4d87;--arancio:#a3460a;--ese:#2e7d32;--bordo:#999;--inchiostro-secondario:#555;--font-ui:sans-serif} body{background:#f4efe0;margin:0} .figura-disegno{width:400px;display:inline-block;margin:4px} :where(.figura-disegno) :where(path, line, polyline, polygon, rect, circle, ellipse) {
+  fill: none;
+  stroke: var(--inchiostro);
+  stroke-width: 1.5;
+}
+
+:where(.figura-disegno) :where(text, tspan) {
+  fill: var(--inchiostro);
+  stroke: none;
+  font-family: var(--font-ui);
+  font-size: 14px;
+}
+
+.fig-linea {
+  stroke: var(--inchiostro);
+  stroke-width: 1.5;
+}
+
+.fig-sottile {
+  stroke: var(--bordo);
+  stroke-width: 1;
+}
+
+.fig-tratteggio {
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+
+.fig-accento {
+  stroke: var(--arancio);
+  stroke-width: 2.4;
+}
+
+/* Le aree sono trasparenti, così le sovrapposizioni (intersezioni) si vedono; non contengono testo. */
+.fig-area-1 {
+  fill: var(--blu);
+  fill-opacity: 0.22;
+}
+
+.fig-area-2 {
+  fill: var(--arancio);
+  fill-opacity: 0.22;
+}
+
+.fig-area-3 {
+  fill: var(--ese);
+  fill-opacity: 0.22;
+}
+
+.fig-pieno {
+  fill: var(--inchiostro);
+  stroke: none;
+}
+
+.fig-testo {
+  fill: var(--inchiostro);
+}
+
+.fig-testo-corsivo {
+  fill: var(--inchiostro);
+  font-family: KaTeX_Math, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 18px;
+}</style></head><body>
+<div class='figura-disegno'>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <title>Diagramma di Eulero-Venn: B = {2, 4, 6} contenuto in A = {1, 2, 3, 4, 5, 6}</title>
+  <!-- A è l'ellisse grande, B quella piccola tutta dentro A. -->
+  <ellipse class="fig-area-1 fig-linea" cx="160" cy="100" rx="145" ry="88"/>
+  <ellipse class="fig-area-2 fig-linea" cx="205" cy="105" rx="70" ry="50"/>
+  <text class="fig-testo-corsivo" x="40" y="72">A</text>
+  <text class="fig-testo-corsivo" x="255" y="72">B</text>
+  <circle class="fig-pieno" cx="70" cy="95" r="3"/>
+  <text class="fig-testo" x="78" y="100">1</text>
+  <circle class="fig-pieno" cx="95" cy="140" r="3"/>
+  <text class="fig-testo" x="103" y="145">3</text>
+  <circle class="fig-pieno" cx="110" cy="55" r="3"/>
+  <text class="fig-testo" x="118" y="60">5</text>
+  <circle class="fig-pieno" cx="175" cy="95" r="3"/>
+  <text class="fig-testo" x="183" y="100">2</text>
+  <circle class="fig-pieno" cx="215" cy="125" r="3"/>
+  <text class="fig-testo" x="223" y="130">4</text>
+  <circle class="fig-pieno" cx="235" cy="90" r="3"/>
+  <text class="fig-testo" x="243" y="95">6</text>
+</svg>
+</div>
+<div class='figura-disegno'>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <title>Diagrammi di Eulero-Venn: 1 unione, 2 intersezione, 3 differenza A meno B, 4 complementare di A</title>
+  <!-- Riquadro 1. -->
+  <path class="fig-area-1" d="M29 66A32 32 0 1 0 93 66A32 32 0 1 0 29 66ZM67 66A32 32 0 1 0 131 66A32 32 0 1 0 67 66Z"/>
+  <rect class="fig-linea" x="6" y="6" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="61" cy="66" r="32"/>
+  <circle class="fig-linea" cx="99" cy="66" r="32"/>
+  <text class="fig-testo" x="13" y="23">1</text>
+  <text class="fig-testo-corsivo" x="42" y="71">A</text>
+  <text class="fig-testo-corsivo" x="110" y="71">B</text>
+  <text class="fig-testo" x="136" y="23">U</text>
+  <!-- Riquadro 2. -->
+  <path class="fig-area-1" d="M240 40.25A32 32 0 0 1 240 91.75A32 32 0 0 1 240 40.25Z"/>
+  <rect class="fig-linea" x="166" y="6" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="221" cy="66" r="32"/>
+  <circle class="fig-linea" cx="259" cy="66" r="32"/>
+  <text class="fig-testo" x="173" y="23">2</text>
+  <text class="fig-testo-corsivo" x="202" y="71">A</text>
+  <text class="fig-testo-corsivo" x="270" y="71">B</text>
+  <text class="fig-testo" x="296" y="23">U</text>
+  <!-- Riquadro 3. -->
+  <path class="fig-area-1" fill-rule="evenodd" d="M29 184A32 32 0 1 0 93 184A32 32 0 1 0 29 184ZM80 158.25A32 32 0 0 1 80 209.75A32 32 0 0 1 80 158.25Z"/>
+  <rect class="fig-linea" x="6" y="124" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="61" cy="184" r="32"/>
+  <circle class="fig-linea" cx="99" cy="184" r="32"/>
+  <text class="fig-testo" x="13" y="141">3</text>
+  <text class="fig-testo-corsivo" x="42" y="189">A</text>
+  <text class="fig-testo-corsivo" x="110" y="189">B</text>
+  <text class="fig-testo" x="136" y="141">U</text>
+  <!-- Riquadro 4. -->
+  <path class="fig-area-1" fill-rule="evenodd" d="M166 124h148v110h-148ZM189 184A32 32 0 1 0 253 184A32 32 0 1 0 189 184Z"/>
+  <rect class="fig-linea" x="166" y="124" width="148" height="110" rx="4"/>
+  <circle class="fig-linea" cx="221" cy="184" r="32"/>
+  <text class="fig-testo" x="173" y="141">4</text>
+  <text class="fig-testo-corsivo" x="202" y="189">A</text>
+  <text class="fig-testo" x="296" y="141">U</text>
+</svg>
+</div>
+<div class='figura-disegno'>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 220">
+  <title>Diagramma di Eulero-Venn delle tre lingue, con il numero di studenti in ogni zona</title>
+  <!-- I = inglese, F = francese, S = spagnolo; il rettangolo sono i 50 studenti. -->
+  <rect class="fig-linea" x="8" y="8" width="304" height="204" rx="6"/>
+  <circle class="fig-area-1 fig-linea" cx="130" cy="90" r="55"/>
+  <circle class="fig-area-2 fig-linea" cx="190" cy="90" r="55"/>
+  <circle class="fig-area-3 fig-linea" cx="160" cy="140" r="55"/>
+  <text class="fig-testo-corsivo" x="62" y="48">I</text>
+  <text class="fig-testo-corsivo" x="250" y="48">F</text>
+  <text class="fig-testo-corsivo" x="232" y="190">S</text>
+  <text class="fig-testo" x="95" y="85" text-anchor="middle">12</text>
+  <text class="fig-testo" x="225" y="85" text-anchor="middle">5</text>
+  <text class="fig-testo" x="160" y="180" text-anchor="middle">7</text>
+  <text class="fig-testo" x="160" y="73" text-anchor="middle">4</text>
+  <text class="fig-testo" x="122" y="133" text-anchor="middle">6</text>
+  <text class="fig-testo" x="198" y="133" text-anchor="middle">2</text>
+  <text class="fig-testo" x="160" y="113" text-anchor="middle">3</text>
+  <text class="fig-testo" x="32" y="200" text-anchor="middle">11</text>
+</svg>
+</div>
+<div class='figura-disegno'>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <title>Diagramma di Eulero-Venn della classe: 11 solo calcio, 4 calcio e pallavolo, 6 solo pallavolo, 7 nessuno dei due</title>
+  <!-- Il rettangolo è la classe (28 studenti); C = calcio, P = pallavolo. -->
+  <rect class="fig-linea" x="8" y="8" width="304" height="184" rx="6"/>
+  <circle class="fig-area-1 fig-linea" cx="125" cy="100" r="62"/>
+  <circle class="fig-area-2 fig-linea" cx="195" cy="100" r="62"/>
+  <text class="fig-testo-corsivo" x="70" y="44">C</text>
+  <text class="fig-testo-corsivo" x="240" y="44">P</text>
+  <text class="fig-testo" x="95" y="105" text-anchor="middle">11</text>
+  <text class="fig-testo" x="160" y="105" text-anchor="middle">4</text>
+  <text class="fig-testo" x="225" y="105" text-anchor="middle">6</text>
+  <text class="fig-testo" x="32" y="180" text-anchor="middle">7</text>
+</svg>
+</div>
+</body></html>
