@@ -82,7 +82,7 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - scelta multipla scritta a mano: `A02` criteri di divisibilità, `A03` fattori primi, `A07` razionali e irrazionali, `A08` confronto tra reali, `A09` verso una base b (la risposta è una scrittura in base b, non un numero del motore).
   - Comune nuovo `src/generatori/comuni/primes.ts` (primi, scomposizione, MCD, mcm).
   - Le otto lezioni dichiarano le loro abilità e hanno le domande lampo dei livelli 1 e 2; casi del livello 3 aggiunti dove mancavano (decisioni 144-150).
-- **Test**: 1.496, verdi in locale e su GitHub. Il test che disegna passaggi e indizi di tutti i generatori (`test/app/moduli.test.ts`) ha ora un tempo massimo di 30 secondi: con i generatori di V1.M01 superava i 5 su GitHub.
+- **Test**: 1.516, verdi in locale e su GitHub. Il test che disegna passaggi e indizi di tutti i generatori (`test/app/moduli.test.ts`) ha ora un tempo massimo di 30 secondi: con i generatori di V1.M01 superava i 5 su GitHub.
 
 ## In corso
 
