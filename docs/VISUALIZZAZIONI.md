@@ -86,3 +86,35 @@ Il grado al più 2 garantisce che gli zeri di $N(x) - k\,D(x)$ il motore li trov
 
 - `V1.M08.L08` «Trasformazioni dei grafici» (quando sarà scritta): per esempio prima solo `cursori="c; d"` con $f(x) = x^2$ (traslazioni, il verso di $c$), poi tutti e quattro con le funzioni elementari di `V1.M08.L07`.
 - Candidata: `V1.M10.L04` (grafici di seno e coseno trasformati), con `funzione="sin(x); cos(x)"` e una finestra più larga.
+
+## VIS.esponenziale-logaritmo
+
+**Che cosa deve far capire** (specifica 11): i grafici di $y = a^x$ e di $y = \log_a x$ sono **simmetrici rispetto alla retta $y = x$** (uno scambia le coordinate dell'altro); per $a > 1$ entrambe le funzioni sono crescenti, per $0 < a < 1$ entrambe decrescenti; dominio e immagine dell'una sono immagine e dominio dell'altra; con $a = 1$ non c'è niente da invertire.
+
+**Che cosa si manipola**
+
+- **La base** $a$, con un cursore che passa per valori esatti: $\tfrac15, \tfrac14, \tfrac13, \tfrac12, \tfrac23, \tfrac34, 1, \tfrac43, \tfrac32, 2, e, 3, 4, 5$.
+- **Il punto $P$** sul grafico dell'esponenziale: si trascina col dito la maniglia in basso (lungo l'asse $x$) oppure si usa il cursore «Punto» ($t$ tra $-3$ e $3$, a passi di $0{,}1$).
+
+**Che cosa si vede**
+
+- Il grafico di $y = a^x$ (blu, continuo), quello di $y = \log_a x$ (arancione, tratteggiato) e la retta $y = x$ (verde, a puntini), disegnati dal motore come i grafici statici, con le **unità uguali sui due assi** (altrimenti la simmetria non si vede).
+- I punti esatti $(0; 1)$ e $(1; a)$ sull'esponenziale, $(1; 0)$ e $(a; 1)$ sul logaritmo.
+- $P(t; a^t)$, il suo simmetrico $P'(a^t; t)$ sul logaritmo, il segmento $PP'$ tratteggiato (perpendicolare a $y = x$) e il suo punto medio sulla retta; i valori approssimati con $\approx$.
+- Sotto il disegno: crescente o decrescente (a parole, con il motivo: $a > 1$ o $0 < a < 1$), dominio, immagine e asintoto di ognuna delle due funzioni.
+- Con $a = 1$: $y = 1^x = 1$ è costante, il suo simmetrico è la retta verticale $x = 1$, che non è il grafico di una funzione: il logaritmo in base $1$ non esiste (scritto sotto il disegno).
+
+**Parametri della lezione** (nel blocco `:::visualizzazione{id=VIS.esponenziale-logaritmo …}`)
+
+| Nome | Significato | Predefinito | Valori ammessi |
+| --- | --- | --- | --- |
+| `base` | la base iniziale $a$ | `2` | uno dei valori del cursore: `1/5`, `1/4`, `1/3`, `1/2`, `2/3`, `3/4`, `1`, `4/3`, `3/2`, `2`, `e`, `3`, `4`, `5` |
+| `punto` | la posizione iniziale $t$ di $P$ | `1` | un multiplo di $0{,}1$ tra $-3$ e $3$ |
+| `logaritmo` | se mostrare il logaritmo (e la retta $y = x$, il punto $P'$, la simmetria) | `sì` | `sì` oppure `no` |
+
+La finestra non è un parametro: è fissa (x tra $-4$ e $6$), con le unità uguali sui due assi.
+
+**Lezioni che la usano**
+
+- `V1.M09.L01` «Funzione esponenziale» (quando sarà scritta), con `logaritmo=no`: solo $a^x$, crescenza e decrescenza al variare della base.
+- Candidata: `V1.M09.L03` «Logaritmi» (o la lezione sulla funzione logaritmica), con il logaritmo e la simmetria.

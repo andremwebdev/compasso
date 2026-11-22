@@ -958,6 +958,63 @@ p {
   stroke-linecap: round;
 }
 
+/* VIS.esponenziale-logaritmo: legenda con lo stesso tratto delle curve (non solo il colore). */
+.vis-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-4);
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--testo-piccolo);
+}
+
+.vis-legenda li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+.vis-legenda .legenda-segno {
+  height: 0;
+}
+
+.vis-legenda-exp {
+  border-top: 3px solid var(--blu);
+}
+
+.vis-legenda-log {
+  border-top: 3px dashed var(--arancio);
+}
+
+.vis-legenda-bisettrice {
+  border-top: 3px dotted var(--ese);
+}
+
+.vis-simmetrico {
+  fill: none;
+  stroke: var(--arancio);
+  stroke-width: 2.4;
+  stroke-dasharray: 9 5;
+}
+
+.vis-notevole {
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+  fill: var(--blu);
+}
+
+.vis-notevole-log,
+.vis-punto-simmetrico {
+  fill: var(--arancio);
+}
+
+.vis-medio {
+  fill: var(--ese);
+  stroke: var(--carta-alta);
+  stroke-width: 1.2;
+}
+
 /* Figure scritte a mano: senza classe una forma è un contorno d'inchiostro senza riempimento. */
 :where(.figura-disegno) :where(path, line, polyline, polygon, rect, circle, ellipse) {
   fill: none;

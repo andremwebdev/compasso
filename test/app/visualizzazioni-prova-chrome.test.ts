@@ -60,6 +60,7 @@ const themeColor = (name: string) =>
 /** Le visualizzazioni della lezione di prova, nell'ordine: il selettore del loro contenitore. */
 const VIS = {
   transforms: ".vis:has(.vis-trasformazioni)",
+  expLog: ".vis:has(.vis-esplog)",
 } as const;
 
 describe("visualizzazioni in Chrome (lezione di prova)", () => {
@@ -146,6 +147,24 @@ describe("visualizzazioni in Chrome (lezione di prova)", () => {
         await pause(50);
         expect(await latex(page, vis, ".vis-formula")).toBe(String.raw`y = \frac{1}{x - 3} - 1`);
         expect(await page.evaluate<number>(`document.querySelectorAll("${vis} .vis-sopra .vis-asintoto").length`)).toBe(1);
+      }
+
+      // ── VIS.esponenziale-logaritmo: P trascinato di un'unità a sinistra (t = 0); base 1/2 col cursore.
+      {
+        const vis = VIS.expLog;
+        expect(await latex(page, vis, ".vis-punti")).toContain(String.raw`P\left(1;\, 2\right)`);
+        const colors = await page.evaluate<{ curve: string; blue: string; log: string; orange: string }>(`({
+          curve: getComputedStyle(document.querySelector("${vis} .graf-curva-1")).stroke, blue: ${themeColor("--blu")},
+          log: getComputedStyle(document.querySelector("${vis} .graf-curva-2")).stroke, orange: ${themeColor("--arancio")},
+        })`);
+        expect(colors.curve).toBe(colors.blue);
+        expect(colors.log).toBe(colors.orange);
+        const unit = ((await box(page, vis, ".vis-piano .grafico-disegno svg")).width / 320) * (308 / 10);
+        await dragHandle(page, vis, ".vis-maniglia-sonda .vis-maniglia-segno", -unit, 0);
+        expect(await latex(page, vis, ".vis-punti")).toContain(String.raw`P\left(0;\, 1\right)`);
+        await page.evaluate(`(() => { const input = document.querySelector("${vis} .vis-cursore input"); input.value = "3"; input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
+        await pause(50);
+        expect(await page.evaluate<string>(`document.querySelector("${vis} .vis-passi").textContent`)).toContain("decrescente");
       }
 
       expect(await page.evaluate<number>("document.documentElement.scrollWidth")).toBeLessThanOrEqual(width);

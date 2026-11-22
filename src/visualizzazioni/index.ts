@@ -8,6 +8,8 @@ import type { VisualizationCode } from "../codici";
 import { VisualizationBox, VisualizationProblem } from "./comuni";
 import { InequalityGraph } from "./disequazioni-grafico";
 import { checkInequalityParams } from "./disequazioni-grafico-math";
+import { ExpLog } from "./esponenziale-logaritmo";
+import { checkExpLogParams } from "./esponenziale-logaritmo-math";
 import { FunctionTransforms } from "./trasformazioni-funzioni";
 import { checkTransformParams } from "./trasformazioni-funzioni-math";
 
@@ -23,6 +25,7 @@ export interface VisualizationDefinition {
 export const VISUALIZATIONS: readonly VisualizationDefinition[] = [
   { code: "VIS.disequazioni-grafico", component: InequalityGraph, checkParams: checkInequalityParams },
   { code: "VIS.trasformazioni-funzioni", component: FunctionTransforms, checkParams: checkTransformParams },
+  { code: "VIS.esponenziale-logaritmo", component: ExpLog, checkParams: checkExpLogParams },
 ];
 
 /** I codici delle visualizzazioni esistenti (per la verifica dei contenuti). */
