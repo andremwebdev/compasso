@@ -220,9 +220,9 @@ export function solutionBars(solution: RealSet, window: GraphWindow): SolutionBa
   return bars;
 }
 
-/** f(x) − k = N/D, in LaTeX: la riga sopra la tabella. */
-export function shiftedLatex(f: Expr, k: Rational, study: InequalityStudy): string {
-  const left = k.isZero() ? `f(x) = ${toLatex(f)}` : `f(x) ${k.sign() > 0 ? "-" : "+"} ${toLatex({ kind: "num", value: k.abs() })} = ${toLatex(f)} ${k.sign() > 0 ? "-" : "+"} ${toLatex({ kind: "num", value: k.abs() })}`;
+/** f(x) − k = N/D, in LaTeX: la riga sopra la tabella (corta, per stare in 320 px). */
+export function shiftedLatex(k: Rational, study: InequalityStudy): string {
+  const left = k.isZero() ? "f(x)" : `f(x) ${k.sign() > 0 ? "-" : "+"} ${toLatex({ kind: "num", value: k.abs() })}`;
   return `${left} = ${study.table.result.label}`;
 }
 
@@ -241,6 +241,11 @@ export function approximate(value: number): string {
   const rounded = Math.round(value * 100) / 100;
   const text = String(Object.is(rounded, -0) ? 0 : rounded);
   return text.replace(".", ",").replace("-", "−");
+}
+
+/** Lo stesso numero approssimato dentro una formula: la virgola come {,} (senza spazio dopo), il meno di LaTeX. */
+export function approximateLatex(value: number): string {
+  return approximate(value).replace(",", "{,}").replace("−", "-");
 }
 
 /** La cornice del disegno (la stessa dei grafici statici). */

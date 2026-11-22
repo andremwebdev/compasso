@@ -7,10 +7,10 @@ import { evaluate, type Expr } from "../../src/motore/expr";
 import { Rational } from "../../src/motore/numbers/rational";
 import { atLeast, closed, greaterThan, isAllReals, isEmptySet, lessThan, realSet, setsEqual, setUnion, type RealSet } from "../../src/motore/sets";
 import {
-  RELATIONS, approximate, cellAt, checkInequalityParams, inequalityLatex, readInequalityParams, shiftedLatex, snapThreshold, solutionBars,
+  RELATIONS, approximate, approximateLatex, cellAt, checkInequalityParams, inequalityLatex, readInequalityParams, shiftedLatex, snapThreshold, solutionBars,
   solutionLatex, studyInequality, type InequalitySetup,
 } from "../../src/visualizzazioni/disequazioni-grafico-math";
-import { draws, drawsText } from "../motore/helpers";
+import { draws } from "../motore/helpers";
 import { lessonParams as lessonsUsing } from "./helpers";
 
 const lessonParams = () => lessonsUsing("VIS.disequazioni-grafico");
@@ -145,7 +145,7 @@ describe("VIS.disequazioni-grafico: soluzione", () => {
               expect(study.solutionCells[2 * index + 1]).toBe(inside);
             });
             // Il LaTeX mostrato si disegna.
-            draws(shiftedLatex(f.expr, k, study));
+            draws(shiftedLatex(k, study));
             draws(inequalityLatex(f.expr, k, relation));
             draws(solutionLatex(study.solution));
           }
@@ -189,6 +189,7 @@ describe("VIS.disequazioni-grafico: disegno e sonda", () => {
     expect(approximate(1.256)).toBe("1,26");
     expect(approximate(-0.5)).toBe("−0,5");
     expect(approximate(-0.001)).toBe("0");
-    drawsText("$x \\approx 1{,}26$");
+    expect(approximateLatex(-4.98)).toBe("-4{,}98");
+    draws(`x \\approx ${approximateLatex(-4.98)}`);
   });
 });

@@ -10,14 +10,17 @@ import { evaluate, toLatex } from "../motore/expr";
 import type { Rational } from "../motore/numbers/rational";
 import { Slider, VisualizationBox, VisualizationProblem, pathOf, svgNumber, useDragHandle } from "./comuni";
 import {
-  RELATION_LATEX, RELATION_WORDS, RELATIONS, THRESHOLD_STEP, approximate, cellAt, frameOf, inequalityLatex, readInequalityParams,
+  RELATION_LATEX, RELATION_WORDS, RELATIONS, THRESHOLD_STEP, approximate, approximateLatex, cellAt, frameOf, inequalityLatex, readInequalityParams,
   shiftedLatex, snapThreshold, solutionBars, solutionLatex, studyInequality, type InequalitySetup,
 } from "./disequazioni-grafico-math";
 
 export const TITLE = "Disequazioni e grafico";
 
-/** Il raggio dell'area di tocco delle maniglie, in unità del disegno (circa 44 px anche a 320 px di schermo). */
-const GRIP = 27;
+/**
+ * Il raggio dell'area di tocco delle maniglie, in unità del disegno: a 320 px di schermo il disegno è
+ * largo circa 250 px, e 29 unità di raggio fanno 45 px di diametro.
+ */
+const GRIP = 29;
 /** Entro questa distanza (unità del disegno) la sonda si aggancia a un punto della tabella. */
 const SNAP = 5;
 
@@ -75,7 +78,7 @@ function InequalityGraphView({ setup }: { setup: InequalitySetup }) {
   const probeInside = Number.isFinite(probeY) && probeY >= window.yMin && probeY <= window.yMax;
   const kLatex = toLatex({ kind: "num", value: threshold });
   const onPoint = probeCell % 2 === 1;
-  const probeXText = onPoint ? `x = ${toLatex(study.table.points[(probeCell - 1) / 2] as never)}` : `x \\approx ${approximate(probe).replace("−", "-")}`;
+  const probeXText = onPoint ? `x = ${toLatex(study.table.points[(probeCell - 1) / 2] as never)}` : `x \\approx ${approximateLatex(probe)}`;
 
   return (
     <div class="vis-disequazioni">
@@ -92,7 +95,7 @@ function InequalityGraphView({ setup }: { setup: InequalitySetup }) {
       <div class="vis-scelta vis-versi" role="group" aria-label="Verso della disequazione">
         {RELATIONS.map((item) => (
           <button key={item} type="button" class="vis-pulsante" aria-pressed={item === relation} aria-label={RELATION_WORDS[item]} onClick={() => setRelation(item)}>
-            <RichText text={`$f(x) ${RELATION_LATEX[item]} k$`} inline />
+            <RichText text={`$${RELATION_LATEX[item]}$`} inline />
           </button>
         ))}
       </div>
@@ -129,7 +132,7 @@ function InequalityGraphView({ setup }: { setup: InequalitySetup }) {
             <path class="vis-sonda-linea" d={`M${svgNumber(frame.sx(probe))} ${frame.top}V${frame.bottom}`} />
             {probeInside && <circle class="vis-sonda-punto" cx={svgNumber(frame.sx(probe))} cy={svgNumber(frame.sy(probeY))} r="4.5" />}
           </g>
-          <text class="vis-soglia-nome" x={frame.left + 4} y={svgNumber(ky < frame.top + 16 ? ky + 14 : ky - 5)}>
+          <text class="vis-soglia-nome" x={frame.right - 32} y={svgNumber(ky < frame.top + 16 ? ky + 16 : ky - 7)} text-anchor="end">
             {`y = ${approximate(k)}`}
           </text>
           {/* Le maniglie: un cerchio visibile e un'area di tocco più grande, trasparente. */}
@@ -168,7 +171,7 @@ function InequalityGraphView({ setup }: { setup: InequalitySetup }) {
 
       <RichText class="vis-sonda-testo" text={probeText(probeSign, probeY, relation)} />
 
-      <RichText class="vis-frazione" text={`$$${shiftedLatex(current.expr, threshold, study)}$$`} />
+      <RichText class="vis-frazione" text={`$$${shiftedLatex(threshold, study)}$$`} />
       <div class="vis-tabella">
         <table>
           <tbody>
@@ -223,6 +226,6 @@ function probeText(sign: Sign, y: number, relation: SignRelation): string {
   const where = sign === "+" ? "sopra la retta" : sign === "-" ? "sotto la retta" : "sulla retta";
   const wanted = relation === ">" || relation === ">=" ? "+" : "-";
   const inside = sign === wanted || (sign === "0" && (relation === ">=" || relation === "<="));
-  const value = sign === "0" ? "" : `, $f(x) \\approx ${approximate(y).replace("−", "-")}$`;
+  const value = sign === "0" ? "" : `, $f(x) \\approx ${approximateLatex(y)}$`;
   return `Sonda: la curva sta **${where}**${value}: $x$ ${inside ? "è una soluzione ✓" : "**non** è una soluzione ✗"}.`;
 }

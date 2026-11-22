@@ -4,41 +4,13 @@
 // un parametro sbagliato mostri il messaggio senza rompere la pagina. Con COMPASSO_FOTO=cartella le
 // fotografie delle pagine finiscono lì, per guardarle a occhio.
 
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
-import { build } from "esbuild";
+import { pathToFileURL } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { contentIndexDefine } from "../../scripts/indice-contenuti.mjs";
 import { Chrome, findChrome } from "../chrome";
-
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
-const katexDist = path.join(root, "node_modules", "katex", "dist");
-
-/** La pagina di prova: script e stili dentro il file, caratteri di KaTeX incorporati (nessuna richiesta esterna). */
-async function previewPage(): Promise<string> {
-  const result = await build({
-    entryPoints: [path.join(root, "test", "app", "anteprima", "figure.tsx")],
-    tsconfig: path.join(root, "tsconfig.json"),
-    bundle: true,
-    write: false,
-    format: "iife",
-    target: "es2020",
-    logLevel: "error",
-    loader: { ".md": "text", ".svg": "text" },
-    define: { __TARGET__: '"pc"', __CONTENT_INDEX__: await contentIndexDefine(), "process.env.NODE_ENV": '"production"' },
-  });
-  const js = (result.outputFiles[0]?.text ?? "").replaceAll("</script", "<\\/script");
-  let katexCss = readFileSync(path.join(katexDist, "katex.min.css"), "utf8")
-    .replace(/,url\(fonts\/[^)]+\.woff\) format\("woff"\)/g, "")
-    .replace(/,url\(fonts\/[^)]+\.ttf\) format\("truetype"\)/g, "");
-  for (const name of new Set([...katexCss.matchAll(/url\(fonts\/([^)]+\.woff2)\)/g)].map((m) => m[1] as string))) {
-    katexCss = katexCss.replaceAll(`url(fonts/${name})`, `url(data:font/woff2;base64,${readFileSync(path.join(katexDist, "fonts", name)).toString("base64")})`);
-  }
-  const css = readFileSync(path.join(root, "src", "app", "styles.css"), "utf8");
-  return `<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>${katexCss}${css}</style></head><body><div id="app"></div><script>${js}</script></body></html>`;
-}
+import { previewPage } from "./anteprima/pagina";
 
 describe("grafici e figure in Chrome (lezione di prova)", () => {
   const executable = findChrome();
@@ -53,7 +25,7 @@ describe("grafici e figure in Chrome (lezione di prova)", () => {
   beforeAll(async () => {
     folder = mkdtempSync(path.join(tmpdir(), "compasso-figure-"));
     const file = path.join(folder, "prova.html");
-    writeFileSync(file, await previewPage());
+    writeFileSync(file, await previewPage("test/app/anteprima/figure.tsx"));
     url = pathToFileURL(file).href;
     if (executable) chrome = await Chrome.launch(executable);
   }, 60_000);

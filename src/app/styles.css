@@ -679,25 +679,26 @@ p {
 
 .vis-barra {
   fill: none;
-  stroke: var(--blu);
-  stroke-width: 6;
+  stroke: var(--ese);
+  stroke-width: 5;
   stroke-linecap: butt;
 }
 
-.vis-estremo-pieno,
-.vis-incontro {
-  fill: var(--blu);
+.vis-estremo-pieno {
+  fill: var(--ese);
   stroke: var(--carta-alta);
   stroke-width: 1.5;
 }
 
 .vis-incontro {
   fill: var(--arancio);
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
 }
 
 .vis-estremo-vuoto {
   fill: var(--carta-alta);
-  stroke: var(--blu);
+  stroke: var(--ese);
   stroke-width: 2;
 }
 

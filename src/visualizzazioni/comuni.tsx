@@ -116,6 +116,11 @@ export function useDragHandle(onDrag: (point: DrawingPoint) => void) {
   };
 
   return {
+    // Sul telefono il dito sulla maniglia trascina, non scorre la pagina (touch-action nel CSS non
+    // basta sugli elementi SVG in tutti i browser).
+    onTouchStart: (event: TouchEvent) => {
+      if (event.cancelable) event.preventDefault();
+    },
     onPointerDown: (event: PointerEvent) => {
       active.current = event.pointerId;
       (event.currentTarget as Element).setPointerCapture?.(event.pointerId);

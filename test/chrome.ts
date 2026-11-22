@@ -114,6 +114,15 @@ export class ChromePage {
     return result.result.value as T;
   }
 
+  /**
+   * Un tocco col dito, come sullo schermo del telefono: «start», «move» o «end» nel punto (x, y)
+   * della pagina (pixel CSS). Chrome ne ricava anche gli eventi pointer.
+   */
+  async touch(type: "start" | "move" | "end", x: number, y: number): Promise<void> {
+    const name = { start: "touchStart", move: "touchMove", end: "touchEnd" }[type];
+    await this.chrome.send("Input.dispatchTouchEvent", { type: name, touchPoints: type === "end" ? [] : [{ x, y, radiusX: 4, radiusY: 4, force: 1, id: 1 }] }, this.sessionId);
+  }
+
   /** Toglie la rete alla scheda: da qui in poi ogni richiesta fallisce. */
   async goOffline(): Promise<void> {
     await this.chrome.send("Network.enable", {}, this.sessionId);
