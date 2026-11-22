@@ -51,6 +51,11 @@ describe("padronanza", () => {
     expect(level([attempt("2026-11-20", { context: "lampo" })])).toBe("nuovo");
   });
 
+  it("i tentativi sulle dimostrazioni non hanno abilità e non entrano nella padronanza (decisione 119)", () => {
+    const proof = attempt("2026-11-20", { context: "dimostrazione", skill: null, generator: null, seed: null, level: null, lesson: "V2.M06.L99", proof: { theorem: "V2.M06.T03", mode: "completa" } });
+    expect([...skillMasteries([proof, proof], [], now("2026-11-20"), "2026-11-20").keys()]).toEqual([]);
+  });
+
   it("pochi tentativi o molti errori: in apprendimento", () => {
     expect(level([attempt("2026-11-20")])).toBe("apprendimento");
     expect(level(["2026-11-17", "2026-11-18", "2026-11-19", "2026-11-20"].map((d) => wrong(d, "DISEQ.ESTREMI")))).toBe("apprendimento");
@@ -176,9 +181,11 @@ describe("diario degli errori", () => {
     wrong("2026-11-20", "DISEQ.SEGNO_DENOMINATORE", { distraction: true }),
     wrong("2026-11-20", "NON_CLASSIFICATO"),
     wrong("2026-11-20", "DISEQ.ESTREMI", { context: "lampo" }),
+    // Decisione 119: le dimostrazioni non entrano nel diario (nessun codice del catalogo).
+    wrong("2026-11-20", "NON_CLASSIFICATO", { context: "dimostrazione", skill: null, generator: null, seed: null, level: null, lesson: "V2.M06.L99", proof: { theorem: "V2.M06.T03", mode: "riordina" } }),
   ];
 
-  it("i recenti pesano di più; le viste sono separate; le domande lampo non entrano", () => {
+  it("i recenti pesano di più; le viste sono separate; le domande lampo e le dimostrazioni non entrano", () => {
     const concept = diaryEntries(log, now("2026-11-20"), "concetto");
     expect(concept.map((e) => e.code)).toEqual(["DISEQ.ESTREMI", "NON_CLASSIFICATO", "COND.DENOMINATORE"]);
     expect(concept[0]?.count).toBe(3);

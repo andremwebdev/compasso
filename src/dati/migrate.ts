@@ -22,6 +22,9 @@ const STEPS: Readonly<Record<number, Step>> = {
   // 1 → 2: arrivano giorni di studio, ripassi delle flashcard, controlli «Lo so già», impostazioni,
   // stato del backup e sessione di Oggi. I dati vecchi restano come sono.
   1: (data) => ({ ...data, version: 2, days: [], reviews: [], checks: [], settings: defaultSettings(), backup: emptyBackup(), session: null }),
+  // 2 → 3: arrivano i tentativi sulle dimostrazioni (contesto «dimostrazione», campo facoltativo
+  // `proof`). I tentativi vecchi non ne hanno bisogno: restano come sono.
+  2: (data) => ({ ...data, version: 3 }),
 };
 
 const list = <T>(value: unknown): T[] => (Array.isArray(value) ? (value as T[]) : []);

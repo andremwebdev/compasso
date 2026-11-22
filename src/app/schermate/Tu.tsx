@@ -26,7 +26,8 @@ export function Tu() {
   const t = today();
   const streak = streakInfo(days.value, t);
   const log = attempts.value;
-  const counted = log.filter((attempt) => attempt.context !== "lampo");
+  const counted = log.filter((attempt) => attempt.context !== "lampo" && attempt.context !== "dimostrazione");
+  const proofs = log.filter((attempt) => attempt.context === "dimostrazione");
   const completed = Object.values(lessonProgress.value).filter((progress) => progress.completed).length;
   const store = dataStore.value;
   const top = diaryEntries(log, new Date(), "concetto").slice(0, 3);
@@ -99,8 +100,13 @@ export function Tu() {
             Esercizi fatti: <strong>{counted.length}</strong>, giusti <strong>{counted.filter((attempt) => attempt.outcome === "correct").length}</strong>
           </li>
           <li>
-            Domande lampo: <strong>{log.length - counted.length}</strong>
+            Domande lampo: <strong>{log.filter((attempt) => attempt.context === "lampo").length}</strong>
           </li>
+          {proofs.length > 0 && (
+            <li>
+              Dimostrazioni provate: <strong>{proofs.length}</strong>, giuste <strong>{proofs.filter((attempt) => attempt.outcome === "correct").length}</strong>
+            </li>
+          )}
         </ul>
       </div>
 

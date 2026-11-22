@@ -1,7 +1,8 @@
 // Diario degli errori (specifica, sezione 5): frequenza di ogni errore e di ogni categoria, con i
 // recenti che pesano di più (peso che si dimezza ogni 30 giorni), andamento degli ultimi 30 giorni
 // rispetto ai 30 precedenti, viste separate per errori di concetto, di forma e distrazioni.
-// Le domande lampo non entrano: controllano la comprensione mentre si legge.
+// Le domande lampo non entrano: controllano la comprensione mentre si legge. Nemmeno le dimostrazioni:
+// una versione sbagliata non ha un codice del catalogo (decisione 119).
 
 import { ageInDays } from "./dates";
 import type { AttemptRecord } from "./types";
@@ -49,7 +50,7 @@ export function trendOf(last30: number, previous30: number): Trend {
 
 /** Gli errori che entrano nel diario. */
 const diaryErrors = (attempts: readonly AttemptRecord[]): AttemptRecord[] =>
-  attempts.filter((attempt) => attempt.outcome === "wrong" && attempt.error !== null && attempt.context !== "lampo");
+  attempts.filter((attempt) => attempt.outcome === "wrong" && attempt.error !== null && attempt.context !== "lampo" && attempt.context !== "dimostrazione");
 
 /** Le voci del diario per una vista (o tutte), dalla più frequente. */
 export function diaryEntries(attempts: readonly AttemptRecord[], now: Date, view?: DiaryView): DiaryEntry[] {

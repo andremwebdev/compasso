@@ -63,7 +63,8 @@ function upgrade(db: IDBDatabase, from: number): void {
     db.createObjectStore("checks", { keyPath: "id" });
     db.createObjectStore("meta", { keyPath: "key" });
   }
-  // Le versioni successive aggiungono qui i loro passi: if (from < 3) { … }
+  // Versione 3: nessun magazzino nuovo (i tentativi sulle dimostrazioni stanno con gli altri).
+  // Le versioni successive aggiungono qui i loro passi: if (from < 4) { … }
 }
 
 /** Apre IndexedDB. Rifiuta se il browser non la offre, se è bloccata o se i dati sono di una versione futura. */

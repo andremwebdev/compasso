@@ -1,16 +1,18 @@
 // Ripasso delle flashcard (autovalutazione con tre pulsanti) e dimostrazioni interattive nelle tre
 // modalità. Il mazzo di flashcard si usa anche nella fase «Ripasso» di Oggi.
 
-import { useMemo, useState } from "preact/hooks";
+import { useMemo, useRef, useState } from "preact/hooks";
 import { moduleOf, type LessonCode, type TheoremCode } from "../../codici";
 import { loadLesson } from "../../contenuti";
 import { GRADE_LABELS } from "../../dati";
 import { modulesOf, WithModules } from "../caricamento";
 import { BackButton, Tabs } from "../componenti/Common";
+import { ReorderList } from "../componenti/ReorderList";
 import { RichText } from "../componenti/RichText";
-import { findCard, proofsOfLesson } from "../ripasso/cards";
-import { completeTask, DRILL_MODES, isInOrder, moveStep, shuffledOrder, wrongTask, type DrillMode } from "../ripasso/drill";
-import { newId, recordReview } from "../state";
+import { findCard, proofsOfLesson, type ProofEntry } from "../ripasso/cards";
+import { completeTask, DRILL_MODES, isInOrder, proofAttempt, shuffledOrder, wrongTask, type DrillMode } from "../ripasso/drill";
+import { rightPlaces } from "../risposta/ordering";
+import { newId, recordAttempt, recordReview } from "../state";
 
 const KIND_LABELS = { definizione: "Definizione", teorema: "Teorema", manuale: "Flashcard" } as const;
 
@@ -113,14 +115,22 @@ export function ProofScreen(props: ProofScreenProps) {
   return <WithModules modules={[moduleOf(props.lesson)]}>{() => <Proof {...props} />}</WithModules>;
 }
 
-/** Una dimostrazione nelle tre modalità interattive. */
+/** Una dimostrazione cercata nella sua lezione (il modulo è già caricato). */
 function Proof({ lesson, theorem }: ProofScreenProps) {
   const proof = useMemo(() => {
     const source = loadLesson(lesson);
     return source ? proofsOfLesson(source).find((entry) => entry.theorem === theorem) : undefined;
   }, [lesson, theorem]);
+  return <ProofDrills lesson={lesson} theorem={theorem} proof={proof} />;
+}
+
+/** Una dimostrazione nelle tre modalità interattive; ogni giro registra un tentativo. */
+export function ProofDrills({ lesson, theorem, proof }: ProofScreenProps & { proof: ProofEntry | undefined }) {
   const [mode, setMode] = useState<DrillMode>("riordina");
   const [round, setRound] = useState(0);
+  // Ogni giro (modalità aperta o «Ricomincia») dà un tentativo nel registro, alla prima risposta.
+  const answered = (drill: DrillMode) => (correct: boolean, millis: number) =>
+    recordAttempt(proofAttempt({ id: newId(), at: new Date().toISOString(), lesson, theorem, mode: drill, correct, millis }));
   if (!proof) {
     return (
       <section class="section">
@@ -141,9 +151,9 @@ function Proof({ lesson, theorem }: ProofScreenProps) {
         <RichText text={proof.statement} />
       </div>
       <Tabs tabs={DRILL_MODES} current={mode} onChange={setMode} label="Modalità" />
-      {mode === "riordina" && <ReorderDrill key={round} steps={proof.steps} />}
-      {mode === "sbagliato" && <WrongDrill key={round} steps={proof.steps} />}
-      {mode === "completa" && <CompleteDrill key={round} steps={proof.steps} />}
+      {mode === "riordina" && <ReorderDrill key={round} steps={proof.steps} onAnswered={answered("riordina")} />}
+      {mode === "sbagliato" && <WrongDrill key={round} steps={proof.steps} onAnswered={answered("sbagliato")} />}
+      {mode === "completa" && <CompleteDrill key={round} steps={proof.steps} onAnswered={answered("completa")} />}
       <div class="exercise-actions">
         <button type="button" class="button" onClick={() => setRound(round + 1)}>
           Ricomincia
@@ -165,51 +175,70 @@ function StepText({ text, reason, showReason }: { text: string; reason: string; 
   );
 }
 
-function ReorderDrill({ steps }: { steps: Steps }) {
+/** Chiamata una volta per giro, alla prima risposta: giusta o no, e dopo quanto tempo. */
+type OnAnswered = (correct: boolean, millis: number) => void;
+
+/** Il tempo dall'apertura del giro, per il registro. */
+function useStartTime() {
+  const startedAt = useRef(performance.now());
+  return () => performance.now() - startedAt.current;
+}
+
+function ReorderDrill({ steps, onAnswered }: { steps: Steps; onAnswered: OnAnswered }) {
   const [order, setOrder] = useState(() => shuffledOrder(steps, Math.random));
-  const [checked, setChecked] = useState(false);
-  const right = isInOrder(order);
+  // L'esito dell'ultimo «Controlla»; si cancella appena si sposta un passaggio (non si scopre l'ordine giusto senza controllare).
+  const [verdict, setVerdict] = useState<boolean | null>(null);
+  const [recorded, setRecorded] = useState(false);
+  const elapsed = useStartTime();
+  const done = verdict === true;
+  const items = useMemo(() => steps.map((step) => ({ content: step.text, fixed: step.fixed })), [steps]);
+  const check = (): void => {
+    const right = isInOrder(order);
+    setVerdict(right);
+    // Conta il primo «Controlla»: dopo un errore si può correggere, ma il tentativo resta quello.
+    if (!recorded) {
+      setRecorded(true);
+      onAnswered(right, elapsed());
+    }
+  };
   return (
     <>
       <p class="muted">Rimetti i passaggi in ordine con le frecce. Quelli tratteggiati sono fissi.</p>
-      {order.map((stepIndex, position) => {
-        const step = steps[stepIndex];
-        if (!step) return null;
-        return (
-          <div key={stepIndex} class={step.fixed ? "proof-step proof-step-fixed" : "proof-step"}>
-            <span class="muted-inline">{position + 1}.</span>
-            <StepText text={step.text} reason={step.reason} showReason={checked && right} />
-            {!step.fixed && !(checked && right) && (
-              <span class="proof-step-moves">
-                <button type="button" class="key" aria-label="Sposta su" onClick={() => setOrder(moveStep(order, steps, position, -1))}>
-                  ↑
-                </button>
-                <button type="button" class="key" aria-label="Sposta giù" onClick={() => setOrder(moveStep(order, steps, position, 1))}>
-                  ↓
-                </button>
-              </span>
-            )}
-          </div>
-        );
-      })}
-      <div class="exercise-actions">
-        <button type="button" class="button button-primary" onClick={() => setChecked(true)}>
-          Controlla
-        </button>
-      </div>
-      {checked && (
-        <div class={right ? "verdict verdict-correct" : "verdict verdict-wrong"} role="status">
-          <p class="verdict-title">{right ? <><span aria-hidden="true">✓</span> Ordine giusto</> : <><span aria-hidden="true">✗</span> Non ancora</>}</p>
-          {!right && <p>Passaggi al posto giusto: {order.filter((value, index) => value === index).length} su {order.length}. Sposta gli altri e controlla di nuovo.</p>}
+      <ReorderList
+        items={items}
+        order={order}
+        onChange={
+          done
+            ? undefined
+            : (next) => {
+                setOrder(next);
+                setVerdict(null);
+              }
+        }
+        extra={(index) => (done ? <RichText text={steps[index]?.reason ?? ""} class="proof-reason" /> : null)}
+        label="Passaggi da riordinare"
+      />
+      {!done && (
+        <div class="exercise-actions">
+          <button type="button" class="button button-primary" onClick={check}>
+            Controlla
+          </button>
+        </div>
+      )}
+      {verdict !== null && (
+        <div class={verdict ? "verdict verdict-correct" : "verdict verdict-wrong"} role="status">
+          <p class="verdict-title">{verdict ? <><span aria-hidden="true">✓</span> Ordine giusto</> : <><span aria-hidden="true">✗</span> Non ancora</>}</p>
+          {!verdict && <p>Passaggi al posto giusto: {rightPlaces(order)} su {order.length}. Sposta gli altri e controlla di nuovo.</p>}
         </div>
       )}
     </>
   );
 }
 
-function WrongDrill({ steps }: { steps: Steps }) {
+function WrongDrill({ steps, onAnswered }: { steps: Steps; onAnswered: OnAnswered }) {
   const task = useMemo(() => wrongTask(steps, Math.random), [steps]);
   const [chosen, setChosen] = useState<number | null>(null);
+  const elapsed = useStartTime();
   if (!task) return <p class="muted">Questa dimostrazione non ha versioni sbagliate.</p>;
   return (
     <>
@@ -218,7 +247,10 @@ function WrongDrill({ steps }: { steps: Steps }) {
         const text = index === task.index ? task.wrong.text : step.text;
         const state = chosen === null ? "" : index === task.index ? " option-right" : index === chosen ? " option-wrong" : "";
         return (
-          <button key={index} type="button" class={`proof-step option${state}`} disabled={chosen !== null} onClick={() => setChosen(index)}>
+          <button key={index} type="button" class={`proof-step option${state}`} disabled={chosen !== null} onClick={() => {
+            setChosen(index);
+            onAnswered(index === task.index, elapsed());
+          }}>
             <span class="muted-inline">{index + 1}.</span>
             <StepText text={text} reason={step.reason} showReason={false} />
           </button>
@@ -236,9 +268,10 @@ function WrongDrill({ steps }: { steps: Steps }) {
   );
 }
 
-function CompleteDrill({ steps }: { steps: Steps }) {
+function CompleteDrill({ steps, onAnswered }: { steps: Steps; onAnswered: OnAnswered }) {
   const task = useMemo(() => completeTask(steps, Math.random), [steps]);
   const [chosen, setChosen] = useState<number | null>(null);
+  const elapsed = useStartTime();
   if (!task) return <p class="muted">Questa dimostrazione non ha versioni sbagliate.</p>;
   const picked = chosen === null ? undefined : task.options[chosen];
   return (
@@ -254,7 +287,10 @@ function CompleteDrill({ steps }: { steps: Steps }) {
         {task.options.map((option, index) => {
           const state = chosen === null ? "" : option.correct ? " option-right" : chosen === index ? " option-wrong" : "";
           return (
-            <button key={index} type="button" class={`option${state}`} disabled={chosen !== null} onClick={() => setChosen(index)}>
+            <button key={index} type="button" class={`option${state}`} disabled={chosen !== null} onClick={() => {
+              setChosen(index);
+              onAnswered(option.correct, elapsed());
+            }}>
               <span class="option-mark" aria-hidden="true">
                 {chosen !== null && option.correct ? "✓" : chosen === index ? "✗" : ""}
               </span>

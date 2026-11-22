@@ -3,10 +3,13 @@
 // da una sua versione sbagliata), completa (un passaggio è nascosto e va scelto tra la versione giusta
 // e quelle sbagliate). Il caso viene da `random`, così i test lo fissano.
 
+import type { LessonCode, TheoremCode } from "../../codici";
 import type { ProofStep } from "../../contenuti/formato";
+import type { AttemptRecord, ProofMode } from "../../dati";
+import { UNCLASSIFIED } from "../../errori";
 import { moveItem } from "../risposta/ordering";
 
-export type DrillMode = "riordina" | "sbagliato" | "completa";
+export type DrillMode = ProofMode;
 
 export const DRILL_MODES: readonly { id: DrillMode; label: string }[] = [
   { id: "riordina", label: "Riordina" },
@@ -72,4 +75,41 @@ export function completeTask(steps: readonly ProofStep[], random: () => number):
   if (!chosen) return null;
   const options = [{ text: chosen.step.text, correct: true, reason: chosen.step.reason }, ...chosen.step.wrong.map((w) => ({ text: w.text, correct: false, reason: w.reason }))];
   return { index: chosen.index, options: shuffle(options, random) };
+}
+
+/** Quello che serve per registrare un tentativo su una dimostrazione. */
+export interface ProofAttemptInput {
+  readonly id: string;
+  readonly at: string;
+  readonly lesson: LessonCode;
+  readonly theorem: TheoremCode;
+  readonly mode: DrillMode;
+  readonly correct: boolean;
+  readonly millis: number;
+}
+
+/**
+ * La riga del registro per una prova su una dimostrazione (decisione 119): contesto «dimostrazione»,
+ * teorema e modalità in `proof`, nessuna abilità (non entra nella padronanza), lezione del teorema;
+ * una risposta sbagliata è NON_CLASSIFICATO (le versioni sbagliate non hanno codici del catalogo) e
+ * resta fuori dal diario. Nel riordino conta il primo «Controlla» di ogni giro.
+ */
+export function proofAttempt(input: ProofAttemptInput): AttemptRecord {
+  return {
+    id: input.id,
+    at: input.at,
+    skill: null,
+    generator: null,
+    seed: null,
+    level: null,
+    lesson: input.lesson,
+    question: null,
+    outcome: input.correct ? "correct" : "wrong",
+    error: input.correct ? null : UNCLASSIFIED,
+    distraction: false,
+    hints: 0,
+    millis: Math.max(0, Math.round(input.millis)),
+    context: "dimostrazione",
+    proof: { theorem: input.theorem, mode: input.mode },
+  };
 }

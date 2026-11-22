@@ -3,13 +3,25 @@
 // numero di versione dei dati (DATA_VERSION): quando la struttura cambia, il numero sale e si
 // scrive un passaggio di migrazione in migrate.ts.
 
-import type { GeneratorCode, LessonCode, ModuleCode, SkillCode } from "../codici";
+import type { GeneratorCode, LessonCode, ModuleCode, SkillCode, TheoremCode } from "../codici";
 
 /** Versione della struttura dei dati. Si aumenta di uno a ogni cambiamento della struttura. */
-export const DATA_VERSION = 2;
+export const DATA_VERSION = 3;
 
-/** Dove è stato fatto un tentativo. «controllo» è il controllo «Lo so già» di un modulo. */
-export type AttemptContext = "lampo" | "lezione" | "esercizi" | "oggi" | "simulazione" | "minitest" | "controllo";
+/**
+ * Dove è stato fatto un tentativo. «controllo» è il controllo «Lo so già» di un modulo; «dimostrazione»
+ * una delle tre modalità delle dimostrazioni interattive (dalla versione 3 dei dati).
+ */
+export type AttemptContext = "lampo" | "lezione" | "esercizi" | "oggi" | "simulazione" | "minitest" | "controllo" | "dimostrazione";
+
+/** Le tre modalità delle dimostrazioni interattive (specifica, sezione 4). */
+export type ProofMode = "riordina" | "sbagliato" | "completa";
+
+/** Per un tentativo su una dimostrazione: quale teorema e in quale modalità. */
+export interface ProofAttempt {
+  readonly theorem: TheoremCode;
+  readonly mode: ProofMode;
+}
 
 /** Un tentativo: una riga del registro (specifica, sezione 9). */
 export interface AttemptRecord {
@@ -34,6 +46,12 @@ export interface AttemptRecord {
   /** Tempo impiegato, in millisecondi. */
   readonly millis: number;
   readonly context: AttemptContext;
+  /**
+   * Solo nei tentativi sulle dimostrazioni (contesto «dimostrazione»): teorema e modalità. Lì `skill`,
+   * `generator`, `seed` e `level` sono null, `lesson` è la lezione del teorema, `error` è
+   * NON_CLASSIFICATO per una risposta sbagliata (le versioni sbagliate non hanno codici del catalogo).
+   */
+  readonly proof?: ProofAttempt;
 }
 
 /** A che punto è una lezione. */

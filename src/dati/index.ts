@@ -3,7 +3,7 @@
 
 export {
   DATA_VERSION, defaultSettings, emptyBackup, emptyData, SESSION_MINUTES, TRACKS,
-  type AttemptContext, type AttemptRecord, type BackupInfo, type DayRecord, type FlashcardReview, type KnownCheck, type LessonProgress,
+  type AttemptContext, type AttemptRecord, type ProofAttempt, type ProofMode, type BackupInfo, type DayRecord, type FlashcardReview, type KnownCheck, type LessonProgress,
   type SessionMinutes, type Settings, type StoredData, type ThemeChoice, type TodaySession, type TrackId,
 } from "./types";
 export { DataVersionError, migrateData, readSettings } from "./migrate";

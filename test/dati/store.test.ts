@@ -191,6 +191,49 @@ describe("migrazioni", () => {
     expect(defaultSettings()).toEqual({ theme: "system", tracks: ["V1"], defaultMinutes: 40 });
   });
 
+  it("dalla versione 2: tutto resta com'è, i tentativi vecchi senza il campo delle dimostrazioni", () => {
+    const v2 = { ...emptyData(), version: 2, attempts: [attempt("a")], lessons: [progress], settings: { theme: "dark", tracks: ["V1", "V2"], defaultMinutes: 20 } };
+    expect(migrateData(JSON.parse(JSON.stringify(v2)))).toEqual({ ...v2, version: DATA_VERSION });
+    expect(DATA_VERSION).toBe(3);
+  });
+
+  it("un tentativo su una dimostrazione si salva e si rilegge con teorema e modalità", async () => {
+    const proof = attempt("p", { context: "dimostrazione", skill: null, generator: null, seed: null, level: null, lesson: "V2.M06.L99", error: "NON_CLASSIFICATO", proof: { theorem: "V2.M06.T03", mode: "sbagliato" } });
+    const store = await openIndexedDbStore(new IDBFactory());
+    await store.addAttempt(proof);
+    expect((await store.exportData()).attempts).toEqual([proof]);
+    expect(migrateData(JSON.parse(JSON.stringify(await store.exportData()))).attempts).toEqual([proof]);
+  });
+
+  it("una base IndexedDB della versione 2 si apre e tiene i suoi dati", async () => {
+    const factory = new IDBFactory();
+    await new Promise<void>((resolve, reject) => {
+      const request = factory.open("compasso", 2);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        db.createObjectStore("attempts", { keyPath: "id" }).createIndex("at", "at");
+        db.createObjectStore("lessons", { keyPath: "code" });
+        for (const name of ["days", "reviews", "checks"]) db.createObjectStore(name, { keyPath: name === "days" ? "date" : "id" });
+        db.createObjectStore("meta", { keyPath: "key" });
+      };
+      request.onsuccess = () => {
+        const db = request.result;
+        const tx = db.transaction(["attempts", "lessons", "meta"], "readwrite");
+        tx.objectStore("attempts").put(attempt("a"));
+        tx.objectStore("lessons").put(progress);
+        tx.objectStore("meta").put({ key: "settings", value: { theme: "dark", tracks: ["V1"], defaultMinutes: 60 } });
+        tx.oncomplete = () => {
+          db.close();
+          resolve();
+        };
+      };
+      request.onerror = () => reject(request.error);
+    });
+    const store = await openIndexedDbStore(factory);
+    expect(store.version).toBe(DATA_VERSION);
+    expect(await store.exportData()).toEqual({ ...emptyData(), attempts: [attempt("a")], lessons: [progress], settings: { theme: "dark", tracks: ["V1"], defaultMinutes: 60 } });
+  });
+
   it("impostazioni strane prendono i valori predefiniti", () => {
     const data = migrateData({ ...emptyData(), settings: { theme: "viola", tracks: ["V9"], defaultMinutes: 45 } });
     expect(data.settings).toEqual(defaultSettings());

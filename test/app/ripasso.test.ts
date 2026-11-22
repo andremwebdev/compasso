@@ -9,7 +9,7 @@ import { loadLesson } from "../../src/contenuti";
 import { parseLesson } from "../../src/contenuti/formato";
 import { skillsOfModule } from "../../src/contenuti/programma";
 import { cardsOfLesson, proofsOfLesson } from "../../src/app/ripasso/cards";
-import { completeTask, isInOrder, moveStep, shuffledOrder, wrongTask } from "../../src/app/ripasso/drill";
+import { completeTask, isInOrder, moveStep, proofAttempt, shuffledOrder, wrongTask } from "../../src/app/ripasso/drill";
 import { CHECK_PASS, checkRecord, knownCheckPlan } from "../../src/app/schermate/checks";
 import { seriesItems } from "../../src/app/schermate/Esercizi";
 import { findGenerator } from "../../src/generatori";
@@ -80,6 +80,15 @@ describe("dimostrazioni interattive", () => {
       expect(complete?.options.filter((option) => option.correct).length).toBe(1);
       expect(complete?.options.length).toBe((steps[complete?.index ?? 0]?.wrong.length ?? 0) + 1);
     }
+  });
+
+  it("il tentativo registrato: contesto «dimostrazione», teorema e modalità, nessuna abilità", () => {
+    const base = { id: "x", at: "2026-11-22T10:00:00.000Z", lesson: "V2.M06.L99", theorem: "V2.M06.T03", mode: "completa", millis: 1234.6 } as const;
+    expect(proofAttempt({ ...base, correct: true })).toEqual({
+      id: "x", at: base.at, skill: null, generator: null, seed: null, level: null, lesson: "V2.M06.L99", question: null, outcome: "correct", error: null,
+      distraction: false, hints: 0, millis: 1235, context: "dimostrazione", proof: { theorem: "V2.M06.T03", mode: "completa" },
+    });
+    expect(proofAttempt({ ...base, correct: false })).toMatchObject({ outcome: "wrong", error: "NON_CLASSIFICATO" });
   });
 });
 

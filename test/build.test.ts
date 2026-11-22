@@ -163,7 +163,7 @@ async function expectAppWorks(ui: Ui) {
   // Tu → il registro ha la domanda lampo e l'esercizio; la lezione risulta cominciata.
   await ui.click("nav.tab-bar button", "Tu");
   expect((await ui.text("main"))).toContain("Tentativi nel registro: 2");
-  expect((await ui.text("main"))).toContain("Versione dei dati: 2");
+  expect((await ui.text("main"))).toContain("Versione dei dati: 3");
   // Tu: serie, padronanza, diario, impostazioni, backup.
   const tu = (await ui.text("main")) ?? "";
   for (const title of ["Serie di giorni", "Padronanza", "Diario degli errori", "Impostazioni", "Backup"]) expect(tu).toContain(title);
