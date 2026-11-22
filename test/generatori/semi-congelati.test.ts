@@ -183,6 +183,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A05.g1", 2, 2, "Scrivi il numero $5{,}145$ come frazione irriducibile."],
   ["V1.M02.A05.g1", 3, 1, "Scrivi il numero $0{,}8736$ come frazione irriducibile."],
   ["V1.M02.A05.g1", 3, 2, "Scrivi il numero $-1{,}5984$ come frazione irriducibile."],
+  ["V1.M02.A06.g1", 1, 1, "Scrivi la frazione generatrice di $0{,}\\overline{42}$, ridotta ai minimi termini."],
+  ["V1.M02.A06.g1", 1, 2, "Scrivi la frazione generatrice di $1{,}\\overline{6}$, ridotta ai minimi termini."],
+  ["V1.M02.A06.g1", 2, 1, "Scrivi la frazione generatrice di $1{,}6\\overline{1}$, ridotta ai minimi termini."],
+  ["V1.M02.A06.g1", 2, 2, "Scrivi la frazione generatrice di $0{,}7\\overline{73}$, ridotta ai minimi termini."],
+  ["V1.M02.A06.g1", 3, 1, "Scrivi la frazione generatrice di $4{,}3\\overline{7}$, ridotta ai minimi termini."],
+  ["V1.M02.A06.g1", 3, 2, "Scrivi la frazione generatrice di $2{,}0\\overline{1}$, ridotta ai minimi termini."],
 ];
 
 describe("semi congelati", () => {
