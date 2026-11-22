@@ -195,6 +195,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A07.g1", 2, 2, "Quale di questi numeri è razionale?"],
   ["V1.M02.A07.g1", 3, 1, "Quale di questi numeri è irrazionale?"],
   ["V1.M02.A07.g1", 3, 2, "Quale di questi numeri è irrazionale?"],
+  ["V1.M02.A08.g1", 1, 1, "Quale di questi numeri è il maggiore: $0{,}714$, $0{,}74$, $0{,}8$, $\\frac{11}{15}$?"],
+  ["V1.M02.A08.g1", 1, 2, "Quale di questi numeri è il maggiore: $0{,}28$, $0{,}298$, $0{,}3$, $\\frac{11}{40}$?"],
+  ["V1.M02.A08.g1", 2, 1, "Quale di questi numeri è il maggiore: $4{,}413$, $4{,}5$, $\\frac{112}{25}$, $\\sqrt{11}$?"],
+  ["V1.M02.A08.g1", 2, 2, "Quale di questi numeri è il maggiore: $2{,}515$, $2{,}6$, $\\frac{32}{13}$, $\\sqrt{5}$?"],
+  ["V1.M02.A08.g1", 3, 1, "Quale di questi numeri è il maggiore: $-2{,}5$, $-2{,}547$, $-\\frac{26}{7}$, $-\\sqrt{11}$?"],
+  ["V1.M02.A08.g1", 3, 2, "Quale di questi numeri è il maggiore: $-2{,}9$, $-2{,}977$, $-\\frac{29}{12}$, $-\\sqrt{3}$?"],
 ];
 
 describe("semi congelati", () => {

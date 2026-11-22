@@ -150,6 +150,14 @@ export const errorCatalog = [
     example: tex`$84 = 2^2\cdot3\cdot7$: il $2$ divide $84$ due volte ($84\to42\to21$). Scrivere $2\cdot3\cdot7$ perde un fattore: il prodotto è $42$, non $84$.`,
     reference: "V1.M02.L02",
   },
+  {
+    code: "CALC.CONFRONTO_NUMERI",
+    name: "Confronto tra numeri scritti in modi diversi",
+    category: "CALC",
+    explanation: tex`Due decimali si confrontano cifra per cifra dopo la virgola, non dal numero di cifre; due frazioni si confrontano in croce, non guardando solo i numeratori; una radice si confronta con un numero positivo confrontando i quadrati, non il radicando con il numero.`,
+    example: tex`$0{,}7 > 0{,}65$, anche se $65$ ha più cifre: $0{,}70$ contro $0{,}65$. $\dfrac{13}{20} = 0{,}65$ è minore di $\dfrac{7}{10}$, anche se $13 > 7$. $\sqrt{10} < 3{,}2$, perché $3{,}2^2 = 10{,}24 > 10$.`,
+    reference: "V1.M02.L07",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

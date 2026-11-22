@@ -806,6 +806,14 @@ def _():
     assert 2 * 3 * 7 == 42 != 84
 
 
+@check("CALC.CONFRONTO_NUMERI")
+def _():
+    from sympy import sqrt as _sqrt
+    assert Rational(7, 10) > Rational(65, 100)
+    assert Rational(13, 20) < Rational(7, 10) and 13 > 7
+    assert _sqrt(10) < Rational(32, 10) and Rational(32, 10)**2 == Rational(1024, 100)
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)
