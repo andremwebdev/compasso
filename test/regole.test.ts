@@ -32,12 +32,13 @@ describe("gli esempi di REGOLE.md", () => {
       ':::definizione{id=V1.M06.D02 nome="Segno di una frazione" termine=segno-di-una-frazione}\nIl segno di $\\dfrac{N}{D}$ dipende dai segni di $N$ e di $D$.\n:::',
       ':::teorema{id=V1.M06.T03 nome="Teorema di prova"}\nEnunciato.\n:::',
       // Gli esempi di dimostrazione usano un teorema del Volume 2: qui lo si porta nel modulo della lezione.
-      ...blocks.map((block) => block.replaceAll("V2.M06.T03", "V1.M06.T03")),
+      // e l'esempio di figura (V1.M01.L02) prende il nome di file della lezione.
+      ...blocks.map((block) => block.replaceAll("V2.M06.T03", "V1.M06.T03").replaceAll("l02-venn", "l04-venn")),
       ":::riepilogo\nI punti da ricordare.\n:::",
     ].join("\n\n");
     expect(parseLesson(lesson).problems).toEqual([]);
     expect(parseLesson(lesson).lesson?.blocks.map((block) => block.kind)).toEqual([
-      "text", "definition", "theorem", "question", "question", "proof", "visualization", "flashcard", "summary",
+      "text", "definition", "theorem", "question", "question", "proof", "visualization", "flashcard", "graph", "figure", "summary",
     ]);
   });
 

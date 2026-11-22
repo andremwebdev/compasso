@@ -477,6 +477,249 @@ p {
   border-left-style: solid;
 }
 
+/* Grafici e figure delle lezioni (blocchi «grafico» e «figura»). Il disegno è SVG nella pagina:
+   prende i colori dalle variabili del tema con le classi graf-… (motore) e fig-… (figure scritte a
+   mano, elenco in src/contenuti/formato/figure.ts). Curve distinte anche dal tratteggio, mai solo
+   dal colore. Il disegno si adatta alla larghezza: niente scorrimento orizzontale. */
+.box-figure {
+  --colore: var(--inchiostro-secondario);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.grafico-disegno svg,
+.figura-disegno svg {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.box-figure figcaption {
+  margin-top: var(--s-2);
+  color: var(--inchiostro-secondario);
+  font-size: var(--testo-piccolo);
+}
+
+.box-figure figcaption .rich > :first-child {
+  margin-top: 0;
+}
+
+.grafico-svg text {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  fill: var(--inchiostro-secondario);
+  /* Un alone del colore del fondo: numeri e lettere restano leggibili sopra linee e curve. */
+  paint-order: stroke;
+  stroke: var(--carta-alta);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.grafico-svg .graf-nome {
+  font-family: KaTeX_Math, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 14px;
+  fill: var(--inchiostro);
+}
+
+.grafico-svg .graf-etichetta {
+  font-weight: 600;
+  font-size: 12px;
+  fill: var(--inchiostro);
+}
+
+.graf-griglia {
+  fill: none;
+  stroke: var(--griglia-forte);
+  stroke-width: 1;
+}
+
+.graf-asse {
+  fill: none;
+  stroke: var(--inchiostro);
+  stroke-width: 1.2;
+}
+
+.graf-freccia {
+  fill: var(--inchiostro);
+  stroke: none;
+}
+
+.graf-asintoto {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+
+.graf-curva {
+  fill: none;
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.graf-curva-1,
+.graf-segno-1 {
+  stroke: var(--blu);
+  color: var(--blu);
+}
+
+.graf-curva-2,
+.graf-segno-2 {
+  stroke: var(--arancio);
+  color: var(--arancio);
+}
+
+.graf-curva-2 {
+  stroke-dasharray: 9 5;
+}
+
+.graf-curva-3,
+.graf-segno-3 {
+  stroke: var(--ese);
+  color: var(--ese);
+}
+
+.graf-curva-3 {
+  stroke-dasharray: 2 4;
+}
+
+.graf-punto {
+  fill: currentColor;
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+}
+
+.graf-buco {
+  fill: var(--carta-alta);
+  stroke-width: 2;
+}
+
+.grafico-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1) var(--s-4);
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.grafico-legenda li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.legenda-segno {
+  flex: none;
+  width: 32px;
+  height: 8px;
+}
+
+.grafico-punti {
+  margin-top: var(--s-2);
+  font-size: var(--testo-piccolo);
+}
+
+.grafico-punti p {
+  margin: 0;
+}
+
+/* Figure scritte a mano: senza classe una forma è un contorno d'inchiostro senza riempimento. */
+:where(.figura-disegno) :where(path, line, polyline, polygon, rect, circle, ellipse) {
+  fill: none;
+  stroke: var(--inchiostro);
+  stroke-width: 1.5;
+}
+
+:where(.figura-disegno) :where(text, tspan) {
+  fill: var(--inchiostro);
+  stroke: none;
+  font-family: var(--font-ui);
+  font-size: 14px;
+}
+
+.fig-linea {
+  stroke: var(--inchiostro);
+  stroke-width: 1.5;
+}
+
+.fig-sottile {
+  stroke: var(--bordo);
+  stroke-width: 1;
+}
+
+.fig-tratteggio {
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+
+.fig-accento {
+  stroke: var(--arancio);
+  stroke-width: 2.4;
+}
+
+/* Le aree sono trasparenti, così le sovrapposizioni (intersezioni) si vedono; non contengono testo. */
+.fig-area-1 {
+  fill: var(--blu);
+  fill-opacity: 0.22;
+}
+
+.fig-area-2 {
+  fill: var(--arancio);
+  fill-opacity: 0.22;
+}
+
+.fig-area-3 {
+  fill: var(--ese);
+  fill-opacity: 0.22;
+}
+
+.fig-pieno {
+  fill: var(--inchiostro);
+  stroke: none;
+}
+
+.fig-testo {
+  fill: var(--inchiostro);
+}
+
+.fig-testo-corsivo {
+  fill: var(--inchiostro);
+  font-family: KaTeX_Math, "Times New Roman", serif;
+  font-style: italic;
+  font-size: 18px;
+}
+
+.figura-problema {
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--att);
+  border-radius: var(--raggio);
+  background: var(--att-fondo);
+  color: var(--inchiostro);
+  font-size: var(--testo-piccolo);
+}
+
+.figura-problema p,
+.figura-problema ul {
+  margin: 0;
+}
+
+.figura-problema ul {
+  padding-left: var(--s-5);
+}
+
+.figura-problema strong {
+  color: var(--att);
+}
+
 .proof-reason {
   color: var(--inchiostro-secondario);
   font-size: 0.95em;

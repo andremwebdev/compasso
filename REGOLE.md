@@ -58,7 +58,7 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | `src/motore/` | matematica pura: numeri, espressioni, parser, equivalenza, forma, insiemi, matrici | solo se stesso |
 | `src/esercizi/` | schema dei generatori, creazione dell'esercizio, valutazione delle risposte | `motore`, `errori`, `codici` |
 | `src/generatori/` | un file per generatore, `comuni/` con gli strumenti condivisi; `index.ts` legge i generatori (dati leggeri dall'indice, generatore vero dai moduli caricati) | `esercizi`, `motore`, `errori`, `codici`, `moduli` |
-| `src/contenuti/` | lezioni in Markdown (`v1/m06/l04.md`); `index.ts` legge le lezioni (codici e titoli dall'indice, testo dai moduli caricati); in `formato/` il codice che le legge e le controlla | `codici`, `errori`, `moduli` |
+| `src/contenuti/` | lezioni in Markdown (`v1/m06/l04.md`) e loro figure SVG (`v1/m01/l02-venn.svg`); `index.ts` legge le lezioni (codici e titoli dall'indice, testo dai moduli caricati); in `formato/` il codice che le legge e le controlla | `codici`, `errori`, `moduli`, `motore` (solo `formato/graph.ts`, per leggere i grafici) |
 | `src/moduli/` | **gli elenchi**: un file per modulo (`v1/m06.ts`) con le sue lezioni e i suoi generatori; `index.ts` registro fisso dei 35 moduli; `indice.ts` indice leggero; `caricamento.ts` moduli caricati (`ensureModules`) | `codici`, `contenuti`, `generatori`, `esercizi` |
 | `src/riserva/` | teoremi con dimostrazione già scritti, in attesa della lezione (`LEGGIMI.md` dice come usarli); non entra nell'app | — |
 | `src/dati/` | progressi, ripasso, registro, backup | `codici`, `errori`, `esercizi` (solo tipi) |
@@ -149,6 +149,7 @@ Il resto del motore, per cartella (ogni cartella ha un `index.ts` da cui importa
 | Numeri complessi | `motore/complex` | `Complex.of(1, 2)`, `fromPolar`, `polarForm`, `complexExpr`, `trigonometricForm`, `exponentialForm`, `complexRoots`, `exactComplex` |
 | Passaggi delle procedure | `motore/steps` | `solveQuadratic`, `ruffini`, `dividePolynomials`, `factorPolynomial`; ogni passaggio diventa testo con `stepText` |
 | Tabelle e sistemi | `motore/display` | `signTable`, `solutionFromSigns`, `signStudySteps`, `signTableToLatex`, `variationTable`, `variationTableToLatex`, `systemToLatex` |
+| Grafici statici | `motore/display` | `plotGraph(funzioni, finestra, { points })` (curve, punti notevoli esatti, asintoti, tacche), `graphToSvg` (SVG con sole classi `graf-…`), `graphPointToLatex` |
 
 ```ts
 import { simplify } from "../../../motore/algebra/simplify";
@@ -398,6 +399,8 @@ termini: [segno-di-una-frazione]
 | `attenzione` | `errore` (codice del catalogo) | l'errore tipico e come evitarlo |
 | `domanda` | `generatore`, `livello` **oppure** nessuno | domanda lampo (vedi sotto) |
 | `visualizzazione` | `id` (VIS.nome) + parametri iniziali | vuoto |
+| `grafico` | `funzioni`, `finestra`, `punti` (facoltativo) | didascalia (facoltativa) |
+| `figura` | `file` (lNN-nome.svg, accanto alla lezione) | didascalia (obbligatoria) |
 | `flashcard` | `id` (V2.M06.F05) | davanti, poi `::retro`, poi dietro |
 | `glossario` | `termine`, `nome` | definizione breve (1-2 frasi) di un termine che non merita un riquadro |
 | `riepilogo` | nessuno | i punti da ricordare. Uno solo, **ultimo blocco** della lezione |
@@ -467,6 +470,50 @@ Quando si può moltiplicare una disequazione per il denominatore?
 Solo se il segno del denominatore è noto: se è negativo il verso si inverte.
 :::
 ```
+
+**Grafici e figure**
+
+Un **grafico** lo disegna il motore (`plotGraph` e `graphToSvg` in `src/motore/display/graph.ts`): si scrivono solo le funzioni e la finestra.
+
+```markdown
+:::grafico{funzioni="(x-1)/(x+2); x/2 - 1" finestra="-6; 6; -4; 4" punti="4"}
+La funzione $y = \dfrac{x-1}{x+2}$ e la retta $y = \dfrac{x}{2} - 1$.
+:::
+```
+
+- `funzioni`: da una a tre funzioni di `x`, separate da `;`, scritte come le legge `parseExpression` (`sqrt(x)`, `ln(x)`, `2^x`, `sin(x)`). Si distinguono per colore **e** tratteggio (continua, a tratti, a punti); sotto il disegno compare la legenda con le formule.
+- `finestra`: quattro numeri separati da `;`, nell'ordine x minimo; x massimo; y minimo; y massimo. Valgono anche costanti (`-2pi`, `3/2`, `1,5`).
+- `punti` (facoltativo): ascisse di altri punti da segnare, separate da `;`, su ogni curva definita lì (un'intersezione tra due curve si scrive così).
+- Il motore segna da solo, **esatti**: zeri e asintoti verticali delle funzioni razionali, buchi (punti esclusi con limite finito), intersezione con l'asse $y$. Per le altre funzioni (seno, logaritmo, radici) gli zeri non li cerca: se servono, vanno in `punti`. Le lettere A, B, C… vanno in ordine di ascissa e sotto il disegno c'è l'elenco con le coordinate.
+- La curva è interrotta dove la funzione non è definita (anche ai poli della tangente, che il motore non conosce: lì non disegna l'asintoto).
+- Un parametro sbagliato è un problema della verifica dei contenuti (`Grafico: …`); se arrivasse nell'app, il riquadro mostra il messaggio e la lezione continua.
+
+Una **figura** è un file SVG scritto a mano, accanto alla lezione, per ciò che non è il grafico di una funzione (diagrammi di Venn in V1.M01, figure di geometria in V1.M11).
+
+```markdown
+:::figura{file=l02-venn-unione.svg}
+L'unione $A \cup B$: tutta la parte colorata, dentro almeno uno dei due cerchi.
+:::
+```
+
+```svg
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <title>Diagramma di Venn: l'unione di A e B</title>
+  <rect class="fig-linea" x="8" y="8" width="304" height="184" rx="6"/>
+  <circle class="fig-area-1 fig-linea" cx="125" cy="100" r="62"/>
+  <circle class="fig-area-1 fig-linea" cx="195" cy="100" r="62"/>
+  <text class="fig-testo-corsivo" x="88" y="104">A</text>
+  <text class="fig-testo-corsivo" x="222" y="104">B</text>
+</svg>
+```
+
+- **File**: `src/contenuti/vN/mNN/lNN-nome.svg` (per `V1.M01.L02`: `l02-…`, minuscolo e trattini). Va nell'elenco del modulo, come la lezione: `import l02Venn from "../../contenuti/v1/m01/l02-venn-unione.svg";` e `figures: { "v1/m01/l02-venn-unione.svg": l02Venn }` in `defineModule`.
+- **Didascalia obbligatoria**: dice che cosa mostra la figura, anche a chi non la vede.
+- **Regole del file** (le controlla `checkFigure`): comincia con `<svg` e ha il `viewBox`, senza `width` né `height` (si adatta allo schermo; disegnare su una larghezza di circa 320); solo forme, testo, gruppi, `defs`, `marker`, `clipPath`, `use`; niente `script`, `style`, immagini, `foreignObject`, riferimenti fuori dal file; gli `id` cominciano con il nome del file (`l02-venn-unione-freccia`); nel testo `<` e `>` si scrivono `&lt;` e `&gt;`.
+- **Colori solo dalle classi** (mai `fill="…"`, `stroke="…"` o codici di colore; ammessi solo `none` e `currentColor`): `fig-linea` (contorno d'inchiostro), `fig-sottile` (linea di costruzione), `fig-tratteggio`, `fig-accento` (contorno arancione), `fig-area-1`/`-2`/`-3` (riempimento trasparente blu, arancione, verde: le sovrapposizioni si vedono), `fig-pieno` (punti, frecce), `fig-testo`, `fig-testo-corsivo` (lettere matematiche). Una forma senza classe è un contorno d'inchiostro senza riempimento. L'elenco è `FIGURE_CLASSES` in `src/contenuti/formato/figure.ts`; le regole sono in `styles.css` e seguono il tema.
+- Le formule vere non stanno nella figura (il testo SVG non passa da KaTeX): lettere e numeri semplici sì, il resto va nella didascalia.
+
+Una figura che nessuna lezione usa è un avviso della verifica. La prova in Chrome di grafici e figure (`test/app/grafici-chrome.test.ts`) usa la lezione di prova `test/contenuti/prova/v1/m01/l99.md`, che non entra nell'app; con `COMPASSO_FOTO=cartella` salva le fotografie nei due temi a 414 e 320 px.
 
 **Nel testo**
 
@@ -583,7 +630,7 @@ Il lavoro si salva su GitHub (commit e push) dopo ogni parte completata, non sol
 - Il service worker (`src/app/sw.ts`) salva in anticipo tutti i file della build; la versione della cache è un hash del contenuto. Una versione nuova si usa dalla riapertura successiva (nessun `skipWaiting`, per non cambiare l'app sotto gli occhi di chi sta studiando).
 - GitHub Pages serve l'app sotto `/compasso/`: nell'app si usano solo percorsi relativi.
 - `src/app/sw.ts` ha un suo `tsconfig.sw.json` (libreria WebWorker) ed è escluso dal `tsconfig.json` principale.
-- I file `.md` delle lezioni si importano come testo: `loader: { ".md": "text" }` in `scripts/build.mjs`, un piccolo plugin in `vitest.config.ts`, la dichiarazione in `src/contenuti/markdown.d.ts`.
+- I file `.md` delle lezioni e le figure `.svg` si importano come testo: `loader` in `scripts/build.mjs` e `scripts/indice-contenuti.mjs`, due piccoli plugin in `vitest.config.ts`, le dichiarazioni in `src/contenuti/markdown.d.ts`.
 - **Contenuti per modulo** (specifica, sezione 12). Ogni modulo ha un file `src/moduli/vN/mNN.ts` con le sue lezioni e i suoi generatori; il registro `src/moduli/index.ts` li carica con `import()` ed è **fisso** (35 righe, una per modulo: non si tocca). Versione telefono: moduli ES (`<script type="module">`, `splitting`), ogni modulo diventa `dist/telefono/moduli/vN/mNN.js` e si legge solo quando serve; il codice in comune sta in `chunks/`; il service worker salva tutto per l'uso offline. Versione PC: gli `import()` restano dentro il file unico.
 - **Indice leggero** (`src/moduli/indice.ts`): per ogni modulo codici e titoli delle lezioni, prerequisiti dichiarati, termini del glossario, codici delle flashcard, e dei generatori codice, abilità, lezione, titolo, livelli, errori. Non si scrive a mano: lo calcola `scripts/indice-contenuti.mjs` (con `indexModule` di `src/moduli/indicizza.ts`) e la compilazione e Vitest lo inseriscono come costante `__CONTENT_INDEX__`. Se serve un dato nuovo senza caricare i moduli, si aggiunge lì (con il test in `test/moduli/moduli.test.ts`).
 - **Due modi di leggere i contenuti**. Senza caricare nulla (indice): `lessonCodes`, `lessonInfo`, `generatorInfos`, `findGeneratorInfo`, `isWritten`, `generatorsOfModule`… bastano per navigazione, Oggi, Esercizi, diario, «Lo so già». Con il modulo caricato: `loadLesson`, `lessonSource`, `findGenerator`, `loadedGenerators` restituiscono `null`/`undefined` finché il modulo non c'è. Una schermata che ha bisogno del testo di una lezione o di generare esercizi si avvolge in `<WithModules modules={…}>{() => …}</WithModules>` (`src/app/caricamento.tsx`, mostra «Caricamento…»), come fanno `LessonView`, `ExerciseSeries`, il mazzo di flashcard, glossario e dimostrazioni. Il codice di una lezione, di un generatore, di una definizione o di una flashcard dice il suo modulo (`moduleOf`, `modulesOf`).

@@ -114,6 +114,18 @@ export class ChromePage {
     return result.result.value as T;
   }
 
+  /** Toglie la rete alla scheda: da qui in poi ogni richiesta fallisce. */
+  async goOffline(): Promise<void> {
+    await this.chrome.send("Network.enable", {}, this.sessionId);
+    await this.chrome.send("Network.emulateNetworkConditions", { offline: true, latency: 0, downloadThroughput: -1, uploadThroughput: -1 }, this.sessionId);
+  }
+
+  /** Fotografa la pagina intera in PNG (per guardarla a occhio). */
+  async screenshot(): Promise<Buffer> {
+    const { data } = (await this.chrome.send("Page.captureScreenshot", { format: "png", captureBeyondViewport: true }, this.sessionId)) as { data: string };
+    return Buffer.from(data, "base64");
+  }
+
   /** Apre un indirizzo e aspetta che la pagina sia caricata. */
   async goto(url: string): Promise<void> {
     await this.chrome.send("Page.navigate", { url }, this.sessionId);

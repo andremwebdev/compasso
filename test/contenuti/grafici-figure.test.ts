@@ -57,8 +57,8 @@ describe("blocco grafico", () => {
     expect(problemsOf(withGraph('funzioni="x^2" finestra="-5; 5; 3"'))).toContain("Grafico: La finestra ha 3 valori: ne servono 4 (x minimo; x massimo; y minimo; y massimo).");
     expect(problemsOf(withGraph('funzioni="x^2" finestra="-5; a; -3; 3"'))).toContain("Grafico: Finestra, x massimo: «a» deve essere un numero, senza lettere.");
     expect(problemsOf(withGraph('funzioni="x^2" finestra="5; -5; -3; 3"'))).toContain("Grafico: Nella finestra il primo estremo di x deve essere minore del secondo.");
-    expect(problemsOf(withGraph('funzioni="sqrt(x)" finestra="-5; 5; -3; 3" punti="-1"'))).toContain("Grafico: Nel punto x = -1 nessuna funzione del grafico è definita.");
-    expect(problemsOf(withGraph('funzioni="a x" finestra="-5; 5; -3; 3"'))).toContain("Grafico: La funzione 1 contiene la lettera «a»: nei grafici l'unica variabile è x.");
+    expect(problemsOf(withGraph('funzioni="sqrt(x)" finestra="-5; 5; -3; 3" punti="-1"'))).toContain("Grafico: Nel punto $x = -1$ nessuna funzione del grafico è definita.");
+    expect(problemsOf(withGraph('funzioni="a x" finestra="-5; 5; -3; 3"'))).toContain("Grafico: La funzione 1 contiene la lettera «a»: nei grafici l'unica variabile è $x$.");
     expect(problemsOf(withGraph('funzioni="x" finestra="-5; 5; -3; 3" colore=blu'))).toContain("Il blocco «grafico» non ha l'attributo «colore» (attributi: funzioni, finestra, punti).");
   });
 

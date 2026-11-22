@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "preact/hooks";
 import { isLessonCode, moduleOf, type LessonCode } from "../../codici";
-import { loadLesson } from "../../contenuti";
+import { figureSource, loadLesson } from "../../contenuti";
 import { moduleOfLesson } from "../../contenuti/programma";
 import type { LessonBlock, QuestionOption } from "../../contenuti/formato";
 import { findError } from "../../errori";
@@ -11,6 +11,7 @@ import { BackButton } from "../componenti/Common";
 import { ExerciseView } from "../componenti/ExerciseView";
 import { RichText } from "../componenti/RichText";
 import { lessonChunks } from "../lezione/chunks";
+import { FigureBlock, GraphBlock } from "../lezione/figure";
 import { loadGlossaryItem, type GlossaryItem } from "../lezione/glossary";
 import { isWritten, lessonTitle, missingPrerequisites } from "../programma";
 import { freshSeed } from "../risposta/seeds";
@@ -292,6 +293,10 @@ function BlockView({ block, lesson, onAnswered }: { block: LessonBlock; lesson: 
           <p class="muted">Le visualizzazioni interattive arrivano in una fase successiva.</p>
         </Box>
       );
+    case "graph":
+      return <GraphBlock block={block} lesson={lesson} />;
+    case "figure":
+      return <FigureBlock block={block} source={figureSource(lesson, block.file)} />;
     case "question":
       return block.source.type === "manual" ? (
         <ManualQuestion lesson={lesson} line={block.line} prompt={block.source.prompt} options={block.source.options} explanation={block.source.explanation} onAnswered={() => onAnswered(block.line)} />

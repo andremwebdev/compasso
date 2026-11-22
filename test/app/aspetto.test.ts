@@ -5,6 +5,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { FIGURE_CLASSES } from "../../src/contenuti/formato";
 import { THEME_COLORS } from "../../src/app/state";
 
 const root = path.resolve(__dirname, "../..");
@@ -73,6 +74,10 @@ const UI_PAIRS: readonly (readonly [string, string])[] = [
   ["arancio", "carta"],
   ["arancio", "carta-alta"],
   ["inchiostro-secondario", "carta-alta"],
+  // Curve dei grafici (la terza è verde) e contorno del riquadro di un problema.
+  ["blu", "carta-alta"],
+  ["ese", "carta-alta"],
+  ["att", "att-fondo"],
 ];
 
 describe.each([
@@ -117,8 +122,16 @@ describe("aspetto", () => {
   });
 
   it("niente opacità sui testi: abbasserebbe il contrasto sotto AA", () => {
-    // L'unica opacità ammessa è quella di elementi senza testo (quote, righello).
+    // L'unica opacità ammessa è quella di elementi senza testo (quote, righello, aree delle figure).
     const withOpacity = [...css.matchAll(/([^{}]+)\{[^}]*\bopacity:/g)].map((m) => (m[1] ?? "").trim());
-    expect(withOpacity.every((selector) => /h1::after|\.ruler-fill/.test(selector))).toBe(true);
+    expect(withOpacity.every((selector) => /h1::after|\.ruler-fill|\.fig-area-\d$/.test(selector))).toBe(true);
+  });
+
+  it("ogni classe delle figure e dei grafici ha la sua regola, con i colori del tema", () => {
+    const classes = [...FIGURE_CLASSES, "graf-griglia", "graf-asse", "graf-freccia", "graf-asintoto", "graf-curva", "graf-curva-1", "graf-curva-2", "graf-curva-3", "graf-punto", "graf-buco"];
+    for (const name of classes) expect(css, `.${name}`).toMatch(new RegExp(`\\.${name}[\\s,{]`));
+    // Le regole dei grafici e delle figure non scrivono colori: solo variabili.
+    const rules = [...css.matchAll(/([^{}]*\.(?:graf|fig|grafico|figura)-[^{}]*)\{([^}]*)\}/g)].map((m) => m[2] ?? "");
+    for (const body of rules) expect(body).not.toMatch(/#[0-9a-f]{3,6}\b|rgba?\(/i);
   });
 });

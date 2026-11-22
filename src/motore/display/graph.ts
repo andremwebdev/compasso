@@ -104,7 +104,7 @@ export function plotGraph(functions: readonly Expr[], window: GraphWindow, optio
   functions.forEach((f, index) => {
     const others = variables(f).filter((name) => name !== variable);
     if (others.length > 0) {
-      throw new EngineError(`La funzione ${index + 1} contiene la lettera «${others[0]}»: nei grafici l'unica variabile è ${variable}.`);
+      throw new EngineError(`La funzione ${index + 1} contiene la lettera «${others[0]}»: nei grafici l'unica variabile è $${variable}$.`);
     }
   });
 
@@ -121,7 +121,7 @@ export function plotGraph(functions: readonly Expr[], window: GraphWindow, optio
   // Punti chiesti: su ogni curva definita lì.
   for (const x of options.points ?? []) {
     const value = evaluate(x);
-    if (!Number.isFinite(value) || variables(x).length > 0) throw new EngineError(`Il punto ${toLatex(x)} non è un numero.`);
+    if (!Number.isFinite(value) || variables(x).length > 0) throw new EngineError(`Il punto $${toLatex(x)}$ non è un numero.`);
     let found = false;
     functions.forEach((f, curve) => {
       const y = exactValueAt(f, variable, x);
@@ -129,7 +129,7 @@ export function plotGraph(functions: readonly Expr[], window: GraphWindow, optio
       found = true;
       candidates.push({ kind: "point", curve, x, y });
     });
-    if (!found) throw new EngineError(`Nel punto x = ${toLatex(x)} nessuna funzione del grafico è definita.`);
+    if (!found) throw new EngineError(`Nel punto $x = ${toLatex(x)}$ nessuna funzione del grafico è definita.`);
   }
 
   return {
