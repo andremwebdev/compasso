@@ -419,6 +419,37 @@ export const GRAPH_WIDTH = 320;
 export const GRAPH_HEIGHT = 240;
 const PAD = 6;
 
+/** Dove finisce un punto del piano nel disegno: bordi dell'area e conversioni (stesse per graphToSvg e per le visualizzazioni). */
+export interface GraphFrame {
+  readonly left: number;
+  readonly right: number;
+  readonly top: number;
+  readonly bottom: number;
+  /** Da ascissa del piano a coordinata orizzontale del disegno. */
+  readonly sx: (x: number) => number;
+  /** Da ordinata del piano a coordinata verticale del disegno (verso il basso). */
+  readonly sy: (y: number) => number;
+  /** Da coordinata orizzontale del disegno ad ascissa del piano. */
+  readonly px: (sx: number) => number;
+  /** Da coordinata verticale del disegno a ordinata del piano. */
+  readonly py: (sy: number) => number;
+}
+
+/** La cornice del disegno di un grafico (viewBox GRAPH_WIDTH × GRAPH_HEIGHT) per la finestra data. */
+export function graphFrame({ xMin, xMax, yMin, yMax }: GraphWindow): GraphFrame {
+  const left = PAD;
+  const right = GRAPH_WIDTH - PAD;
+  const top = PAD;
+  const bottom = GRAPH_HEIGHT - PAD;
+  return {
+    left, right, top, bottom,
+    sx: (x) => left + ((x - xMin) / (xMax - xMin)) * (right - left),
+    sy: (y) => bottom - ((y - yMin) / (yMax - yMin)) * (bottom - top),
+    px: (sx) => xMin + ((sx - left) / (right - left)) * (xMax - xMin),
+    py: (sy) => yMin + ((bottom - sy) / (bottom - top)) * (yMax - yMin),
+  };
+}
+
 export interface GraphSvgOptions {
   /** Descrizione per chi usa un lettore di schermo (aria-label). */
   readonly label?: string;
@@ -437,12 +468,7 @@ const escapeXml = (text: string): string =>
  */
 export function graphToSvg(graph: Graph, options: GraphSvgOptions = {}): string {
   const { xMin, xMax, yMin, yMax } = graph.window;
-  const left = PAD;
-  const right = GRAPH_WIDTH - PAD;
-  const top = PAD;
-  const bottom = GRAPH_HEIGHT - PAD;
-  const sx = (x: number): number => left + ((x - xMin) / (xMax - xMin)) * (right - left);
-  const sy = (y: number): number => bottom - ((y - yMin) / (yMax - yMin)) * (bottom - top);
+  const { left, right, top, bottom, sx, sy } = graphFrame(graph.window);
   // Gli assi passano per l'origine se è nella finestra, altrimenti stanno sul bordo.
   const axisY = sy(Math.min(yMax, Math.max(yMin, 0)));
   const axisX = sx(Math.min(xMax, Math.max(xMin, 0)));

@@ -11,6 +11,7 @@ import { lessonCodes, lessonInfo, lessonSource, loadLesson } from "../../src/con
 import { loadedModules } from "../../src/moduli/caricamento";
 import { blockTexts, formatContentReport, lessonPath, splitInline, verifyContents, type ContentFile } from "../../src/contenuti/formato";
 import { findGenerator, generatorLevels } from "../../src/generatori";
+import { checkVisualizationParams, visualizationCodes } from "../../src/visualizzazioni";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const folder = path.join(root, "src", "contenuti");
@@ -31,7 +32,7 @@ const figures: Record<string, string> = Object.fromEntries(
 
 describe("lezioni dell'app", () => {
   it("superano la verifica dei contenuti, senza problemi e senza avvisi", () => {
-    const report = verifyContents(files, { generators: generatorLevels(), visualizations: [], figures });
+    const report = verifyContents(files, { generators: generatorLevels(), visualizations: visualizationCodes, visualizationParams: checkVisualizationParams, figures });
     expect(report.problems, formatContentReport(report)).toEqual([]);
     expect(report.warnings, formatContentReport(report)).toEqual([]);
     expect(report.lessons).toBe(files.length);

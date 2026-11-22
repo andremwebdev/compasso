@@ -16,6 +16,7 @@ import { loadGlossaryItem, type GlossaryItem } from "../lezione/glossary";
 import { isWritten, lessonTitle, missingPrerequisites } from "../programma";
 import { freshSeed } from "../risposta/seeds";
 import { lessonProgress, newId, open, randomSeed, recordAttempt, saveLessonProgress } from "../state";
+import { VisualizationBlock } from "../../visualizzazioni";
 import { GlossarySheet } from "./Teoria";
 
 interface LessonViewProps {
@@ -288,11 +289,7 @@ function BlockView({ block, lesson, onAnswered }: { block: LessonBlock; lesson: 
         </Box>
       );
     case "visualization":
-      return (
-        <Box kind="proof" label="Visualizzazione">
-          <p class="muted">Le visualizzazioni interattive arrivano in una fase successiva.</p>
-        </Box>
-      );
+      return <VisualizationBlock id={block.id} params={block.params} />;
     case "graph":
       return <GraphBlock block={block} lesson={lesson} />;
     case "figure":

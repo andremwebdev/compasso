@@ -18,8 +18,13 @@ export interface ContentFile {
 export interface ContentCatalog {
   /** I generatori esistenti, con i livelli che supportano: { "V1.M06.A04.g1": [1, 2, 3] }. */
   readonly generators: Readonly<Record<string, readonly number[]>>;
-  /** I codici delle visualizzazioni esistenti. */
+  /** I codici delle visualizzazioni esistenti (da src/visualizzazioni/index.ts). */
   readonly visualizations: readonly string[];
+  /**
+   * Il controllo dei parametri iniziali di una visualizzazione (da src/visualizzazioni/index.ts):
+   * restituisce i problemi, vuoto se vanno bene. Se manca, i parametri non si controllano.
+   */
+  readonly visualizationParams?: (id: string, params: Readonly<Record<string, string>>) => readonly string[];
   /** Le figure SVG accanto alle lezioni: percorso relativo a src/contenuti (v1/m01/l02-venn.svg) → testo. */
   readonly figures: Readonly<Record<string, string>>;
 }
@@ -177,6 +182,12 @@ export function verifyContents(files: readonly ContentFile[], catalog: ContentCa
     }
     for (const visualization of references.visualizations) {
       if (!visualizations.has(visualization)) problems.push({ path, line: 0, message: `La visualizzazione ${visualization} non esiste.` });
+    }
+    for (const block of lesson.blocks) {
+      if (block.kind !== "visualization" || !visualizations.has(block.id) || !catalog.visualizationParams) continue;
+      for (const message of catalog.visualizationParams(block.id, block.params)) {
+        problems.push({ path, line: block.line, message: `Visualizzazione ${block.id}: ${message}` });
+      }
     }
     for (const block of lesson.blocks) {
       if (block.kind !== "question" || block.source.type !== "generator") continue;

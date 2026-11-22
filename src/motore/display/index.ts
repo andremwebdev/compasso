@@ -10,6 +10,10 @@ export {
 } from "./variation-table";
 export { systemToLatex } from "./system";
 export {
-  GRAPH_HEIGHT, GRAPH_WIDTH, MAX_GRAPH_CURVES, graphPointToLatex, graphToSvg, plotGraph, tickLabel, ticks,
-  type Graph, type GraphAsymptote, type GraphCurve, type GraphOptions, type GraphPoint, type GraphPointKind, type GraphSvgOptions, type GraphWindow,
+  GRAPH_HEIGHT, GRAPH_WIDTH, MAX_GRAPH_CURVES, graphFrame, graphPointToLatex, graphToSvg, plotGraph, tickLabel, ticks,
+  type Graph, type GraphAsymptote, type GraphCurve, type GraphFrame, type GraphOptions, type GraphPoint, type GraphPointKind, type GraphSvgOptions, type GraphWindow,
 } from "./graph";
+export {
+  asPolynomial, isConstantFunction, rationalDegrees, rationalFunction, rationalParts, subtractConstant,
+  type RationalFunction,
+} from "./rational-function";

@@ -631,6 +631,254 @@ p {
   margin: 0;
 }
 
+/* Visualizzazioni interattive (src/visualizzazioni/). Il disegno di base è un grafico del motore
+   (classi graf-…); sopra, un secondo SVG con la stessa cornice per le parti che si muovono. Colori
+   solo dalle variabili del tema; la soluzione si riconosce anche da spessore, ✓ e parole. */
+.vis-piano {
+  position: relative;
+  max-width: 480px;
+  margin: var(--s-2) auto 0;
+}
+
+.vis-piano .grafico-disegno svg {
+  max-width: none;
+}
+
+.vis-sopra {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.vis-sopra text {
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  fill: var(--arancio);
+  paint-order: stroke;
+  stroke: var(--carta-alta);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.vis-curva-soluzione {
+  fill: none;
+  stroke: var(--blu);
+  stroke-width: 5.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.vis-soglia {
+  fill: none;
+  stroke: var(--arancio);
+  stroke-width: 2;
+}
+
+.vis-barra {
+  fill: none;
+  stroke: var(--blu);
+  stroke-width: 6;
+  stroke-linecap: butt;
+}
+
+.vis-estremo-pieno,
+.vis-incontro {
+  fill: var(--blu);
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+}
+
+.vis-incontro {
+  fill: var(--arancio);
+}
+
+.vis-estremo-vuoto {
+  fill: var(--carta-alta);
+  stroke: var(--blu);
+  stroke-width: 2;
+}
+
+.vis-sonda-linea {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+.vis-sonda-punto {
+  fill: var(--inchiostro);
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+}
+
+/* Le maniglie: l'area di tocco è grande e trasparente; solo lì il dito trascina invece di scorrere la pagina. */
+.vis-maniglia {
+  cursor: grab;
+  touch-action: none;
+}
+
+.vis-presa {
+  fill: transparent;
+  stroke: none;
+}
+
+.vis-maniglia-segno {
+  fill: var(--arancio);
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+}
+
+.vis-maniglia-sonda .vis-maniglia-segno {
+  fill: var(--inchiostro);
+}
+
+.vis-maniglia-frecce {
+  fill: none;
+  stroke: var(--carta-alta);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vis-scelta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-top: var(--s-2);
+}
+
+.vis-pulsante {
+  min-height: var(--tocco);
+  min-width: var(--tocco);
+  max-width: 100%;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  background: var(--carta-alta);
+  color: var(--inchiostro);
+  font: inherit;
+  cursor: pointer;
+  overflow-x: auto;
+  transition: background-color var(--durata) ease, border-color var(--durata) ease, color var(--durata) ease;
+}
+
+.vis-pulsante[aria-pressed="true"] {
+  border-color: var(--blu);
+  background: var(--blu);
+  color: var(--carta);
+}
+
+.vis-versi .vis-pulsante {
+  flex: 1 1 0;
+  padding-left: var(--s-1);
+  padding-right: var(--s-1);
+}
+
+.vis-disequazione,
+.vis-frazione {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.vis-cursori {
+  display: grid;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+}
+
+.vis-cursore {
+  display: grid;
+  gap: var(--s-1);
+}
+
+.vis-cursore-testa {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  font-size: var(--testo-piccolo);
+}
+
+.vis-cursore-nome {
+  font-weight: 600;
+}
+
+.vis-cursore input[type="range"] {
+  width: 100%;
+  min-height: var(--tocco);
+  margin: 0;
+  accent-color: var(--blu);
+}
+
+.vis-sonda-testo {
+  font-size: var(--testo-piccolo);
+}
+
+.vis-tabella {
+  max-width: 100%;
+  overflow-x: auto;
+  margin-top: var(--s-2);
+}
+
+.vis-tabella table {
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.vis-tabella th,
+.vis-tabella td {
+  padding: var(--s-1) var(--s-2);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.vis-tabella th {
+  text-align: right;
+  font-weight: 400;
+  border-right: 1px solid var(--inchiostro);
+}
+
+.vis-tabella-x th,
+.vis-tabella-x td {
+  border-bottom: 1px solid var(--inchiostro);
+}
+
+.vis-tabella-risultato th,
+.vis-tabella-risultato td {
+  border-top: 1px solid var(--inchiostro);
+  font-weight: 600;
+}
+
+.vis-tabella-soluzione th {
+  font-size: var(--testo-minimo);
+  color: var(--inchiostro-secondario);
+}
+
+.vis-cella-soluzione {
+  background: var(--def-fondo);
+  color: var(--def);
+}
+
+.vis-tabella-soluzione .vis-cella-soluzione {
+  font-weight: 700;
+}
+
+.vis-cella-sonda {
+  box-shadow: inset 2px 0 0 var(--arancio), inset -2px 0 0 var(--arancio);
+}
+
+.vis-no {
+  color: var(--inchiostro-secondario);
+}
+
+.vis-soluzione {
+  margin-top: var(--s-2);
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 /* Figure scritte a mano: senza classe una forma è un contorno d'inchiostro senza riempimento. */
 :where(.figura-disegno) :where(path, line, polyline, polygon, rect, circle, ellipse) {
   fill: none;

@@ -10,6 +10,7 @@ import katex from "katex";
 import { describe, expect, it } from "vitest";
 import { blockTexts, formatContentReport, parseLesson, splitInline, verifyContents, type ContentFile, type LessonBlock } from "../../src/contenuti/formato";
 import { generatorLevels } from "../../src/generatori";
+import { checkVisualizationParams, visualizationCodes } from "../../src/visualizzazioni";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const reserveFolder = path.join(root, "src", "riserva");
@@ -88,7 +89,7 @@ describe("dimostrazioni di riserva", () => {
 
   it("superano la verifica dei contenuti insieme alle lezioni vere, senza problemi e senza avvisi", () => {
     // Insieme alle lezioni vere: un teorema già entrato in una lezione non può restare anche in riserva.
-    const report = verifyContents([...lessons, ...reserves.map((reserve) => reserve.wrapped)], { generators: generatorLevels(), visualizations: [], figures: {} });
+    const report = verifyContents([...lessons, ...reserves.map((reserve) => reserve.wrapped)], { generators: generatorLevels(), visualizations: visualizationCodes, visualizationParams: checkVisualizationParams, figures: {} });
     expect(report.problems, formatContentReport(report)).toEqual([]);
     expect(report.warnings, formatContentReport(report)).toEqual([]);
     expect(report.lessons).toBe(lessons.length + reserves.length);
