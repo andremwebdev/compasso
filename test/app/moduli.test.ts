@@ -67,7 +67,8 @@ describe("testo ricco", () => {
         }
       }
     }
-  });
+    // Tutti i generatori, 15 semi per livello: in locale circa 2,5 secondi, su GitHub tre volte tanto.
+  }, 30_000);
 });
 
 describe("anteprima della risposta", () => {
