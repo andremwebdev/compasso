@@ -177,6 +177,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A04.g1", 2, 2, "Calcola $\\mathrm{MCD}(54, 66)$. Rispondi con un numero naturale."],
   ["V1.M02.A04.g1", 3, 1, "Calcola $\\mathrm{MCD}(9, 21, 30)$. Rispondi con un numero naturale."],
   ["V1.M02.A04.g1", 3, 2, "Calcola $\\mathrm{mcm}(18, 45, 81)$. Rispondi con un numero naturale."],
+  ["V1.M02.A05.g1", 1, 1, "Scrivi il numero $0{,}09$ come frazione irriducibile."],
+  ["V1.M02.A05.g1", 1, 2, "Scrivi la frazione $\\frac{19}{40}$ come numero decimale."],
+  ["V1.M02.A05.g1", 2, 1, "Scrivi il numero $4{,}456$ come frazione irriducibile."],
+  ["V1.M02.A05.g1", 2, 2, "Scrivi il numero $5{,}145$ come frazione irriducibile."],
+  ["V1.M02.A05.g1", 3, 1, "Scrivi il numero $0{,}8736$ come frazione irriducibile."],
+  ["V1.M02.A05.g1", 3, 2, "Scrivi il numero $-1{,}5984$ come frazione irriducibile."],
 ];
 
 describe("semi congelati", () => {
