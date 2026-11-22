@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: parser del Volume 1 ed errore `ALG.RADICE_DEL_QUADRATO` (22 novembre 2026). Prima: visualizzazioni parte 2, le altre quattro del Volume 1. Prima: visualizzazioni parte 1, impalcatura e `VIS.disequazioni-grafico`. Prima: involucro parte 4, figure e grafici. Prima: involucro parte 3, caricamento dei contenuti per modulo. Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: involucro parte 5, risposta a riordino (22 novembre 2026). Prima: parser del Volume 1 ed errore `ALG.RADICE_DEL_QUADRATO`. Prima: visualizzazioni parte 2, le altre quattro del Volume 1. Prima: visualizzazioni parte 1, impalcatura e `VIS.disequazioni-grafico`. Prima: involucro parte 4, figure e grafici. Prima: involucro parte 3, caricamento dei contenuti per modulo. Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -62,7 +62,12 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - Costruttori `repeatingDecimal`, `factorial`, `degrees`; vincoli di forma nuovi `scientificNotation`, `degrees`, `radians`; `reducedFraction` rifiuta un periodico (frazione generatrice).
   - Tastiera: Base con `n!`, `·10ⁿ`, «periodo», `n`, `k` (una riga in più); Funzioni con `°`, `′`, `″`, α, β, θ (una riga in più). Gradi aprono Funzioni, il fattoriale Base.
   - Voce di catalogo `ALG.RADICE_DEL_QUADRATO` «√(x²) = x anche per x negativo» (rimando V1.M03), in `docs/SPECIFICA.md` e nel controllo sympy.
-- **Test**: 1.431, verdi in locale e su GitHub.
+- **Involucro, parte 5** (risposta `ordering`, ⚙ fase 4 punto 7 e fase 5 punto 6):
+  - **Schermata di esercizio**: la risposta `ordering` si fa con le frecce ↑ e ↓ (componente comune `ReorderList`, logica in `src/app/risposta/ordering.ts`), i fissi tratteggiati e senza frecce; partenza da `orderingStart` (mescolata, mai giusta); conferma, valutazione, errore riconosciuto (codice `error` della risposta), posti segnati ✓/✗, ordine giusto mostrato, tentativo registrato come gli altri; «Non lo so», indizi, soluzione ed esercizio simile come per gli altri tipi. Frecce da 44 px.
+  - **Dimostrazioni**: le tre modalità registrano un tentativo per giro (decisione 119); «riordina» usa lo stesso `ReorderList`. Dati alla **versione 3** (contesto `dimostrazione`, campo facoltativo `proof`), con migrazione e test dalla versione 2 (anche IndexedDB). In Tu, «Dimostrazioni provate» a parte.
+  - **Generatore di prova** solo nei test: `test/esercizi/fixtures/ordering-generator.ts` (ordine delle operazioni, `CALC.PRECEDENZA`), supera la verifica automatica. Indicazioni per il primo vero, `V1.M11.A08.g1`, in `REGOLE.md` («Come replicare un generatore», punto `ordering`).
+  - **Prove**: jsdom (`test/app/riordino-vista.test.ts`, `test/app/dimostrazioni-vista.test.ts`) e Chrome col dito (`test/app/riordino-chrome.test.ts`): a 414 e 320 px, due temi, senza rete, si riordina toccando le frecce, si conferma (giusta), si passa al simile, si conferma l'ordine di partenza (errore riconosciuto), tentativi nel registro. Fotografie guardate.
+- **Test**: 1.449, verdi in locale e su GitHub.
 
 ## In corso
 
@@ -78,7 +83,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 2. ~~Navigazione e sezioni~~ e 3. ~~Impostazioni e backup~~: fatti (involucro parte 1). Restano da provare su iPhone vero: download del backup dall'app installata, condivisione, scelta del file.
 4. ~~Tastiera completa~~ e 5. ~~Aspetto definitivo~~: fatti (involucro parte 2). Resta la **modalità lettura** (citata qui in passato, non nella specifica): da decidere se serve.
 6. ~~Flashcard, glossario, diario~~: fatti (involucro parte 1).
-7. ⚙ **Risposta `ordering`** nella schermata di esercizio (le tre modalità delle dimostrazioni e la scheda esistono già, fuori da `ExerciseView`, e non registrano tentativi).
+7. ~~Risposta `ordering`~~: fatta (involucro parte 5), con i tentativi delle dimostrazioni.
 8. ~~Impalcatura delle visualizzazioni~~: fatta (visualizzazioni parte 1).
 9. ~~Caricamento dei contenuti per modulo~~: fatto (involucro parte 3).
    - Fase finita quando: tutte le sezioni funzionano con i contenuti presenti, e l'app è installata su iPhone e funziona offline.
@@ -92,7 +97,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 3. ~~Impalcatura delle visualizzazioni con `VIS.disequazioni-grafico`~~: fatta (visualizzazioni parte 1). Le altre si copiano da questa (`REGOLE.md`).
 4. ~~Le altre quattro visualizzazioni del Volume 1~~: fatte (visualizzazioni parte 2). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08), con i parametri delle schede; quando una entra in una lezione vera, il suo blocco si toglie dalla lezione finta e il caso Chrome passa alla prova con la lezione vera.
 5. ~~Parser e catalogo~~: fatto (parser del Volume 1). Le forme `√(x² + ax) + x` con `x → −∞` e con il valore assoluto in `V2.M04.A01.g1` restano alla fase 6 (cambiano semi congelati: annotarlo); i generatori del Volume 1 su radicali e valore assoluto possono già usare `ALG.RADICE_DEL_QUADRATO`.
-6. ⚙ **Risposta `ordering`** nella schermata di esercizio (punto 7 della fase 4): serve a V1.M11.A08 e alle dimostrazioni.
+6. ~~Risposta `ordering`~~: fatta (involucro parte 5). `V1.M11.A08.g1` diventa il generatore di riferimento per i riordini (indicazioni in `REGOLE.md`); prima serve una voce GEO nel catalogo per l'errore d'ordine nelle costruzioni.
 
 *Poi le lezioni e i generatori, in modo lineare*, con queste regole:
 
@@ -189,7 +194,8 @@ App:
 
 - Non provata su un iPhone vero.
 - Su telefono la riga finale dei passaggi delle disequazioni fratte va fatta scorrere di lato; le opzioni di scelta multipla di un insieme mostrano solo gli intervalli.
-- `ordering` non è mostrato dalla schermata di esercizio. Nella lezione le dimostrazioni restano statiche; le modalità interattive sono nella scheda Dimostrazioni.
+- Nella lezione le dimostrazioni restano statiche; le modalità interattive sono nella scheda Dimostrazioni (oggi nessuna lezione scritta ne ha). Il riordino non è ancora provato su un iPhone vero.
+- Riordino: un solo codice di errore per esercizio (campo `error`), qualunque sia lo scambio fatto; un ordine sbagliato non distingue quale passo è fuori posto oltre ai ✓/✗.
 - Tastiera a 320 px: nel livello Funzioni (7 colonne) i tasti sono larghi circa 37 px, sotto i 44 consigliati; su iPhone XR (414 px) sono 50 px. Base e Funzioni hanno una riga in più (parser del Volume 1): Funzioni è alta circa 350 px, da guardare sull'iPhone.
 - Il valore assoluto non è a modello (il tasto scrive una barra sola): `||` vuoto il parser lo legge come due valori assoluti annidati.
 - Esportazione del backup su iPhone dall'app installata non provata: c'è anche «Condividi il backup» (foglio di condivisione) dove il browser lo permette.
@@ -230,7 +236,7 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 80. Serie: i giorni liberi coprono ma non allungano la serie; si usano solo con una serie in corso.
 81. Diario: le domande lampo non entrano (come per la padronanza); `NON_CLASSIFICATO` sta negli errori di concetto ma non alimenta i punti deboli.
 82. Backup: file JSON `compasso-backup-AAAA-MM-GG.json`; importare sostituisce tutto (con conferma) tranne la sessione di Oggi; unire somma i registri, prende il punto più avanti di ogni lezione e tiene impostazioni e sessione del dispositivo; promemoria anche se il backup non è mai stato fatto, appena c'è una lezione o una sessione completata.
-83. Riordino delle dimostrazioni con le frecce su/giù invece del trascinamento (più sicuro sul telefono); le dimostrazioni interattive non registrano tentativi.
+83. Riordino con le frecce su/giù invece del trascinamento (più sicuro sul telefono), ora anche nella risposta `ordering` della schermata di esercizio (la specifica, sezione 7, dice «trascinamento»). Le dimostrazioni interattive registrano i tentativi dalla parte 5 (decisione 119).
 85. Oggi: «Esci e riprendi dopo» lascia la sessione in pausa (fase, esercizi fatti e tratto della lezione restano salvati); riaprendo l'app la sessione di oggi parte sempre dalla schermata «Sessione in pausa», non dentro la fase. Della lezione si salva l'ultimo tratto aperto: la domanda lampo del tratto torna senza risposta (decisione 35).
 86. Aspetto: palette definitiva (chiaro: carta `#f4efe0`, inchiostro `#132a4c`, blu `#1c4d87`, arancio `#a3460a`; scuro: tavola `#0d1a31`, testo `#e9eef9`, blu `#8fbbff`, arancio `#ffa862`), tutti i valori in cima a `styles.css`. Proposta della specifica accolta: **IBM Plex** Sans (400, corsivo, 600 anche per il grassetto) e Mono (400), solo sottoinsieme latino; titoli nello stesso carattere del testo (il serif di prima stonava con KaTeX). Dipendenza nuova `@fontsource/ibm-plex-sans` e `-mono` (solo per la build: copia i file dei caratteri, licenza OFL).
 87. Icona: compasso avorio che traccia un cerchio arancione su tavola blu quadrettata, disegno dentro il cerchio centrale (non si taglia se Android la ritaglia tonda); niente icona `maskable` dichiarata.
@@ -279,6 +285,13 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 116. Fattoriale come funzione `factorial`: lega più del prodotto (`2n! = 2·(n!)`); esatto per i naturali fino a 300, poi atomo; nei reali vale Γ(x + 1), solo per il confronto numerico (così `n!/(n−1)! = n`); non si deriva (`EngineError`). `!=` resta «diverso» (`5!=120` è 5 ≠ 120).
 117. Tastiera: una riga in più in Base (`n!`, `·10ⁿ` a modello, «periodo» largo due che scrive `(‸)`, `n`, `k`) e in Funzioni (`°` largo due, `′`, `″`, α, β, θ). Gradi aprono Funzioni (dove c'è π), il fattoriale Base.
 118. `ALG.RADICE_DEL_QUADRATO`: categoria ALG (come `ALG.RADICE_SOMMA`), rimando V1.M03 (radicali), finché le lezioni non esistono.
+
+*Involucro, parte 5 (I5)*
+
+119. Tentativi delle dimostrazioni: contesto nuovo `dimostrazione`, campo facoltativo `proof` (teorema e modalità), `lesson` = lezione del teorema, nessuna abilità, `error` = `NON_CLASSIFICATO` se sbagliata. **Non entrano** nella padronanza delle abilità (un teorema non è un'abilità), nel riassunto per abilità, nel diario e nel conto «Esercizi fatti» di Tu (contati a parte). Un tentativo per giro: alla prima risposta; nel riordino al primo «Controlla» (dopo si può correggere e ricontrollare senza nuovi tentativi); «Ricomincia» o il cambio di modalità aprono un giro nuovo. Nessun indizio, nessun «Non lo so». Un eventuale indicatore per teorema resta alla fase 8.
+120. Dati alla versione 3 per il contesto nuovo: campo facoltativo (i tentativi vecchi non cambiano, migrazione senza conversioni, nessun magazzino IndexedDB nuovo); il numero sale perché un'app vecchia non apra dati che non sa leggere.
+121. «Riordina» delle dimostrazioni: spostando un passaggio l'esito del controllo precedente sparisce (prima, dopo un «Non ancora», l'ordine giusto si rivelava da solo appena raggiunto).
+122. Risposta `ordering`: confermare l'ordine di partenza è una risposta (sbagliata: non è mai quello giusto), non serve toccare prima una freccia; dopo la risposta si vede «Il tuo ordine» con ✓/✗ e il numero di posti giusti, poi «Ordine giusto». Anche il campo «Risposta giusta» del testo è l'elenco numerato degli elementi.
 
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 
