@@ -6,4 +6,4 @@ export * from "./walk";
 export { evaluate, literalRational, type Environment } from "./evaluate";
 export { evaluateComplex, type ComplexValue } from "./evaluate-complex";
 export { toLatex, rationalToLatex } from "./latex";
-export { functionTable, functionNames, type FunctionDef } from "./functions";
+export { functionTable, functionNames, isPostfixFunction, ANGLE_UNITS, type FunctionDef } from "./functions";

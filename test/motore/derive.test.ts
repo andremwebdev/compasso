@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { derivativeRules, derive, deriveTimes, deriveWithSteps, isAntiderivative } from "../../src/motore/calculus/derive";
 import { equivalent } from "../../src/motore/equivalence/equivalence";
 import { EngineError } from "../../src/motore/errors";
-import { evaluate, toLatex } from "../../src/motore/expr";
+import { cos, div, evaluate, fn, mul, pi, sin, sym, toLatex } from "../../src/motore/expr";
 import { Rng } from "../../src/motore/random/rng";
 import { draws, parse, randomExpr } from "./helpers";
 
@@ -118,5 +118,13 @@ describe("derivata simbolica", () => {
       }
     }
     expect(checked).toBeGreaterThan(1000);
+  });
+});
+
+describe("derivata con gli angoli in gradi e il fattoriale", () => {
+  it("x° vale πx/180: la derivata di sin(x°) è (π/180)·cos(x°); il fattoriale non si deriva", () => {
+    const x = sym("x");
+    expect(equivalent(derive(sin(fn("deg", x)), "x"), mul(div(pi, 180), cos(fn("deg", x))))).toBe(true);
+    expect(() => derive(fn("factorial", x), "x")).toThrow(EngineError);
   });
 });

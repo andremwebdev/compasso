@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import katex from "katex";
 import { evaluate, toLatex, variables } from "../../src/motore/expr";
 import { parseExpression, parseRelation } from "../../src/motore/parser";
 
@@ -267,3 +268,151 @@ describe("revisione 4a: il parser non lancia mai e legge gli angoli come si scri
     expect(tex("sin π/2^2")).toBe("\\frac{\\sin \\pi}{2^{2}}");
   });
 });
+
+describe("parser del Volume 1: periodici, notazione scientifica, gradi, fattoriale", () => {
+  /** Risultato del parser anche per un testo da finire: LaTeX e completezza (errore se il testo non è valido). */
+  function preview(text: string): { latex: string; complete: boolean } {
+    const result = parseExpression(text);
+    if (!result.ok) throw new Error(`«${text}»: ${result.error.message}`);
+    return { latex: toLatex(result.value), complete: result.complete };
+  }
+  const draws = (latex: string): void => {
+    expect(() => katex.renderToString(latex, { throwOnError: true, strict: "error" }), latex).not.toThrow();
+  };
+  const exactValue = (text: string): string => {
+    const result = parseExpression(text);
+    if (!result.ok || result.value.kind !== "num") throw new Error(`«${text}» non è un numero`);
+    return result.value.value.toString();
+  };
+
+  it.each([
+    ["0,1(6)", "0{,}1\\overline{6}", "1/6"],
+    ["0.1(6)", "0{,}1\\overline{6}", "1/6"],
+    ["3,(3)", "3{,}\\overline{3}", "10/3"],
+    ["0,(142857)", "0{,}\\overline{142857}", "1/7"],
+    ["12,3(45)", "12{,}3\\overline{45}", "679/55"],
+    ["0,(9)", "0{,}\\overline{9}", "1"],
+    ["0,16̅", "0{,}1\\overline{6}", "1/6"],
+  ])("numero periodico %s: LaTeX all'italiana e frazione generatrice", (text, latex, fraction) => {
+    expect(tex(text)).toBe(latex);
+    draws(latex);
+    expect(exactValue(text)).toBe(fraction);
+  });
+
+  it("la lineetta su più cifre, anche con il macron; fuori posto è un errore spiegato", () => {
+    expect(tex("0,12̅3̅")).toBe("0{,}1\\overline{23}");
+    expect(tex("2,5̄")).toBe("2{,}\\overline{5}");
+    const wrong = parseExpression("0,1̅6");
+    expect(wrong.ok).toBe(false);
+    if (!wrong.ok) expect(wrong.error.message).toContain("ultime cifre");
+  });
+
+  it("il periodo si legge solo attaccato ai decimali e con sole cifre: altrimenti la parentesi è un fattore", () => {
+    expect(tex("2(3)")).toBe("2 \\cdot 3");
+    expect(tex("0,5(x+1)")).toBe("0{,}5\\left(x + 1\\right)");
+    expect(tex("0,5 (3)")).toBe("0{,}5 \\cdot 3");
+    expect(tex("-0,(3)")).toBe("-0{,}\\overline{3}");
+    expect(value("-0,(3)")).toBeCloseTo(-1 / 3, 12);
+    expect(tex("0,(3)+1/3")).toBe("0{,}\\overline{3} + \\frac{1}{3}");
+  });
+
+  it("periodico a metà, nell'anteprima: la casella del periodo e il testo incompleto", () => {
+    expect(preview("0,1(")).toEqual({ latex: "0{,}1\\overline{\\square}", complete: false });
+    expect(preview("0,1()")).toEqual({ latex: "0{,}1\\overline{\\square}", complete: false });
+    expect(preview("0,1(6")).toEqual({ latex: "0{,}1\\overline{6}", complete: false });
+    expect(preview("3,(")).toEqual({ latex: "3{,}\\overline{\\square}", complete: false });
+    expect(preview("0,1(6)")).toEqual({ latex: "0{,}1\\overline{6}", complete: true });
+    draws("0{,}1\\overline{\\square}");
+  });
+
+  it.each([
+    ["3,2E5", "3{,}2 \\cdot 10^{5}", 320000],
+    ["3,2E-5", "3{,}2 \\cdot 10^{-5}", 0.000032],
+    ["3.2E+5", "3{,}2 \\cdot 10^{5}", 320000],
+    ["1E3", "1 \\cdot 10^{3}", 1000],
+    ["3,2·10^5", "3{,}2 \\cdot 10^{5}", 320000],
+    ["3,2*10^(-5)", "3{,}2 \\cdot 10^{-5}", 0.000032],
+    ["6,02·10²³", "6{,}02 \\cdot 10^{23}", 6.02e23],
+  ])("notazione scientifica %s", (text, latex, number) => {
+    expect(tex(text)).toBe(latex);
+    draws(latex);
+    expect(value(text) / number).toBeCloseTo(1, 12);
+  });
+
+  it("notazione scientifica a metà, nell'anteprima; la e minuscola resta il numero di Nepero", () => {
+    expect(preview("3,2E")).toEqual({ latex: "3{,}2 \\cdot 10^{\\square}", complete: false });
+    expect(preview("3,2E-")).toEqual({ latex: "3{,}2 \\cdot 10^{-\\square}", complete: false });
+    expect(preview("3,2·10^(")).toEqual({ latex: "3{,}2 \\cdot 10^{\\square}", complete: false });
+    expect(tex("2e")).toBe("2e");
+    // Una E non seguita da un esponente, in mezzo al testo, è una lettera.
+    expect(variables(parseOk("3E+x"))).toEqual(["E", "x"]);
+  });
+
+  it.each([
+    ["30°", "30^{\\circ}", Math.PI / 6],
+    ["30º", "30^{\\circ}", Math.PI / 6],
+    ["30°15'", "30^{\\circ}\\,15'", (30.25 * Math.PI) / 180],
+    ["30°15′20″", "30^{\\circ}\\,15'\\,20''", ((30 + 15 / 60 + 20 / 3600) * Math.PI) / 180],
+    ["30°15'20''", "30^{\\circ}\\,15'\\,20''", ((30 + 15 / 60 + 20 / 3600) * Math.PI) / 180],
+    ["30°20\"", "30^{\\circ}\\,20''", ((30 + 20 / 3600) * Math.PI) / 180],
+    ["45'", "45'", (0.75 * Math.PI) / 180],
+    ["22,5°", "22{,}5^{\\circ}", Math.PI / 8],
+    ["-30°", "-30^{\\circ}", -Math.PI / 6],
+    ["sin 30°", "\\sin 30^{\\circ}", 0.5],
+    ["cos(60°)", "\\cos 60^{\\circ}", 0.5],
+    ["sin 30°15'", "\\sin 30^{\\circ}\\,15'", Math.sin((30.25 * Math.PI) / 180)],
+    ["2·30°", "2 \\cdot 30^{\\circ}", Math.PI / 3],
+    ["180°-x", "180^{\\circ} - x", NaN],
+  ])("angolo in gradi %s (vale in radianti)", (text, latex, radians) => {
+    expect(tex(text)).toBe(latex);
+    draws(latex);
+    if (!Number.isNaN(radians)) expect(value(text)).toBeCloseTo(radians, 12);
+  });
+
+  it("gradi a metà, nell'anteprima: il numero dopo i gradi o i primi è l'unità che si sta scrivendo", () => {
+    expect(preview("30°15")).toEqual({ latex: "30^{\\circ}\\,15'", complete: false });
+    expect(preview("30°15'20")).toEqual({ latex: "30^{\\circ}\\,15'\\,20''", complete: false });
+    expect(preview("sin(30°")).toEqual({ latex: "\\sin 30^{\\circ}", complete: false });
+    expect(preview("30°15'+")).toEqual({ latex: "30^{\\circ}\\,15' + \\square", complete: false });
+    const alone = parseExpression("°");
+    expect(alone.ok).toBe(false);
+    if (!alone.ok) expect(alone.error.message).toContain("dopo un numero");
+  });
+
+  it.each([
+    ["5!", "5!", 120],
+    ["0!", "0!", 1],
+    ["n!", "n!", NaN],
+    ["(n+1)!", "\\left(n + 1\\right)!", NaN],
+    ["3!^2", "\\left(3!\\right)^{2}", 36],
+    ["2·3!", "2 \\cdot 3!", 12],
+    ["2n!", "2n!", NaN],
+    ["n!k", "n! \\cdot k", NaN],
+    ["10!/(8!·2!)", "\\frac{10!}{8! \\cdot 2!}", 45],
+    ["(5-2)!", "\\left(5 - 2\\right)!", 6],
+  ])("fattoriale %s", (text, latex, number) => {
+    expect(tex(text)).toBe(latex);
+    draws(latex);
+    if (!Number.isNaN(number)) expect(value(text)).toBe(number);
+  });
+
+  it("fattoriale a metà, nell'anteprima, e scritture sbagliate", () => {
+    expect(preview("(n+1")).toEqual({ latex: "n + 1", complete: false });
+    expect(preview("5!·(")).toEqual({ latex: "5! \\cdot \\square", complete: false });
+    expect(preview("n!/(")).toEqual({ latex: "\\frac{n!}{\\square}", complete: false });
+    const alone = parseExpression("!5");
+    expect(alone.ok).toBe(false);
+    if (!alone.ok) expect(alone.error.message).toContain("fattoriale");
+    // «!=» resta il «diverso»: 5! = 120 si scrive con lo spazio.
+    const relation = parseRelation("5!=120");
+    expect(relation.ok && relation.value.op).toBe("!=");
+    const factorialRelation = parseRelation("5! = 120");
+    expect(factorialRelation.ok && factorialRelation.value.op).toBe("=");
+  });
+});
+
+function parseOk(text: string) {
+  const result = parseExpression(text);
+  if (!result.ok) throw new Error(`«${text}»: ${result.error.message}`);
+  return result.value;
+}

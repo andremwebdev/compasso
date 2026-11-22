@@ -89,12 +89,18 @@ export function substitute(expr: Expr, replacements: Readonly<Record<string, Exp
   return mapChildren(expr, (child) => substitute(child, replacements));
 }
 
+/** La scrittura di un numero periodico come pezzo di chiave ("" per gli altri numeri): 0,1(6) e 1/6 sono scritti in modo diverso. */
+function repeatingKey(expr: { readonly repeating?: { integer: string; antiperiod: string; period: string } }): string {
+  const r = expr.repeating;
+  return r === undefined ? "" : `p${r.integer},${r.antiperiod}(${r.period})`;
+}
+
 /** Uguaglianza di struttura: stessi nodi nello stesso ordine (x+1 e 1+x sono diversi). */
 export function sameStructure(a: Expr, b: Expr): boolean {
   if (a.kind !== b.kind) return false;
   switch (a.kind) {
     case "num":
-      return a.value.eq((b as typeof a).value) && a.decimals === (b as typeof a).decimals;
+      return a.value.eq((b as typeof a).value) && a.decimals === (b as typeof a).decimals && repeatingKey(a) === repeatingKey(b as typeof a);
     case "sym":
     case "const":
       return a.name === (b as typeof a).name;
@@ -119,7 +125,7 @@ export function sameStructure(a: Expr, b: Expr): boolean {
 export function exprKey(expr: Expr): string {
   switch (expr.kind) {
     case "num":
-      return expr.decimals === undefined ? `#${expr.value.toString()}` : `#${expr.value.toString()}d${expr.decimals}`;
+      return expr.decimals === undefined ? `#${expr.value.toString()}${repeatingKey(expr)}` : `#${expr.value.toString()}d${expr.decimals}`;
     case "sym":
       return expr.name;
     case "const":

@@ -115,7 +115,11 @@ function visit(expr: Expr, env: Environment): ComplexValue {
         case "arcsin":
         case "arccos":
         case "arctan":
-          // Le funzioni inverse si usano solo con argomento reale.
+        case "factorial":
+        case "deg":
+        case "arcmin":
+        case "arcsec":
+          // Le funzioni inverse, il fattoriale e gli angoli in gradi si usano solo con argomento reale.
           return isReal(arg) ? real(functionTable[expr.name].evaluate(arg.re)) : NOT_A_NUMBER;
       }
     }

@@ -4,7 +4,8 @@
 
 import { simplify } from "../algebra/simplify";
 import { equivalent } from "../equivalence/equivalence";
-import { abs, add, cos, div, fn, ln, mul, neg, num, pow, root, sin, sqrt, sub } from "../expr/build";
+import { EngineError } from "../errors";
+import { abs, add, cos, div, fn, ln, mul, neg, num, pi, pow, root, sin, sqrt, sub } from "../expr/build";
 import type { Expr, FunctionName } from "../expr/types";
 import { some } from "../expr/walk";
 
@@ -59,6 +60,15 @@ function outerDerivative(name: FunctionName, u: Expr): Expr {
       return div(1, add(1, pow(u, 2)));
     case "ln":
       return div(1, u);
+    // Gradi, primi e secondi sono multipli costanti del radiante.
+    case "deg":
+      return div(pi, 180);
+    case "arcmin":
+      return div(pi, 10800);
+    case "arcsec":
+      return div(pi, 648000);
+    case "factorial":
+      throw new EngineError("Il fattoriale non si deriva: è definito solo sui numeri naturali.");
   }
 }
 

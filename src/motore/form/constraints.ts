@@ -25,6 +25,9 @@ export const formConstraints = [
   "algebraicForm",
   "trigonometricForm",
   "exponentialForm",
+  "scientificNotation",
+  "degrees",
+  "radians",
 ] as const;
 
 /**
@@ -35,7 +38,10 @@ export const formConstraints = [
  * - simplifiedRadicals: radicali in forma normale (niente da portare fuori, niente frazioni sotto radice);
  * - algebraicForm: numero complesso scritto come a + bi;
  * - trigonometricForm: numero complesso scritto come ρ(cos θ + i sin θ);
- * - exponentialForm: numero complesso scritto come ρ·e^(iθ).
+ * - exponentialForm: numero complesso scritto come ρ·e^(iθ);
+ * - scientificNotation: a·10ⁿ con 1 ≤ a < 10 e n intero (3,2·10⁵, anche scritto 3,2E5);
+ * - degrees: angolo in gradi sessagesimali (30°, 30°15′20″), con primi e secondi minori di 60 e senza π;
+ * - radians: angolo in radianti, cioè senza gradi, primi e secondi.
  */
 export type FormConstraint = (typeof formConstraints)[number];
 
@@ -65,6 +71,12 @@ export function checkForm(expr: Expr, constraint: FormConstraint): FormCheck {
         return checkTrigonometricForm(expr);
       case "exponentialForm":
         return checkExponentialForm(expr);
+      case "scientificNotation":
+        return checkScientificNotation(expr);
+      case "degrees":
+        return checkDegrees(expr);
+      case "radians":
+        return checkRadians(expr);
     }
   } catch (error) {
     // Numeri fuori dai limiti del motore o espressione troppo complessa: non si riesce a dimostrare
@@ -187,6 +199,10 @@ function integerLiteral(expr: Expr): bigint | null {
 }
 
 function checkReducedFraction(expr: Expr): FormCheck {
+  // Un numero periodico non è ancora una frazione: si chiede la frazione generatrice.
+  if (expr.kind === "num" && expr.repeating) {
+    return fail(`${tex(expr)} è ancora un numero periodico: va scritto come frazione (la sua frazione generatrice).`);
+  }
   if (expr.kind === "div") {
     const n = integerLiteral(expr.num);
     const d = integerLiteral(expr.den);
@@ -376,4 +392,62 @@ function checkExponentialForm(expr: Expr): FormCheck {
   const exponent = power.exp;
   const isZero = literalRational(exponent)?.isZero() ?? false;
   return isZero || isImaginaryTerm(exponent) ? OK : wrong;
+}
+
+// ───────────────────────────── scientificNotation ─────────────────────────────
+
+/** L'esponente di 10: un intero scritto, anche con il meno (10^{-3}). */
+function integerExponent(expr: Expr): boolean {
+  const inner = stripSign(expr);
+  return inner.kind === "num" && inner.decimals === undefined && !inner.repeating && inner.value.isInteger();
+}
+
+const isPowerOfTen = (expr: Expr): boolean =>
+  expr.kind === "pow" && expr.base.kind === "num" && expr.base.value.eq(10) && expr.base.decimals === undefined && integerExponent(expr.exp);
+
+function checkScientificNotation(expr: Expr): FormCheck {
+  const reason = fail(
+    `${tex(expr)} non è in notazione scientifica: si scrive $a\\cdot10^{n}$, con $a$ almeno $1$ e minore di $10$ (una sola cifra prima della virgola) e $n$ intero.`,
+  );
+  const body = stripSign(expr);
+  if (isPowerOfTen(body)) return OK;
+  if (body.kind !== "mul" || body.factors.length !== 2) return reason;
+  const [mantissa, power] = body.factors as [Expr, Expr];
+  if (!isPowerOfTen(power) || mantissa.kind !== "num" || mantissa.repeating) return reason;
+  const value = mantissa.value.abs();
+  if (value.cmp(1) < 0 || value.cmp(10) >= 0) {
+    return fail(`In ${tex(expr)} il numero davanti alla potenza di $10$ deve essere almeno $1$ e minore di $10$: una sola cifra, diversa da zero, prima della virgola.`);
+  }
+  return OK;
+}
+
+// ───────────────────────────── degrees, radians ─────────────────────────────
+
+const ANGLE_NAMES = new Set(["deg", "arcmin", "arcsec"]);
+const isAngleNode = (expr: Expr): boolean => expr.kind === "fn" && ANGLE_NAMES.has(expr.name);
+
+function checkDegrees(expr: Expr): FormCheck {
+  const body = stripSign(expr);
+  const parts = body.kind === "add" ? body.terms : [body];
+  const order = ["deg", "arcmin", "arcsec"];
+  let last = -1;
+  for (const part of parts) {
+    if (part.kind !== "fn" || !ANGLE_NAMES.has(part.name)) {
+      return fail(`La misura va scritta in gradi sessagesimali, con il simbolo $^\\circ$: per esempio $30^\\circ$ o $30^\\circ\\,15'$.`);
+    }
+    const level = order.indexOf(part.name);
+    if (level <= last) return fail(`In ${tex(expr)} gradi, primi e secondi vanno scritti una volta sola, in quest'ordine.`);
+    last = level;
+    const value = part.arg.kind === "num" ? part.arg.value : null;
+    if (value === null || value.sign() < 0 || part.arg.kind !== "num" || part.arg.repeating) {
+      return fail(`In ${tex(expr)} gradi, primi e secondi sono numeri scritti, senza $\\pi$ e senza operazioni.`);
+    }
+    if (part.name !== "deg" && value.cmp(60) >= 0) return fail(`In ${tex(expr)} primi e secondi devono essere meno di $60$: $60'$ fanno $1^\\circ$, $60''$ fanno $1'$.`);
+  }
+  return OK;
+}
+
+function checkRadians(expr: Expr): FormCheck {
+  if (some(expr, isAngleNode)) return fail(`La misura va scritta in radianti, senza il simbolo dei gradi: per esempio $\\dfrac{\\pi}{6}$.`);
+  return OK;
 }

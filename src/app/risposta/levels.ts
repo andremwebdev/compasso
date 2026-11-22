@@ -49,6 +49,8 @@ export function usesFunctions(expr: Expr): boolean {
     case "const":
       return expr.name !== "i";
     case "fn":
+      // Il fattoriale sta nel livello Base (combinatoria); gradi, primi e secondi in Funzioni, con π.
+      return expr.name === "factorial" ? usesFunctions(expr.arg) : true;
     case "log":
     case "abs":
       return true;

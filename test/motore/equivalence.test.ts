@@ -235,3 +235,35 @@ describe("equivalenza: controllo a tappeto su espressioni generate", () => {
     expect(different).toBeGreaterThan(100);
   });
 });
+
+describe("equivalenza con periodici, gradi e fattoriale (parser del Volume 1)", () => {
+  const same = (a: string, b: string): boolean => equivalent(p(a), p(b));
+
+  it("un periodico vale la sua frazione generatrice, esattamente", () => {
+    expect(compare(p("0,1(6)"), p("1/6"))).toEqual({ equivalent: true, method: "exact" });
+    expect(same("0,(9)", "1")).toBe(true);
+    expect(same("0,(3)+0,(6)", "1")).toBe(true);
+    expect(same("0,1(6)", "0,16")).toBe(false);
+  });
+
+  it("un angolo in gradi vale in radianti: 30° = π/6, sin 30° = sin(π/6)", () => {
+    expect(compare(p("30°"), p("π/6"))).toEqual({ equivalent: true, method: "exact" });
+    expect(same("30°30'", "30,5°")).toBe(true);
+    expect(same("1°", "60'")).toBe(true);
+    expect(same("sin 30°", "sin(π/6)")).toBe(true);
+    expect(same("sin 30°", "1/2")).toBe(true);
+    expect(same("30°", "30")).toBe(false);
+    expect(same("x°", "πx/180")).toBe(true);
+  });
+
+  it("il fattoriale: esatto sui naturali, confrontato con Γ altrove", () => {
+    expect(compare(p("5!"), p("120"))).toEqual({ equivalent: true, method: "exact" });
+    expect(same("10!/(8!·2!)", "45")).toBe(true);
+    expect(same("n!/(n-1)!", "n")).toBe(true);
+    expect(same("(n+1)!", "(n+1)·n!")).toBe(true);
+    expect(same("n!/(n-1)!", "n-1")).toBe(false);
+    expect(same("(2n)!", "2·n!")).toBe(false);
+    expect(same("0!", "1")).toBe(true);
+    expect(same("4!", "120")).toBe(false);
+  });
+});

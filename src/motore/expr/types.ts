@@ -8,11 +8,25 @@
 
 import type { Rational } from "../numbers/rational";
 
-/** Numero razionale esatto. Se `decimals` è presente, era scritto come decimale con quel numero di cifre. */
+/**
+ * Numero razionale esatto. Se `decimals` è presente, era scritto come decimale con quel numero di cifre.
+ * Se `repeating` è presente, era scritto come numero periodico (0,1(6)): il valore resta la frazione
+ * esatta (1/6), e la scrittura serve a mostrarlo com'è stato scritto. Un periodico non è un decimale
+ * approssimato: non ha `decimals` e non fa scattare FORMA.DECIMALE.
+ */
 export interface NumExpr {
   readonly kind: "num";
   readonly value: Rational;
   readonly decimals?: number;
+  readonly repeating?: RepeatingDigits;
+}
+
+/** Le cifre di un numero periodico, come sono scritte: 12,3(45) ha parte intera "12", antiperiodo "3", periodo "45". */
+export interface RepeatingDigits {
+  readonly integer: string;
+  readonly antiperiod: string;
+  /** Vuoto solo in un testo ancora da finire («0,1(»): l'anteprima mostra la casella del periodo. */
+  readonly period: string;
 }
 
 /** Variabile o parametro: x, y, k, a… */
@@ -79,7 +93,12 @@ export interface FnExpr {
   readonly name: FunctionName;
   readonly arg: Expr;
 }
-export type FunctionName = "sin" | "cos" | "tan" | "cot" | "arcsin" | "arccos" | "arctan" | "ln";
+export type FunctionName =
+  | "sin" | "cos" | "tan" | "cot" | "arcsin" | "arccos" | "arctan" | "ln"
+  /** Fattoriale n! (scritto dopo l'argomento). */
+  | "factorial"
+  /** Misure di angoli in gradi sessagesimali, scritte dopo il numero: 30° (deg), 15′ (arcmin), 20″ (arcsec). Valgono in radianti. */
+  | "deg" | "arcmin" | "arcsec";
 
 /** Logaritmo in base qualsiasi. Il logaritmo naturale è la funzione `ln`. */
 export interface LogExpr {

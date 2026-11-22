@@ -68,7 +68,7 @@ export interface KeyboardLevelDef {
 export const KEYBOARD: Readonly<Record<KeyboardLevel, KeyboardLevelDef>> = {
   base: {
     label: "Base",
-    name: "Base: cifre, operazioni, frazione, potenza, radici",
+    name: "Base: cifre, operazioni, frazione, potenza, radici, fattoriale, notazione scientifica, periodo",
     columns: 6,
     keys: [
       ...digits("789"), t("("), t(")"), BACKSPACE,
@@ -76,11 +76,15 @@ export const KEYBOARD: Readonly<Record<KeyboardLevel, KeyboardLevelDef>> = {
       ...digits("123"), TIMES, t(":", ":", "Diviso"), RIGHT,
       t("0"), COMMA, t("x"), t("y"), FRACTION, NEXT,
       SQRT, NTH_ROOT, POWER, SQUARE, t(";", "; ", "Punto e virgola"), t("="),
+      // Volume 1: fattoriale (V1.M13), notazione scientifica (V1.M03), numeri periodici (V1.M02):
+      // il periodo si scrive tra parentesi subito dopo le cifre decimali, 0,1(6).
+      t("n!", "!", "Fattoriale"), t("·10ⁿ", `·10^(${CURSOR})`, "Per dieci alla…"),
+      { ...w("periodo", `(${CURSOR})`, "Periodo: dopo le cifre decimali, le cifre che si ripetono"), span: 2 }, t("n"), t("k"),
     ],
   },
   funzioni: {
     label: "Funzioni",
-    name: "Funzioni: goniometriche, logaritmi, esponenziale, valore assoluto, costanti",
+    name: "Funzioni: goniometriche, logaritmi, esponenziale, valore assoluto, costanti, gradi",
     columns: 7,
     keys: [
       w("sin", `sin(${CURSOR})`), w("cos", `cos(${CURSOR})`), w("tan", `tan(${CURSOR})`), t("("), t(")"), NEXT, BACKSPACE,
@@ -90,6 +94,8 @@ export const KEYBOARD: Readonly<Record<KeyboardLevel, KeyboardLevelDef>> = {
       t("x"), t("y"), POWER, t("0"), COMMA, t("+"), MINUS,
       // Costanti arbitrarie: integrali indefiniti ed equazioni differenziali (V2.M09, V2.M12).
       t("c", "c", "Costante c"), t("c₁", "c_1", "Costante c uno"), t("c₂", "c_2", "Costante c due"), t("k"), SQUARE, FRACTION, SQRT,
+      // Angoli in gradi sessagesimali (V1.M10): 30°15′20″; lettere greche per gli angoli.
+      { ...t("°", "°", "Gradi"), span: 2 }, t("′", "′", "Primi"), t("″", "″", "Secondi"), t("α", "α", "Alfa"), t("β", "β", "Beta"), t("θ", "θ", "Teta"),
     ],
   },
   insiemi: {
@@ -165,11 +171,11 @@ function insertAt(field: FieldState, piece: string): FieldState {
   return { text: text.slice(0, start) + clean + text.slice(end), start: at, end: at };
 }
 
-/** Vero se il testo finisce con qualcosa che può fare da numeratore: un numero, una lettera, una parentesi chiusa. */
-const endsWithOperand = (before: string): boolean => /[0-9a-zA-Zπ∞)|²³]$/.test(before);
+/** Vero se il testo finisce con qualcosa che può fare da numeratore: un numero, una lettera, una parentesi chiusa, 5!, 30°. */
+const endsWithOperand = (before: string): boolean => /[0-9a-zA-Zπ∞)|²³!°′″]$/.test(before);
 
 /** Nomi che la tastiera scrive e che si cancellano in un colpo solo, con la loro parentesi se c'è. */
-const OPENING = /(?:(?:arcsin|arccos|arctan|sin|cos|tan|ln|log|root|e\^|√|\^)\(|e\^\(i)$/;
+const OPENING = /(?:(?:arcsin|arccos|arctan|sin|cos|tan|ln|log|root|e\^|√|·10\^|\^)\(|e\^\(i)$/;
 
 /** Applica un tasto a un campo: restituisce il nuovo testo e la nuova posizione del cursore. */
 export function pressKey(field: FieldState, key: Key): FieldState {
@@ -215,7 +221,7 @@ export function pressKey(field: FieldState, key: Key): FieldState {
       // spazi attorno (« ∪ »), «non esiste», le costanti c₁ e c₂. Solo i nomi che la tastiera scrive:
       // in «2x(» la x resta.
       const chunk =
-        /(?:(?:arcsin|arccos|arctan|sin|cos|tan|ln|log|root|e\^)\(|e\^\(i|√\(|\^\(|ln |non esiste|c_[12]|∀x|∄x|[+-]∞|\s[^\s]\s|; )$/.exec(before)?.[0] ??
+        /(?:(?:arcsin|arccos|arctan|sin|cos|tan|ln|log|root|e\^)\(|e\^\(i|√\(|·10\^\(|\^\(|ln |non esiste|c_[12]|∀x|∄x|[+-]∞|\s[^\s]\s|; )$/.exec(before)?.[0] ??
         before.slice(-1);
       return remove(text, start - chunk.length, start);
     }

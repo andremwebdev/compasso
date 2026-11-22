@@ -4,7 +4,7 @@ import {
   type AnswerSpec, type Evaluation, type Exercise, type ExerciseDraft, type GeneratorDefinition,
 } from "../../src/esercizi";
 import { finiteLimit, minusInfinity, noLimit, plusInfinity } from "../../src/motore/calculus/limit";
-import { add, div, frac, mul, num, pi, pow, sqrt, sub, sym, toLatex } from "../../src/motore/expr";
+import { add, decimal, degrees, div, frac, mul, num, pi, pow, sqrt, sub, sym, toLatex } from "../../src/motore/expr";
 import { matrix } from "../../src/motore/linalg/matrix";
 import { atLeast, atMost, closed, closedOpen, greaterThan, lessThan, periodic, points, realSet } from "../../src/motore/sets";
 
@@ -232,6 +232,37 @@ describe("valutazione: numero", () => {
     expect(evaluateResponse(half, text("2/4"))).toMatchObject({ outcome: "wrong", error: "FORMA.NON_RICHIESTA", cause: "form" });
     expect(evaluateResponse(half, text("2/5"))).toEqual({ outcome: "wrong", error: "CALC.SOMMA_FRAZIONI", cause: "expected" });
     expect(evaluateResponse(half, text("4/10"))).toEqual({ outcome: "wrong", error: "CALC.SOMMA_FRAZIONI", cause: "expected" });
+  });
+
+  it("un periodico scritto giusto non è FORMA.DECIMALE; dove serve la frazione generatrice è la forma sbagliata", () => {
+    const sixth = exerciseWith({ kind: "number", correct: frac(1, 6), mode: exact, wrong: [] });
+    expect(evaluateResponse(sixth, text("0,1(6)"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(sixth, text("0,16\u0305"))).toEqual({ outcome: "correct" });
+    // Il decimale troncato invece è un valore approssimato.
+    expect(evaluateResponse(sixth, text("0,1666"))).toMatchObject({ outcome: "wrong", error: "FORMA.DECIMALE" });
+    const generating = exerciseWith({ kind: "number", correct: frac(1, 6), mode: exact, form: ["reducedFraction"], wrong: [] });
+    expect(evaluateResponse(generating, text("1/6"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(generating, text("0,1(6)"))).toMatchObject({ outcome: "wrong", error: "FORMA.NON_RICHIESTA", cause: "form" });
+    expect(evaluateResponse(generating, text("0,1(6"))).toEqual({ outcome: "invalid", message: "La risposta non è completa." });
+  });
+
+  it("notazione scientifica, gradi e fattoriale nelle risposte", () => {
+    const scientific = exerciseWith({ kind: "number", correct: mul(decimal("3,2"), pow(10, 5)), mode: exact, form: ["scientificNotation"], wrong: [] });
+    expect(evaluateResponse(scientific, text("3,2E5"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(scientific, text("3,2·10^5"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(scientific, text("32·10^4"))).toMatchObject({ outcome: "wrong", error: "FORMA.NON_RICHIESTA" });
+    const inDegrees = exerciseWith({ kind: "number", correct: degrees(30), mode: exact, form: ["degrees"], wrong: [] });
+    expect(evaluateResponse(inDegrees, text("30°"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(inDegrees, text("π/6"))).toMatchObject({ outcome: "wrong", error: "FORMA.NON_RICHIESTA" });
+    const inRadians = exerciseWith({ kind: "number", correct: div(pi, 6), mode: exact, form: ["radians"], wrong: [] });
+    expect(evaluateResponse(inRadians, text("π/6"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(inRadians, text("30°"))).toMatchObject({ outcome: "wrong", error: "FORMA.NON_RICHIESTA" });
+    const minutes = exerciseWith({ kind: "number", correct: degrees(30, 30), mode: exact, form: ["degrees"], wrong: [] });
+    expect(evaluateResponse(minutes, text("30°30'"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(minutes, text("30,5°"))).toMatchObject({ outcome: "wrong", error: "FORMA.DECIMALE" });
+    const count = exerciseWith({ kind: "number", correct: num(120), mode: exact, wrong: [] });
+    expect(evaluateResponse(count, text("5!"))).toEqual({ outcome: "correct" });
+    expect(evaluateResponse(count, text("4!"))).toEqual({ outcome: "wrong", error: "NON_CLASSIFICATO", cause: "unclassified" });
   });
 
   it("un numero non contiene lettere", () => {

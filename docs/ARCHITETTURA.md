@@ -125,12 +125,16 @@ Regole fissate (la tastiera matematica della fase 4 deve produrre testo che le r
 | `|x|` `abs(x)` | valore assoluto | |
 | `e^x` `exp(x)` `pi` `π` | costanti | `e` è sempre il numero di Nepero |
 | `20%` | 20/100 | |
+| `0,1(6)` `0.1(6)` `3,(3)` `0,16̅` | numero periodico | vale la frazione generatrice (1/6) e si mostra `0{,}1\overline{6}`. Il periodo è tra parentesi **attaccate** alle cifre decimali e fatte di sole cifre: `0,5(x+1)` e `0,5 (3)` restano prodotti. La lineetta combinante (U+0305 o U+0304) va sulle ultime cifre. Nodo `num` con `repeating` (cifre come sono scritte) e senza `decimals`: per FORMA.DECIMALE non è un decimale |
+| `3,2E5` `3,2E-5` `1E+3` | notazione scientifica | si legge come `3,2·10^5` (stessi nodi: `mul(3,2, pow(10, 5))`). Solo la **E maiuscola** subito dopo il numero: `2e5` resta 2·e·5 |
+| `30°` `30º` `30°15′20″` `30°15'20''` `30°20"` | angoli in gradi | `fn("deg", 30)`, `fn("arcmin", 15)`, `fn("arcsec", 20)`: valgono in radianti (`30° = π/6`). Primi e secondi dopo i gradi diventano una somma mostrata attaccata (`30^{\circ}\,15'`); `sin 30°` = `sin(30°)` |
+| `5!` `n!` `(n+1)!` | fattoriale | `fn("factorial", n)`; lega più del prodotto (`2n!` = 2·(n!)) e si può elevare (`3!^2` = (3!)²). `!=` resta «diverso»: `5!=120` vale 5 ≠ 120 |
 | `( )` `[ ]` `{ }` | parentesi | equivalenti tra loro |
 | `=` `≠` `!=` `<` `≤` `<=` `>` `≥` `>=` | relazioni | solo in `parseRelation` |
 | `i` | unità immaginaria | solo con l'opzione `complex`; altrimenti è una variabile |
 | `x_1`, `alpha`, `θ` | variabili con indice, lettere greche | |
 
-**Anteprima in tempo reale.** Un testo incompleto (`2+`, `(x+1`, `sqrt(`) non è un errore: il parser lo completa con il segnaposto `□` e chiude le parentesi aperte, segnalando `complete: false`. L'interfaccia disegna sempre `toLatex(value)`; una risposta con `complete: false` non si può confermare.
+**Anteprima in tempo reale.** Un testo incompleto (`2+`, `(x+1`, `sqrt(`) non è un errore: il parser lo completa con il segnaposto `□` e chiude le parentesi aperte, segnalando `complete: false`. L'interfaccia disegna sempre `toLatex(value)`; una risposta con `complete: false` non si può confermare. Anche le scritture del Volume 1 si vedono a metà: `0,1(` e `0,1()` mostrano la casella del periodo (`0{,}1\overline{\square}`), `0,1(6` il periodo senza la parentesi chiusa, `3,2E` e `3,2E-` la potenza di 10 con l'esponente da scrivere, `30°15` i primi ancora senza `′` (un numero in fondo al testo dopo i gradi o i primi è l'unità successiva). Tutti con `complete: false`.
 
 Un argomento separato da punto e virgola (`root(3; x)`) segue la convenzione italiana degli intervalli; la virgola seguita da spazio o da una non-cifra è accettata come separatore.
 
@@ -167,6 +171,8 @@ Riduzioni applicate durante la normalizzazione (ognuna vale ovunque le due scrit
 - esponenti razionali: `x^(p/q) = (q√x)^p`; esponenti interi negativi: reciproco;
 - parità: `sin(−x) = −sin x`, `cos(−x) = cos x`, `|−x| = |x|`;
 - cambio di base: `log_b(a) = ln a / ln b`; `ln e = 1`, `ln 1 = 0`, `sin 0 = 0`, `cos 0 = 1`;
+- angoli in gradi: `deg(a) = a·π/180`, `arcmin(a) = a·π/10800`, `arcsec(a) = a·π/648000` (sono lineari: `sin 30°` diventa lo stesso atomo di `sin(π/6)`);
+- fattoriale: di un naturale fino a 300 il numero esatto (`5! = 120`), di un intero negativo `EngineError`; altrimenti è un atomo **non indipendente**, e decide il confronto numerico con Γ(x + 1) (`n!/(n − 1)! = n` vale anche nei reali);
 - denominatori numerici e monomi semplificati subito.
 
 Le frazioni **non** si riducono con il MCD: per l'uguaglianza basta il prodotto in croce (`a/b = c/d` se e solo se `ad − bc = 0`), che è esatto e non richiede MCD in più variabili.
@@ -209,12 +215,15 @@ Costo: decimi di millisecondo per le espressioni tipiche (c'è un test che lo co
 | --- | --- | --- |
 | `expanded` | «sviluppa», «riduci a forma normale» | somma di monomi, senza prodotti di somme né potenze di somme, termini simili già sommati (simili = stessa parte letterale **e stesso radicale**: `2√2 + 3√2` sì, `3 + 2√2` no) |
 | `factored` | «scomponi» | prodotto di fattori ciascuno **irriducibile** sui razionali e senza fattori numerici o letterali da raccogliere (il numero da raccogliere si vede anche tra i radicali: `2x + 2√2`); la potenza di un prodotto si guarda fattore per fattore |
-| `reducedFraction` | «riduci ai minimi termini» | frazioni numeriche ridotte; in una frazione algebrica numeratore e denominatore senza fattori comuni, compreso un intero comune davanti ai radicali (`2√2/2`, `(2 + 2√3)/4`) |
+| `reducedFraction` | «riduci ai minimi termini», «scrivi la frazione generatrice» | nessun numero periodico (`0,1(6)` non è ancora una frazione); frazioni numeriche ridotte; in una frazione algebrica numeratore e denominatore senza fattori comuni, compreso un intero comune davanti ai radicali (`2√2/2`, `(2 + 2√3)/4`) |
 | `rationalized` | «razionalizza» | nessuna radice (né esponente frazionario) in un denominatore, e nessuna frazione sotto radice (`√(1/2)` è ancora `1/√2`) |
 | `simplifiedRadicals` | «porta fuori dal segno di radice» | sotto radice nessun fattore che sia una potenza perfetta, nessuna frazione, indice non riducibile; nessuna potenza di una radice numerica con esponente ≥ indice (`(√2)³`), nessun prodotto di radici numeriche con lo stesso indice (`√2·√3`), niente `√0` |
 | `algebraicForm` | «scrivi in forma algebrica» | `a + bi` con `a`, `b` reali, `i` non al denominatore né sotto potenza |
 | `trigonometricForm` | «scrivi in forma trigonometrica» | `ρ(cos θ + i sin θ)` con `ρ > 0` e lo stesso `θ`; i due addendi in qualunque ordine |
 | `exponentialForm` | «scrivi in forma esponenziale» | `ρ·e^{iθ}` con `ρ > 0` e l'esponente della forma `iθ` |
+| `scientificNotation` | «scrivi in notazione scientifica» | `a·10^n` (anche `10^n`, anche scritto `aEn`) con `a` numero scritto, in valore assoluto almeno 1 e minore di 10, e `n` intero scritto |
+| `degrees` | «converti in gradi» | gradi, primi e secondi scritti con il loro simbolo, in quest'ordine e una volta sola, con numeri non negativi; primi e secondi minori di 60; niente π |
+| `radians` | «converti in radianti» | nessun simbolo di gradi, primi o secondi |
 
 `algebraicForm` accetta una parte reale con più termini quando non si possono sommare tra loro (`1 + √2 + i` sì, `1 + 2 + i` no).
 
@@ -399,7 +408,7 @@ Gli aiuti comuni sono in `test/motore/helpers.ts`.
 - Insiemi: l'unione tra soluzioni periodiche e un intervallo, e le operazioni tra periodi con rapporto irrazionale, non sono rappresentabili (lanciano `EngineError`). Gli estremi non fatti di razionali e radici quadrate (π, e, logaritmi) si ordinano con il valore numerico.
 - `realZeros` trova gli zeri dei polinomi che si scompongono in fattori di primo e secondo grado; negli altri casi li indica il generatore.
 - Il decimale approssimato (`FORMA.DECIMALE`) si riconosce solo per risposte costanti, non per espressioni con coefficienti decimali approssimati (`0,33x`), e negli insiemi solo quando l'estremo decimale è esatto (`0,5` per `1/2`).
-- Fattoriale, gradi (`30°`), numeri periodici e notazione scientifica con `E` non sono letti dal parser: quando un modulo li richiede si aggiungono al parser, non ai generatori.
+- Fattoriale, gradi, numeri periodici e notazione scientifica: si leggono (sezione 5). Il fattoriale non si deriva e nei reali vale Γ(x + 1) solo per il confronto numerico; i gradi valgono in radianti, quindi `30` scritto al posto di `30°` è un altro numero (il generatore può prevederlo come risposta sbagliata). La E della notazione scientifica è solo maiuscola. Nessun vincolo «scrivi come numero periodico» (`1/6` è giusto quanto `0,1(6)`): si aggiunge se un generatore lo chiede.
 - `parseSolutionSet` non completa da solo un insieme scritto a metà (`(1; `): per l'anteprima l'app prova delle chiusure plausibili (`SET_ENDINGS` in `src/app/risposta/preview.ts`), da tenere allineate alle scritture che il parser accetta.
 - La forma canonica di un insieme periodico spezza in due un intervallo a cavallo dello zero (`[0; π/3] ∪ (5π/6; 2π)` più il periodo): giusta, ma brutta da mostrare. I generatori scrivono la base a mano.
 - Il confronto numerico usa una tolleranza relativa di 10⁻⁸: due scritture equivalenti che perdono cifre in modo diverso vicino a una cancellazione (`(1 − cos x)/x²` per x molto piccolo) possono, raramente, risultare diverse. Vedi `docs/REVISIONE.md`.

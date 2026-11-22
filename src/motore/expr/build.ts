@@ -95,6 +95,45 @@ export const cos = (arg: ExprLike): Expr => fn("cos", arg);
 export const tan = (arg: ExprLike): Expr => fn("tan", arg);
 export const ln = (arg: ExprLike): Expr => fn("ln", arg);
 
+/** Fattoriale: factorial(5) si scrive 5!, factorial(sym("n")) si scrive n!. */
+export const factorial = (arg: ExprLike): Expr => fn("factorial", arg);
+
+/**
+ * Angolo in gradi sessagesimali (vale in radianti): degrees(30) è 30°, degrees(30, 15) è 30°15′,
+ * degrees(30, 15, 20) è 30°15′20″. Primi e secondi si sommano ai gradi e si mostrano attaccati.
+ */
+export function degrees(deg: ExprLike, minutes?: ExprLike, seconds?: ExprLike): Expr {
+  const parts: Expr[] = [fn("deg", deg)];
+  if (minutes !== undefined) parts.push(fn("arcmin", minutes));
+  if (seconds !== undefined) parts.push(fn("arcsec", seconds));
+  return parts.length === 1 ? (parts[0] as Expr) : { kind: "add", terms: parts };
+}
+
+/**
+ * Numero periodico scritto con il periodo tra parentesi: repeatingDecimal("0,1(6)") vale 1/6 e si mostra
+ * 0,1 con il 6 sopralineato. Accetta anche il punto al posto della virgola e un meno davanti.
+ */
+export function repeatingDecimal(text: string): Expr {
+  const match = /^(-?)(\d+)[.,](\d*)\((\d+)\)$/.exec(text);
+  if (!match) throw new EngineError(`Numero periodico non valido: «${text}».`);
+  const [, sign = "", integer = "", antiperiod = "", period = ""] = match;
+  const value: NumExpr = { kind: "num", value: repeatingValue(integer, antiperiod, period), repeating: { integer, antiperiod, period } };
+  return sign === "-" ? neg(value) : value;
+}
+
+/**
+ * Valore esatto di un numero periodico (frazione generatrice): il numero scritto senza virgola meno
+ * quello senza il periodo, fratto tanti 9 quante le cifre del periodo seguiti da tanti 0 quante
+ * quelle dell'antiperiodo. 0,1(6) = (16 − 1)/90 = 1/6.
+ */
+export function repeatingValue(integer: string, antiperiod: string, period: string): Rational {
+  if (period === "") return Rational.of(BigInt(integer + antiperiod), 10n ** BigInt(antiperiod.length));
+  const whole = BigInt(integer + antiperiod + period);
+  const head = BigInt(integer + antiperiod);
+  const den = (10n ** BigInt(period.length) - 1n) * 10n ** BigInt(antiperiod.length);
+  return Rational.of(whole - head, den);
+}
+
 /** Esponenziale e^x. */
 export const exp = (arg: ExprLike): Expr => pow(e, arg);
 

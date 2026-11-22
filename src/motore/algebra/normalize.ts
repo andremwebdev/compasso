@@ -149,9 +149,36 @@ function normalizeAbs(arg: Expr, ctx: NormalContext): Ratio {
   );
 }
 
+/** Radianti in un grado, in un primo, in un secondo: π/180, π/10800, π/648000. */
+const ANGLE_DENOMINATORS: Partial<Record<FunctionName, number>> = { deg: 180, arcmin: 10800, arcsec: 648000 };
+
+/** Oltre questo argomento il fattoriale resta un atomo (il numero esatto sarebbe troppo grande). */
+const MAX_EXACT_FACTORIAL = 300n;
+
 function normalizeFunction(name: FunctionName, arg: Expr, ctx: NormalContext): Ratio {
+  // Gradi, primi, secondi: misure in radianti, quindi lineari nell'argomento. 30° = π/6.
+  const angle = ANGLE_DENOMINATORS[name];
+  if (angle !== undefined) {
+    const piAtom = Ratio.fromPoly(ctx.atom({ key: KEY_PI, expr: { kind: "const", name: "pi" }, independent: true }));
+    return normalize(arg, ctx).mul(piAtom, ctx).div(Ratio.constant(Surd.from(angle)), ctx);
+  }
+
   let inner = normalize(arg, ctx);
   const constant = inner.constant();
+
+  // Fattoriale di un naturale: il numero esatto. Di un intero negativo: non esiste.
+  if (name === "factorial" && constant !== null) {
+    const value = constant.isRational() ? constant.toRational() : null;
+    if (value !== null && value.isInteger()) {
+      const n = value.n;
+      if (n < 0n) throw new EngineError("Il fattoriale è definito solo per i numeri naturali.");
+      if (n <= MAX_EXACT_FACTORIAL) {
+        let product = 1n;
+        for (let k = 2n; k <= n; k++) product *= k;
+        return Ratio.constant(Surd.from(Rational.of(product)));
+      }
+    }
+  }
 
   // I pochi valori esatti che non richiedono tabelle.
   if (constant?.isZero() && (name === "sin" || name === "tan" || name === "arcsin" || name === "arctan")) return Ratio.ZERO;

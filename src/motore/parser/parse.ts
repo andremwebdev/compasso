@@ -7,11 +7,14 @@
 // - funzioni con o senza parentesi: sin(x), sin x, sin 2x (= sin(2x)), sin^2 x, sin x cos x;
 // - radici: √2, sqrt(2), ∛x, root(3; x); logaritmi: ln x, log x (base 10), log_2 x, log(2; x);
 // - valore assoluto: |x| oppure abs(x); percentuali: 20% vale 20/100;
+// - numeri periodici: 0,1(6) e 0,16̅ (le cifre tra parentesi, attaccate ai decimali, sono il periodo);
+// - notazione scientifica: 3,2E5 vale 3,2·10⁵ (si legge anche 3,2·10^5, che è una potenza qualsiasi);
+// - fattoriale: 5!, n!, (n+1)!; angoli in gradi: 30°, 30°15′, 30°15′20″ (valgono in radianti);
 // - testo incompleto ("2+", "(x+1", "()/()"): si completa con il segnaposto □ e si segnala `complete: false`,
 //   così l'anteprima in tempo reale può disegnare anche quello che non è ancora finito.
 
 import { EngineError } from "../errors";
-import { abs, add, div, e, fn, i, log, mul, neg, num, pi, pow, relation, root, sym } from "../expr/build";
+import { abs, add, div, e, fn, i, log, mul, neg, num, pi, pow, relation, repeatingValue, root, sym } from "../expr/build";
 import { PLACEHOLDER, type Expr, type Relation, type RelationOp } from "../expr/types";
 import { Rational } from "../numbers/rational";
 import { tokenize, type LexOptions, type Operator, type Token } from "./tokenize";
@@ -192,6 +195,12 @@ class Parser {
       } else if (this.isOp("%")) {
         this.advance();
         result = div(result, 100);
+      } else if (this.isOp("!")) {
+        this.advance();
+        result = fn("factorial", result);
+      } else if (this.isOp("°") || this.isOp("′") || this.isOp("″")) {
+        // Un angolo in gradi, primi e secondi chiude il fattore: 30°15′20″ è un numero solo.
+        return this.parseAngle(result);
       } else if (this.isOp("^")) {
         this.advance();
         result = pow(result, this.parseExponent());
@@ -199,6 +208,38 @@ class Parser {
         return result;
       }
     }
+  }
+
+  /**
+   * Angolo in gradi sessagesimali: dopo 30° possono seguire i primi (15′) e poi i secondi (20″),
+   * dopo i primi i secondi. Diventa la somma 30° + 15′ + 20″, mostrata attaccata (30°15′20″).
+   * Un numero in fondo al testo dopo i gradi o i primi («30°15») è l'unità successiva ancora da scrivere.
+   */
+  private parseAngle(first: Expr): Expr {
+    const units = ["°", "′", "″"] as const;
+    const names = { "°": "deg", "′": "arcmin", "″": "arcsec" } as const;
+    let level = units.findIndex((unit) => this.isOp(unit));
+    this.advance();
+    const parts: Expr[] = [fn(names[units[level] as (typeof units)[number]], first)];
+    while (level < 2 && this.current.type === "num") {
+      const value = this.current;
+      const after = this.tokens[this.index + 1];
+      const nextLevel = after?.type === "op" ? units.findIndex((unit) => unit === after.op) : -1;
+      if (nextLevel > level) {
+        this.advance();
+        this.advance();
+        parts.push(fn(names[units[nextLevel] as (typeof units)[number]], parseNumber(value)));
+        level = nextLevel;
+      } else if (after?.type === "end") {
+        this.advance();
+        this.complete = false;
+        parts.push(fn(names[units[level + 1] as (typeof units)[number]], parseNumber(value)));
+        level += 1;
+      } else {
+        break;
+      }
+    }
+    return parts.length === 1 ? (parts[0] as Expr) : add(...parts);
   }
 
   /** L'esponente è un fattore, anche con segno: x^-1, x^2^3 = x^(2^3). */
@@ -219,7 +260,8 @@ class Parser {
     switch (token.type) {
       case "num":
         this.advance();
-        return parseNumber(token.text);
+        if (token.open) this.complete = false;
+        return parseNumber(token);
       case "sym":
         this.advance();
         return sym(token.name);
@@ -250,6 +292,10 @@ class Parser {
         }
         if (token.op === ")") throw new Failure("C'è una parentesi chiusa in più.", token.pos);
         if (token.op === ";") throw new Failure("Qui la virgola o il punto e virgola non hanno senso.", token.pos);
+        if (token.op === "!") throw new Failure("Il punto esclamativo del fattoriale va dopo un numero o una lettera: 5!, n!.", token.pos);
+        if (token.op === "°" || token.op === "′" || token.op === "″") {
+          throw new Failure("Il simbolo dei gradi, dei primi o dei secondi va dopo un numero: 30°, 30°15′.", token.pos);
+        }
         throw new Failure("Qui manca un numero o una lettera.", token.pos);
       case "sup":
         throw new Failure("L'esponente non ha una base.", token.pos);
@@ -349,7 +395,7 @@ class Parser {
       if (denominator?.type === "num" && isInteger && !goesOn) {
         this.advance();
         this.advance();
-        argument = div(argument, parseNumber(denominator.text));
+        argument = div(argument, parseNumber(denominator));
       }
     }
     return negative ? neg(argument) : argument;
@@ -422,7 +468,10 @@ class Parser {
   }
 }
 
-function parseNumber(text: string): Expr {
+function parseNumber(token: Extract<Token, { type: "num" }>): Expr {
+  const { text, repeating } = token;
+  // Un periodico vale la sua frazione generatrice e non è un decimale: FORMA.DECIMALE non scatta.
+  if (repeating) return { kind: "num", value: repeatingValue(repeating.integer, repeating.antiperiod, repeating.period), repeating };
   const { value, decimals } = Rational.parseDecimal(text);
   // Un decimale resta segnato come tale: serve a riconoscere FORMA.DECIMALE.
   return text.includes(",") || text.includes(".") ? { kind: "num", value, decimals } : { kind: "num", value };

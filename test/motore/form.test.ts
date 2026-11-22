@@ -126,8 +126,9 @@ describe("vincoli di forma", () => {
   });
 
   it("l'elenco dei vincoli è completo", () => {
-    // Otto dalla sessione 2: si è aggiunto «exponentialForm».
-    expect(formConstraints).toHaveLength(8);
+    // Otto dalla sessione 2 (si era aggiunto «exponentialForm»); tre per il parser del Volume 1:
+    // «scientificNotation», «degrees», «radians».
+    expect(formConstraints).toHaveLength(11);
     for (const constraint of formConstraints) {
       for (const text of ["1", "x", "x^2-1", "1/√2", "(x+1)/(x-1)"]) {
         expect(typeof checkForm(p(text), constraint).ok).toBe("boolean");
@@ -186,5 +187,42 @@ describe("revisione 4a: vincoli di forma, casi che sfuggivano", () => {
   it("trigonometricForm: l'ordine dei due addendi non conta, e gli angoli si scrivono anche senza parentesi", () => {
     accepts("trigonometricForm", ["2(i sin(pi/3)+cos(pi/3))", "2(cos π/3 + i sin π/3)", "cos 3π/4 + i sin 3π/4", "√2(sin(pi/4)i+cos(pi/4))"], true);
     rejects("trigonometricForm", ["2(i sin(pi/3)+cos(pi/6))", "2(i cos(pi/3)+sin(pi/3))", "2(cos(pi/3)+cos(pi/3))", "2(cos(pi/3)-i sin(pi/3))"], true);
+  });
+});
+
+describe("vincoli di forma del Volume 1: periodici, notazione scientifica, gradi", () => {
+  const accepts = (constraint: FormConstraint, texts: string[]): void => {
+    for (const text of texts) expect(checkForm(p(text), constraint), `${constraint}: ${text}`).toEqual({ ok: true });
+  };
+  const rejects = (constraint: FormConstraint, texts: string[]): void => {
+    for (const text of texts) {
+      const result = checkForm(p(text), constraint);
+      expect(result.ok, `${constraint}: ${text}`).toBe(false);
+      if (!result.ok) {
+        for (const formula of result.reason.split("$").filter((_, index) => index % 2 === 1)) {
+          expect(() => katex.renderToString(formula, { throwOnError: true, strict: "error" }), formula).not.toThrow();
+        }
+      }
+    }
+  };
+
+  it("frazione generatrice: un periodico non è una frazione ridotta", () => {
+    accepts("reducedFraction", ["1/6", "10/3", "-1/3"]);
+    rejects("reducedFraction", ["0,1(6)", "3,(3)", "-0,(3)", "0,16\u0305", "1+0,(3)"]);
+  });
+
+  it("notazione scientifica: a·10ⁿ con 1 ≤ a < 10", () => {
+    accepts("scientificNotation", ["3,2·10^5", "3,2E5", "3,2E-5", "1·10^3", "10^3", "10^(-2)", "9,99·10^0", "-4,5·10^7", "6·10^23", "1,0·10^2"]);
+    rejects("scientificNotation", ["32·10^4", "0,32·10^6", "320000", "3,2·10", "3,2·10^x", "3,2·10^(1/2)", "10·10^3", "3,2·5^5", "0,1(6)·10^2", "10^5·3,2", "3,2·10^5+1"]);
+  });
+
+  it("gradi: simbolo dei gradi, primi e secondi minori di 60, senza π", () => {
+    accepts("degrees", ["30°", "30°15'", "30°15'20''", "0°", "22,5°", "-30°", "390°", "30°20''", "45'"]);
+    rejects("degrees", ["π/6", "30", "30°75'", "30°15'60''", "(π/6)°", "30°+π", "2·30°", "15'30°", "30°+30°"]);
+  });
+
+  it("radianti: senza gradi, primi e secondi", () => {
+    accepts("radians", ["π/6", "2π/3", "0", "x+π"]);
+    rejects("radians", ["30°", "π/6+15'", "sin(30°)"]);
   });
 });

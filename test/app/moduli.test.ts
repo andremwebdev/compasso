@@ -8,9 +8,10 @@ import { fieldKindOf, gridPreview, previewText } from "../../src/app/risposta/pr
 import { freshSeed } from "../../src/app/risposta/seeds";
 import { renderRichText } from "../../src/app/testo/render";
 import { loadLesson } from "../../src/contenuti";
-import { choiceOptions, generateExercise } from "../../src/esercizi";
+import { choiceOptions, exact, generateExercise } from "../../src/esercizi";
 import { loadedGenerators } from "../../src/generatori";
 import { parseLimitValue } from "../../src/motore/calculus/limit";
+import { degrees, factorial, toLatex } from "../../src/motore/expr";
 import { parseExpression } from "../../src/motore/parser";
 import { parseSolutionSet } from "../../src/motore/parser/sets";
 import { setToInequalityLatex, setToLatex } from "../../src/motore/sets";
@@ -238,6 +239,37 @@ describe("tastiera matematica", () => {
     expect(type(KEYBOARD.funzioni.keys, "x arctan ⌫").text).toBe("x");
     // Dentro una casella piena si cancella un carattere alla volta.
     expect(type(KEYBOARD.funzioni.keys, "sin x ⌫").text).toBe("sin()");
+  });
+
+  it("tasti del Volume 1: fattoriale, notazione scientifica e periodo in Base, gradi in Funzioni; il testo si legge", () => {
+    const read = (field: FieldState): string => {
+      const result = parseExpression(field.text);
+      if (!result.ok) throw new Error(`${field.text}: ${result.error.message}`);
+      return `${toLatex(result.value)}${result.complete ? "" : " …"}`;
+    };
+    expect(read(type(KEYBOARD.base.keys, "n n!"))).toBe("n!");
+    expect(read(type(KEYBOARD.base.keys, "( n + 1 ) n!"))).toBe("\\left(n + 1\\right)!");
+    expect(read(type(KEYBOARD.base.keys, "1 0 n! a⁄b 8 n! · 2 n! ⇥"))).toBe("\\frac{10!}{8! \\cdot 2!}");
+    const scientific = type(KEYBOARD.base.keys, "3 , 2 ·10ⁿ");
+    expect(scientific).toEqual({ text: "3,2·10^()", start: 8, end: 8 });
+    expect(read(scientific)).toBe("3{,}2 \\cdot 10^{\\square} …");
+    expect(read(type(KEYBOARD.base.keys, "− 5 ⇥", scientific))).toBe("3{,}2 \\cdot 10^{-5}");
+    expect(type(KEYBOARD.base.keys, "⌫", scientific).text).toBe("3,2");
+    const periodic = type(KEYBOARD.base.keys, "0 , 1 periodo");
+    expect(periodic).toEqual({ text: "0,1()", start: 4, end: 4 });
+    expect(read(periodic)).toBe("0{,}1\\overline{\\square} …");
+    expect(read(type(KEYBOARD.base.keys, "6", periodic))).toBe("0{,}1\\overline{6}");
+    expect(type(KEYBOARD.base.keys, "⌫", periodic).text).toBe("0,1");
+    const angle = type(KEYBOARD.funzioni.keys, "3 0 ° 1 5");
+    expect(read(angle)).toBe("30^{\\circ}\\,15' …");
+    expect(read(type(KEYBOARD.funzioni.keys, "′ 2 0 ″", angle))).toBe("30^{\\circ}\\,15'\\,20''");
+    expect(read(type(KEYBOARD.funzioni.keys, "sin 3 0 ° ⇥"))).toBe("\\sin 30^{\\circ}");
+    expect(read(type(KEYBOARD.funzioni.keys, "π a⁄b 6"))).toBe("\\frac{\\pi}{6}");
+    // Dopo 5! la frazione prende 5! come numeratore.
+    expect(type(KEYBOARD.base.keys, "5 n! a⁄b 2").text).toBe("5!/(2)");
+    // Gradi in Funzioni (con π), fattoriale in Base.
+    expect(keyboardFor({ kind: "number", correct: degrees(30), mode: exact, wrong: [] }).initial).toBe("funzioni");
+    expect(keyboardFor({ kind: "number", correct: factorial(5), mode: exact, wrong: [] }).initial).toBe("base");
   });
 
   it("la tastiera si apre sul livello che serve al tipo di esercizio", () => {

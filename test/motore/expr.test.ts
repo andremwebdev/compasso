@@ -1,10 +1,11 @@
 import katex from "katex";
 import { describe, expect, it } from "vitest";
 import {
-  abs, add, cos, decimal, div, e, evaluate, exp, fn, frac, i, isConstant, containsDecimal, ln, log, mul, neg, num,
+  abs, add, cos, decimal, degrees, factorial, repeatingDecimal, div, e, evaluate, exp, fn, frac, i, isConstant, containsDecimal, ln, log, mul, neg, num,
   pi, pow, relation, root, sameStructure, sin, sqrt, sub, substitute, sym, toLatex, variables, type Expr,
 } from "../../src/motore/expr";
 import { parseExpression } from "../../src/motore/parser";
+import { EngineError } from "../../src/motore/errors";
 
 const x = sym("x");
 const y = sym("y");
@@ -164,5 +165,18 @@ describe("revisione 4a: LaTeX di somme e opposti con un fattore negativo tra par
       expect(parsed.ok, text).toBe(true);
       if (parsed.ok) draws(toLatex(parsed.value));
     }
+  });
+});
+
+describe("costruttori del Volume 1: periodici, fattoriale, gradi", () => {
+  it("repeatingDecimal, factorial e degrees si mostrano come si scrivono e valgono il numero giusto", () => {
+    expect(toLatex(repeatingDecimal("0,1(6)"))).toBe("0{,}1\\overline{6}");
+    expect(toLatex(repeatingDecimal("-2.(3)"))).toBe("-2{,}\\overline{3}");
+    expect(evaluate(repeatingDecimal("0,(142857)"))).toBeCloseTo(1 / 7, 14);
+    expect(() => repeatingDecimal("0,16")).toThrow(EngineError);
+    expect(toLatex(factorial(sym("n")))).toBe("n!");
+    expect(evaluate(factorial(6))).toBe(720);
+    expect(toLatex(degrees(30, 15, 20))).toBe("30^{\\circ}\\,15'\\,20''");
+    expect(evaluate(degrees(90))).toBeCloseTo(Math.PI / 2, 14);
   });
 });
