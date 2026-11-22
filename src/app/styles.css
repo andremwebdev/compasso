@@ -880,6 +880,84 @@ p {
   overflow-x: auto;
 }
 
+/* Visualizzazioni, parte 2: pezzi in comune (formule e righe che possono essere larghe, elenchi,
+   asintoti e frecce) e le singole visualizzazioni. Stessa regola: colori solo dal tema. */
+.vis-formula,
+.vis-punti,
+.vis-riga {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.vis-punti,
+.vis-nota,
+.vis-passi {
+  font-size: var(--testo-piccolo);
+}
+
+.vis-passi ol,
+.vis-passi ul {
+  margin: var(--s-1) 0 0;
+  padding-left: var(--s-5);
+}
+
+.vis-passi li {
+  margin-top: var(--s-1);
+}
+
+.vis-passi-titolo {
+  font-weight: 600;
+}
+
+.vis-asintoto {
+  fill: none;
+  stroke: var(--blu);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+
+.vis-freccia {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.4;
+  stroke-dasharray: 4 3;
+}
+
+.vis-sopra .vis-nome-partenza,
+.vis-sopra .vis-nome {
+  fill: var(--inchiostro);
+}
+
+.vis-punto-partenza,
+.vis-punto {
+  fill: var(--inchiostro);
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+}
+
+.vis-maniglia.vis-ferma {
+  cursor: default;
+}
+
+/* VIS.trasformazioni-funzioni: il grafico di partenza resta sottile e tratteggiato, il nuovo è blu e spesso. */
+.vis-trasformazioni .grafico-disegno .graf-curva {
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.6;
+  stroke-dasharray: 6 4;
+}
+
+.vis-trasformazioni .grafico-disegno .graf-asintoto {
+  stroke-dasharray: 2 4;
+}
+
+.vis-curva-trasformata {
+  fill: none;
+  stroke: var(--blu);
+  stroke-width: 3.2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
 /* Figure scritte a mano: senza classe una forma è un contorno d'inchiostro senza riempimento. */
 :where(.figura-disegno) :where(path, line, polyline, polygon, rect, circle, ellipse) {
   fill: none;

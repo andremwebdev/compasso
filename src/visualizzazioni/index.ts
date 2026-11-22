@@ -8,6 +8,8 @@ import type { VisualizationCode } from "../codici";
 import { VisualizationBox, VisualizationProblem } from "./comuni";
 import { InequalityGraph } from "./disequazioni-grafico";
 import { checkInequalityParams } from "./disequazioni-grafico-math";
+import { FunctionTransforms } from "./trasformazioni-funzioni";
+import { checkTransformParams } from "./trasformazioni-funzioni-math";
 
 /** Una visualizzazione: il componente (riceve i parametri della lezione, come testo) e il loro controllo. */
 export interface VisualizationDefinition {
@@ -20,6 +22,7 @@ export interface VisualizationDefinition {
 /** Le visualizzazioni che esistono. Una nuova si aggiunge qui (REGOLE.md, «Come aggiungere una visualizzazione»). */
 export const VISUALIZATIONS: readonly VisualizationDefinition[] = [
   { code: "VIS.disequazioni-grafico", component: InequalityGraph, checkParams: checkInequalityParams },
+  { code: "VIS.trasformazioni-funzioni", component: FunctionTransforms, checkParams: checkTransformParams },
 ];
 
 /** I codici delle visualizzazioni esistenti (per la verifica dei contenuti). */
