@@ -19,9 +19,9 @@ describe("V1.M02.A03.g1 — scomposizione in fattori primi", () => {
         const exercise = generateExercise(generator, level, seed);
         const where = `livello ${level}, seme ${seed}`;
         const { answer } = exercise;
+        if (answer.kind !== "number" && answer.kind !== "choice") throw new Error(`tipo di risposta inatteso, ${where}`);
         expect(answer.wrong.length, where).toBeGreaterThanOrEqual(3);
         if (answer.kind === "choice") continue;
-        if (answer.kind !== "number") throw new Error(`tipo di risposta inatteso, ${where}`);
         expect(evaluateResponse(exercise, { kind: "text", text: toLatex(answer.correct) }).outcome, where).toBe("correct");
         for (const wrong of answer.wrong) {
           expect(evaluateResponse(exercise, { kind: "text", text: toLatex(wrong.value) }), where).toMatchObject({ outcome: "wrong", error: wrong.error });
