@@ -189,6 +189,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A06.g1", 2, 2, "Scrivi la frazione generatrice di $0{,}7\\overline{73}$, ridotta ai minimi termini."],
   ["V1.M02.A06.g1", 3, 1, "Scrivi la frazione generatrice di $4{,}3\\overline{7}$, ridotta ai minimi termini."],
   ["V1.M02.A06.g1", 3, 2, "Scrivi la frazione generatrice di $2{,}0\\overline{1}$, ridotta ai minimi termini."],
+  ["V1.M02.A07.g1", 1, 1, "Quale di questi numeri è irrazionale?"],
+  ["V1.M02.A07.g1", 1, 2, "Quale di questi numeri è irrazionale?"],
+  ["V1.M02.A07.g1", 2, 1, "Quale di questi numeri è irrazionale?"],
+  ["V1.M02.A07.g1", 2, 2, "Quale di questi numeri è razionale?"],
+  ["V1.M02.A07.g1", 3, 1, "Quale di questi numeri è irrazionale?"],
+  ["V1.M02.A07.g1", 3, 2, "Quale di questi numeri è irrazionale?"],
 ];
 
 describe("semi congelati", () => {
