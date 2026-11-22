@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: visualizzazioni parte 2, le altre quattro del Volume 1 (22 novembre 2026). Prima: visualizzazioni parte 1, impalcatura e `VIS.disequazioni-grafico`. Prima: involucro parte 4, figure e grafici. Prima: involucro parte 3, caricamento dei contenuti per modulo. Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: parser del Volume 1 ed errore `ALG.RADICE_DEL_QUADRATO` (22 novembre 2026). Prima: visualizzazioni parte 2, le altre quattro del Volume 1. Prima: visualizzazioni parte 1, impalcatura e `VIS.disequazioni-grafico`. Prima: involucro parte 4, figure e grafici. Prima: involucro parte 3, caricamento dei contenuti per modulo. Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -13,7 +13,7 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
 - **Tre generatori di Analisi** (sessione E1), tutti con risposta di tipo limite (numero, `+∞`, `−∞`, «non esiste»), tre livelli, verifica automatica senza problemi né avvisi, 750 esercizi ciascuno ricalcolati con sympy **dal testo mostrato**: `V2.M03.A01.g1` limiti di successioni (è il generatore di riferimento per le risposte di tipo limite), `V2.M04.A01.g1` limiti notevoli e forme indeterminate, `V2.M08.A01.g1` sviluppi di Taylor nei limiti (controllato anche con de l'Hôpital dal testo, nel suo test). Strumenti comuni nuovi in `src/generatori/comuni/`: `limits.ts` (scrittura del limite, `distinctWrongLimits`, prova numerica `confirmsLimit`) e `terms.ts` (polinomi scritti termine per termine).
 - **Lezione di riferimento** `V1.M06.L04` «Disequazioni fratte».
 - **Fetta verticale nell'app**: lezione a tratti con domande lampo, schermata di esercizio completa, tastiera matematica (Base, Insiemi, Funzioni), dati in IndexedDB con versione (`DATA_VERSION = 1`) e ripieghi, esercizi per generatore e livello.
-- **Catalogo errori**: 96 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali, `DISEQ.ZERO_DOPPIO` su decisione di Andrea il 20 novembre 2026), allineato alla tabella della specifica e verificato con sympy.
+- **Catalogo errori**: 97 voci in 12 categorie (5 aggiunte nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali, `DISEQ.ZERO_DOPPIO` e `ALG.RADICE_DEL_QUADRATO` su decisione di Andrea il 20 novembre 2026), allineato alla tabella della specifica (anche la copia nel Progetto di Claude, aggiornata il 22 novembre) e verificato con sympy.
 - **Regole** (sessione 4c): `REGOLE.md` completo per generatori, lezioni, dimostrazioni, visualizzazioni, catalogo, con le trappole emerse dalle revisioni.
 - **Dimostrazioni di riserva** (sessione 4d), in `src/riserva/`, nel formato delle dimostrazioni interattive, con enunciato completo, versioni sbagliate e motivi: teorema degli zeri e di Weierstrass (V2.M05), di Fermat, Rolle e Lagrange (V2.M06). Pronte da incollare nelle lezioni; come usarle: `src/riserva/LEGGIMI.md`.
 - **Sei generatori di Analisi** (sessione E2), tre livelli, verifica automatica senza problemi né avvisi, ricalcolati con sympy o mpmath **dal testo mostrato**:
@@ -57,7 +57,12 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - `VIS.coniche-parametri`: circonferenza, parabola, ellisse, iperbole con i coefficienti sui cursori, vertici di ellisse e iperbole da trascinare; fuochi, assi, direttrice, asintoti; elementi esatti (radici semplificate) e casi particolari. Parametri `coniche`, `conica`, `coefficienti`.
   - Comuni nuovi: `src/visualizzazioni/parametri.ts` (lettura dei parametri, numeri a passi esatti, finestra con unità uguali, piano vuoto).
   - **Non inserite in lezioni** (lo faranno le lezioni). Prova in Chrome con la lezione finta `test/app/anteprima/visualizzazioni-prova.md` (`test/app/visualizzazioni-prova-chrome.test.ts`): due temi, 414 e 320 px, senza rete, col dito; fotografie guardate. Controlli a tappeto: trasformata = $a f(b(x-c)) + d$ per ogni posizione dei cursori; logaritmo simmetrico dell'esponenziale per ogni base; seno, coseno, tangente e segni per ogni grado; per ogni coefficiente delle coniche i punti disegnati soddisfano l'equazione e la definizione con i fuochi calcolati.
-- **Test**: 1.375, verdi in locale e su GitHub.
+- **Parser del Volume 1** (⚙ fase 5, punto 5):
+  - Il parser legge **numeri periodici** (`0,1(6)`, `3,(3)`, con la lineetta `0,16̅`): valgono la frazione generatrice, si mostrano `0{,}1\overline{6}` e non sono decimali (niente FORMA.DECIMALE); **notazione scientifica** `3,2E5` (come `3,2·10^5`); **gradi** `30°`, `30°15′20″` (valgono in radianti: `30° = π/6`, `sin 30° = 1/2`); **fattoriale** `5!`, `n!`, `(n+1)!` (esatto sui naturali, Γ nel confronto numerico). Ogni scrittura si vede anche a metà nell'anteprima (`0,1(`, `3,2E-`, `30°15`).
+  - Costruttori `repeatingDecimal`, `factorial`, `degrees`; vincoli di forma nuovi `scientificNotation`, `degrees`, `radians`; `reducedFraction` rifiuta un periodico (frazione generatrice).
+  - Tastiera: Base con `n!`, `·10ⁿ`, «periodo», `n`, `k` (una riga in più); Funzioni con `°`, `′`, `″`, α, β, θ (una riga in più). Gradi aprono Funzioni, il fattoriale Base.
+  - Voce di catalogo `ALG.RADICE_DEL_QUADRATO` «√(x²) = x anche per x negativo» (rimando V1.M03), in `docs/SPECIFICA.md` e nel controllo sympy.
+- **Test**: 1.431, verdi in locale e su GitHub.
 
 ## In corso
 
@@ -86,7 +91,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 2. ~~Figure e grafici nelle lezioni~~: fatto (involucro parte 4). Sintassi in `REGOLE.md`, «Grafici e figure».
 3. ~~Impalcatura delle visualizzazioni con `VIS.disequazioni-grafico`~~: fatta (visualizzazioni parte 1). Le altre si copiano da questa (`REGOLE.md`).
 4. ~~Le altre quattro visualizzazioni del Volume 1~~: fatte (visualizzazioni parte 2). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08), con i parametri delle schede; quando una entra in una lezione vera, il suo blocco si toglie dalla lezione finta e il caso Chrome passa alla prova con la lezione vera.
-5. ⚙ **Parser e catalogo**: numeri periodici (V1.M02.L05), notazione scientifica (V1.M03.L07), gradi (V1.M10.L01), fattoriale (V1.M13.L01); voce di catalogo «√(x²) = x anche per x negativo» («Decisioni di Andrea», punto 1; le forme nuove di `V2.M04.A01.g1` restano alla fase 6).
+5. ~~Parser e catalogo~~: fatto (parser del Volume 1). Le forme `√(x² + ax) + x` con `x → −∞` e con il valore assoluto in `V2.M04.A01.g1` restano alla fase 6 (cambiano semi congelati: annotarlo); i generatori del Volume 1 su radicali e valore assoluto possono già usare `ALG.RADICE_DEL_QUADRATO`.
 6. ⚙ **Risposta `ordering`** nella schermata di esercizio (punto 7 della fase 4): serve a V1.M11.A08 e alle dimostrazioni.
 
 *Poi le lezioni e i generatori, in modo lineare*, con queste regole:
@@ -104,7 +109,7 @@ In parallelo, senza bloccare niente: la prova sull'iPhone della versione su Page
 
 1. ⚙ **Prima**: `log` senza base rifiutato negli esercizi del Volume 2 (decisione 5, presa da Andrea).
 2. **Lezioni dei generatori già esistenti**: `V2.M06.L03` (regole di derivazione), `V3.M02.L01` (Gauss), `V3.M03.L01` (determinante).
-3. ⚙ **Motore**: nodi per successioni e somme (prima delle lezioni di V2.M03 e di V2.M11; i generatori di limiti della sessione E1 non ne hanno avuto bisogno), fattoriale e radice n-esima, grafici statici nelle **soluzioni** degli esercizi (nelle lezioni ci sono già), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
+3. ⚙ **Motore**: nodi per successioni e somme (prima delle lezioni di V2.M03 e di V2.M11; i generatori di limiti della sessione E1 non ne hanno avuto bisogno), radice n-esima di `n` (il fattoriale c'è), grafici statici nelle **soluzioni** degli esercizi (nelle lezioni ci sono già), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
 4. **Scaletta, generatori, lezioni con dimostrazioni** (confrontate con un libro di testo; per V2.M05 e V2.M06 cinque sono già in `src/riserva/`: incollarle, cancellare il file di riserva, collegare con `[[…]]` i risultati usati), modulo per modulo, alternando i due binari; le sei visualizzazioni nei loro moduli (V2.M04, M06, M08, M09; V3.M05, M06).
    - Fase finita quando: come il Volume 1, più dimostrazioni interattive per i teoremi principali.
 
@@ -152,7 +157,7 @@ Motore (fatto così di proposito; dettagli in `docs/REVISIONE.md` e in `REGOLE.m
 - Irriducibilità garantita fino al grado 5; angoli notevoli solo multipli di π/12; autovalori e `realZeros` solo con fattori di primo e secondo grado.
 - Insiemi: unione tra soluzioni periodiche e punti o intervalli non rappresentabile (il messaggio parla di «intervallo» anche per un punto); `x = 1 e 2` vale ∅.
 - `FORMA.DECIMALE` per valori approssimati solo nelle risposte costanti.
-- Parser: niente fattoriale, gradi, numeri periodici, notazione `1E5`; il parser degli insiemi non completa i testi a metà (l'app prova le chiusure di `SET_ENDINGS`).
+- Parser: il parser degli insiemi non completa i testi a metà (l'app prova le chiusure di `SET_ENDINGS`). Fattoriale, gradi, periodici e notazione scientifica si leggono, con i limiti scritti in `REGOLE.md` («Trappole del motore»): solo `E` maiuscola, `5!=120` è «diverso», il fattoriale non si deriva, nessun vincolo «scrivi come periodico».
 - Risposte `matrix`: caselle senza numeri complessi.
 - Passaggi della scomposizione di un quadrato di binomio: `(x + 1)(x + 1)` prima di `(x + 1)²` (`src/motore/steps/factor.ts`).
 
@@ -163,8 +168,8 @@ Grafici e figure (involucro parte 4):
 
 Generatori e lezione:
 
-- I limiti di successioni sono scritti come espressioni nella lettera `n`: per questi esercizi i nodi «successione» del motore (fase 6, punto 3) non servono; mancano ancora fattoriale e radice n-esima, quindi niente `n!` né `ⁿ√n` (criterio del rapporto, formula di Stirling).
-- Nei limiti di funzioni non ci sono forme con il valore assoluto o con `√(x²) = |x|` per `x → −∞`: nel catalogo manca un errore tipico adatto (Andrea ha deciso di aggiungerlo: «Decisioni di Andrea», punto 1).
+- I limiti di successioni sono scritti come espressioni nella lettera `n`: per questi esercizi i nodi «successione» del motore (fase 6, punto 3) non servono; il fattoriale ora c'è (`n!` confrontato con Γ nei reali), manca `ⁿ√n`.
+- Nei limiti di funzioni non ci sono forme con il valore assoluto o con `√(x²) = |x|` per `x → −∞`: l'errore tipico adatto ora c'è (`ALG.RADICE_DEL_QUADRATO`), le forme si aggiungono a `V2.M04.A01.g1` nella fase 6.
 - La prova numerica delle verifiche (`confirmsLimit`) lavora in virgola mobile, con tolleranza del 2 per mille: basta a distinguere la risposta giusta da quelle sbagliate, ma non è una dimostrazione. La garanzia vera è il ricalcolo con sympy dal testo, fatto a mano (script fuori dal repository, come per gli altri generatori).
 
 - Al livello 1 scomposizione, Gauss e qualche derivata hanno due sole risposte sbagliate: niente scelta multipla per quegli esercizi.
@@ -185,7 +190,7 @@ App:
 - Non provata su un iPhone vero.
 - Su telefono la riga finale dei passaggi delle disequazioni fratte va fatta scorrere di lato; le opzioni di scelta multipla di un insieme mostrano solo gli intervalli.
 - `ordering` non è mostrato dalla schermata di esercizio. Nella lezione le dimostrazioni restano statiche; le modalità interattive sono nella scheda Dimostrazioni.
-- Tastiera a 320 px: nel livello Funzioni (7 colonne) i tasti sono larghi circa 37 px, sotto i 44 consigliati; su iPhone XR (414 px) sono 50 px.
+- Tastiera a 320 px: nel livello Funzioni (7 colonne) i tasti sono larghi circa 37 px, sotto i 44 consigliati; su iPhone XR (414 px) sono 50 px. Base e Funzioni hanno una riga in più (parser del Volume 1): Funzioni è alta circa 350 px, da guardare sull'iPhone.
 - Il valore assoluto non è a modello (il tasto scrive una barra sola): `||` vuoto il parser lo legge come due valori assoluti annidati.
 - Esportazione del backup su iPhone dall'app installata non provata: c'è anche «Condividi il backup» (foglio di condivisione) dove il browser lo permette.
 
@@ -203,7 +208,7 @@ Altro:
 
 Prese in chat sulle domande aperte; da eseguire nelle sessioni indicate, non ancora fatte.
 
-1. **Errore tipico nuovo «√(x²) = x anche per x negativo»: sì.** Voce nuova nel catalogo e nella tabella della specifica (sezione 5); poi le forme `√(x² + ax) + x` con `x → −∞` e con il valore assoluto in `V2.M04.A01.g1` (cambiano alcuni semi congelati: annotarlo). Utile anche nel Volume 1 (radicali, valore assoluto).
+1. **Errore tipico nuovo «√(x²) = x anche per x negativo»: sì. Fatto** (22 novembre): `ALG.RADICE_DEL_QUADRATO` nel catalogo, in `docs/SPECIFICA.md`, nella copia del Progetto e nello script sympy. Restano le forme `√(x² + ax) + x` con `x → −∞` e con il valore assoluto in `V2.M04.A01.g1` (cambiano alcuni semi congelati: annotarlo). Utile anche nel Volume 1 (radicali, valore assoluto).
 2. **Errore tipico nuovo «zero doppio trattato come zero semplice»: sì. Fatto**: `DISEQ.ZERO_DOPPIO` nel catalogo, in `docs/SPECIFICA.md` e nello script sympy. Anche la copia della specifica nel Progetto di Claude è aggiornata (sostituita con `docs/SPECIFICA.md`, con l'autorizzazione di Andrea, 20 novembre 2026). Resta da usarlo nei generatori di V1.M06 (segno di un prodotto; `V1.M06.A04.g1` lo può aggiungere solo decidendo il cambio dei semi congelati).
 3. **Intervalli: tonde, `(1; 3)`** (com'è oggi). Le lezioni scrivono gli intervalli così; in lettura resta valido anche `]1; 3[`.
 4. **IndexedDB nella versione PC**: la prova in Safari e Firefox resta alla fase 9.
@@ -264,6 +269,16 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 109. Parametri in più rispetto alla specifica: `cursori` (trasformazioni), `logaritmo` (esponenziale: V1.M09.L01 viene prima dei logaritmi), `tangente` (circonferenza: la tangente è in V1.M10.L03), `coniche` (quali coniche mostrare).
 110. Colori: curva trasformata e conica blu, fuochi e tangente arancioni, coseno blu e seno verde (sempre anche con il nome scritto), logaritmo arancione tratteggiato, $y = x$ verde a puntini.
 111. Sopra il disegno solo comandi che non cambiano altezza (le formule stanno sotto): regola aggiunta a `REGOLE.md`.
+
+*Parser del Volume 1 (P1)*
+
+112. Periodo tra parentesi **attaccate** ai decimali e fatte di sole cifre: `0,5(3)` ora è il periodico 0,5333…, non 0,5·3 (`0,5 (3)` con lo spazio e `0,5(x+1)` restano prodotti); `2(3)` resta 2·3. Lineetta accettata (U+0305, U+0304) sulle ultime cifre; il periodo 9 è ammesso (`0,(9)` vale 1, mostrato com'è scritto).
+113. Un periodico non è un decimale: mai FORMA.DECIMALE, ed è giusto dove serve il valore (`0,1(6)` per 1/6). Dove serve la frazione generatrice il generatore dichiara `reducedFraction`, che rifiuta i periodici (FORMA.NON_RICHIESTA). Nessun vincolo «scrivi come periodico».
+114. Notazione scientifica: solo `E` maiuscola subito dopo il numero (`2e5` resta 2·e·5); `3,2E5` diventa gli stessi nodi di `3,2·10^5`. `3,2·10^5` contro la risposta intera 320000 è FORMA.DECIMALE come ogni decimale: gli esercizi di notazione scientifica scrivono la risposta giusta con il decimale e dichiarano `scientificNotation`.
+115. Gradi come funzioni del motore (`deg`, `arcmin`, `arcsec`) che valgono in radianti: `30°` è equivalente a `π/6` e non a `30`; negli esercizi di conversione si dichiara `degrees` o `radians`. Un numero in fondo al testo dopo i gradi o i primi è l'unità successiva da scrivere (`30°15` incompleto). `º` vale come `°`, `'` e `’` come `′`, `''` e `"` come `″`. `degrees` vuole primi e secondi minori di 60 e ognuno una volta sola, in ordine.
+116. Fattoriale come funzione `factorial`: lega più del prodotto (`2n! = 2·(n!)`); esatto per i naturali fino a 300, poi atomo; nei reali vale Γ(x + 1), solo per il confronto numerico (così `n!/(n−1)! = n`); non si deriva (`EngineError`). `!=` resta «diverso» (`5!=120` è 5 ≠ 120).
+117. Tastiera: una riga in più in Base (`n!`, `·10ⁿ` a modello, «periodo» largo due che scrive `(‸)`, `n`, `k`) e in Funzioni (`°` largo due, `′`, `″`, α, β, θ). Gradi aprono Funzioni (dove c'è π), il fattoriale Base.
+118. `ALG.RADICE_DEL_QUADRATO`: categoria ALG (come `ALG.RADICE_SOMMA`), rimando V1.M03 (radicali), finché le lezioni non esistono.
 
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 

@@ -391,6 +391,7 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | CALC.SEGNO\_TRASPORTO | Segno non cambiato nel trasporto | Un termine che cambia membro cambia segno: x+5 = 2 dà x = −3 | V1.M05 |
 | ALG.QUADRATO\_BINOMIO | (a+b)² = a²+b² | Manca il doppio prodotto 2ab | V1.M04 |
 | ALG.RADICE\_SOMMA | √(a+b) = √a+√b | La radice non si distribuisce sulla somma | V1.M03 |
+| ALG.RADICE\_DEL\_QUADRATO | √(x²) = x anche per x negativo | √(x²) = \|x\|: con x = −3 vale 3, non −3 | V1.M03 |
 | ALG.SEMPLIFICAZIONE\_ADDENDI | Semplificati degli addendi | Si semplificano solo fattori: (x+2)/2 ≠ x+1 | V1.M04 |
 | ALG.SOMMA\_QUADRATI | a²+b² scomposto | a²+b² non si scompone nei reali | V1.M04 |
 | ALG.RUFFINI\_SEGNO | Ruffini con la radice di segno sbagliato | Dividendo per x−a si usa a, per x+a si usa −a | V1.M04 |

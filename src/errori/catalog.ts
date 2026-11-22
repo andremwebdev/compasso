@@ -113,6 +113,15 @@ export const errorCatalog = [
     reference: "V1.M03",
   },
   {
+    // Aggiunto su decisione di Andrea (20 novembre 2026): ALG.RADICE_SOMMA parla d'altro.
+    code: "ALG.RADICE_DEL_QUADRATO",
+    name: "√(x²) = x anche per x negativo",
+    category: "ALG",
+    explanation: tex`La radice quadrata non è mai negativa: $\sqrt{x^2} = |x|$, che vale $x$ per $x\ge0$ e $-x$ per $x<0$. Lo stesso quando si porta fuori un quadrato: $\sqrt{a^2b} = |a|\sqrt b$. Nei limiti per $x\to-\infty$ si ha $x<0$, quindi $\sqrt{x^2} = -x$.`,
+    example: tex`Con $x=-3$: $\sqrt{(-3)^2} = \sqrt9 = 3$, non $-3$. Allo stesso modo $\sqrt{x^2-6x+9} = |x-3|$, non $x-3$: con $x=0$ vale $\sqrt9 = 3$, mentre $x-3 = -3$.`,
+    reference: "V1.M03",
+  },
+  {
     code: "ALG.SEMPLIFICAZIONE_ADDENDI",
     name: "Semplificati degli addendi",
     category: "ALG",

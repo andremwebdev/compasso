@@ -158,6 +158,22 @@ def _():
     assert ne(sqrt(a + b), sqrt(a) + sqrt(b))
 
 
+@check("ALG.RADICE_DEL_QUADRATO")
+def _():
+    t = symbols("t", real=True)
+    n = symbols("n", negative=True)
+    assert sqrt((-3) ** 2) == 3 and sqrt(9) == 3 and sqrt((-3) ** 2) != -3
+    assert eq(sqrt(t**2), Abs(t))
+    assert eq(sqrt(n**2), -n)  # per x < 0, √(x²) = −x
+    assert ne(sqrt(t**2), t)
+    assert expand((t - 3) ** 2) == t**2 - 6 * t + 9 and eq(sqrt((t - 3) ** 2), Abs(t - 3))
+    assert sqrt(0**2 - 6 * 0 + 9) == 3 and (0 - 3) == -3
+    b = symbols("b", nonnegative=True)
+    assert eq(sqrt(t**2 * b), Abs(t) * sqrt(b))
+    # Nei limiti per x → −∞: √(x²) = −x, quindi √(x² + x) + x → −1/2.
+    assert limit(sqrt(t**2 + t) + t, t, -oo) == Rational(-1, 2)
+
+
 @check("ALG.SEMPLIFICAZIONE_ADDENDI")
 def _():
     assert ((x + 2) / 2).subs(x, 4) == 3 and (x + 1).subs(x, 4) == 5
