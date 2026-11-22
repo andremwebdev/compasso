@@ -76,7 +76,7 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - numero: `A03` conteggi con i diagrammi di Venn (zone scelte prima).
   - Comuni nuovi in `src/generatori/comuni/`: `natural-sets.ts` (insiemi di naturali con proprietà), `propositions.ts` (proposizioni, tavole di verità), `conditions.ts` (condizioni su n o x con «forte ⇒ debole»).
   - Le otto lezioni dichiarano le loro abilità e hanno le domande lampo dei livelli 1 e 2; casi del livello 3 aggiunti dove mancavano (vedi decisioni 129-137).
-- **Test**: 1.488, verdi in locale.
+- **Test**: 1.488, verdi in locale e su GitHub. Il test che disegna passaggi e indizi di tutti i generatori (`test/app/moduli.test.ts`) ha ora un tempo massimo di 30 secondi: con i generatori di V1.M01 superava i 5 su GitHub.
 
 ## In corso
 
