@@ -12,6 +12,7 @@ import l03VennLingue from "../../contenuti/v1/m01/l03-venn-lingue.svg";
 import l03VennSport from "../../contenuti/v1/m01/l03-venn-sport.svg";
 import l04 from "../../contenuti/v1/m01/l04.md";
 import l05 from "../../contenuti/v1/m01/l05.md";
+import l06 from "../../contenuti/v1/m01/l06.md";
 
 export default defineModule("V1.M01", {
   lessons: {
@@ -20,6 +21,7 @@ export default defineModule("V1.M01", {
     "V1.M01.L03": l03,
     "V1.M01.L04": l04,
     "V1.M01.L05": l05,
+    "V1.M01.L06": l06,
   },
   figures: {
     "v1/m01/l01-venn-sottoinsieme.svg": l01VennSottoinsieme,
