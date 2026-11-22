@@ -24,3 +24,8 @@ Trascina il punto $P$ sulla circonferenza: guarda come cambiano i segmenti del s
 
 :::visualizzazione{id=VIS.circonferenza-goniometrica angolo=30}
 :::
+
+Scegli una conica e muovi i coefficienti: guarda dove vanno i fuochi.
+
+:::visualizzazione{id=VIS.coniche-parametri conica=iperbole coefficienti="2; 1; 1"}
+:::

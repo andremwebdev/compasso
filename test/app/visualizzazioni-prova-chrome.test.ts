@@ -62,6 +62,7 @@ const VIS = {
   transforms: ".vis:has(.vis-trasformazioni)",
   expLog: ".vis:has(.vis-esplog)",
   circle: ".vis:has(.vis-circonferenza)",
+  conics: ".vis:has(.vis-coniche)",
 } as const;
 
 describe("visualizzazioni in Chrome (lezione di prova)", () => {
@@ -185,6 +186,25 @@ describe("visualizzazioni in Chrome (lezione di prova)", () => {
         await dragHandle(page, vis, ".vis-maniglia-angolo .vis-maniglia-segno", (Math.cos(to) - Math.cos(from)) * unit, -(Math.sin(to) - Math.sin(from)) * unit);
         expect(await latex(page, vis, ".vis-cursore-valore")).toBe(String.raw`\alpha = 120^\circ = \frac{2\pi}{3}`);
         expect(await page.evaluate<string>(`document.querySelector("${vis} .vis-quadrante-testo").textContent`)).toContain("II quadrante");
+      }
+
+      // ── VIS.coniche-parametri: parte dall'iperbole; poi l'ellisse, col vertice trascinato da a = 4 ad a = 5.
+      {
+        const vis = VIS.conics;
+        expect(await latex(page, vis, ".vis-formula")).toBe(String.raw`\frac{x^{2}}{4} - \frac{y^{2}}{1} = 1`);
+        const colors = await page.evaluate<{ conic: string; blue: string; focus: string; orange: string }>(`({
+          conic: getComputedStyle(document.querySelector("${vis} .vis-conica")).stroke, blue: ${themeColor("--blu")},
+          focus: getComputedStyle(document.querySelector("${vis} .vis-fuoco")).fill, orange: ${themeColor("--arancio")},
+        })`);
+        expect(colors.conic).toBe(colors.blue);
+        expect(colors.focus).toBe(colors.orange);
+        await page.evaluate(`document.querySelectorAll("${vis} .vis-coniche > .vis-scelta .vis-pulsante")[2].click()`);
+        await pause(50);
+        expect(await latex(page, vis, ".vis-formula")).toBe(String.raw`\frac{x^{2}}{16} + \frac{y^{2}}{4} = 1`);
+        const unit = ((await box(page, vis, ".vis-piano .grafico-disegno svg")).width / 320) * (308 / 14);
+        await dragHandle(page, vis, ".vis-maniglia-a .vis-maniglia-segno", unit, 0);
+        expect(await latex(page, vis, ".vis-formula")).toBe(String.raw`\frac{x^{2}}{25} + \frac{y^{2}}{4} = 1`);
+        expect(await page.evaluate<string>(`document.querySelector("${vis} .vis-passi").textContent`)).toContain("Fuochi");
       }
 
       expect(await page.evaluate<number>("document.documentElement.scrollWidth")).toBeLessThanOrEqual(width);

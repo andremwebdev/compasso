@@ -10,6 +10,8 @@ import { InequalityGraph } from "./disequazioni-grafico";
 import { checkInequalityParams } from "./disequazioni-grafico-math";
 import { UnitCircle } from "./circonferenza-goniometrica";
 import { checkCircleParams } from "./circonferenza-goniometrica-math";
+import { Conics } from "./coniche-parametri";
+import { checkConicParams } from "./coniche-parametri-math";
 import { ExpLog } from "./esponenziale-logaritmo";
 import { checkExpLogParams } from "./esponenziale-logaritmo-math";
 import { FunctionTransforms } from "./trasformazioni-funzioni";
@@ -29,6 +31,7 @@ export const VISUALIZATIONS: readonly VisualizationDefinition[] = [
   { code: "VIS.trasformazioni-funzioni", component: FunctionTransforms, checkParams: checkTransformParams },
   { code: "VIS.esponenziale-logaritmo", component: ExpLog, checkParams: checkExpLogParams },
   { code: "VIS.circonferenza-goniometrica", component: UnitCircle, checkParams: checkCircleParams },
+  { code: "VIS.coniche-parametri", component: Conics, checkParams: checkConicParams },
 ];
 
 /** I codici delle visualizzazioni esistenti (per la verifica dei contenuti). */

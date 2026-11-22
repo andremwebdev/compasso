@@ -903,6 +903,8 @@ p {
 
 .vis-passi li {
   margin-top: var(--s-1);
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .vis-passi-titolo {
@@ -1090,6 +1092,48 @@ p {
 
 .vis-valori .vis-riga {
   min-height: 2.2em;
+}
+
+/* VIS.coniche-parametri: conica blu, fuochi arancioni; assi, direttrice e asintoti tratteggiati in modo diverso. */
+.vis-conica {
+  fill: none;
+  stroke: var(--blu);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+
+.vis-fuoco {
+  fill: var(--arancio);
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+}
+
+.vis-linea-asse {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.2;
+  stroke-dasharray: 2 4;
+}
+
+.vis-linea-direttrice {
+  fill: none;
+  stroke: var(--arancio);
+  stroke-width: 1.6;
+  stroke-dasharray: 8 4;
+}
+
+.vis-linea-asintoto {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.4;
+  stroke-dasharray: 6 4;
+}
+
+.vis-rettangolo {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
 }
 
 /* Figure scritte a mano: senza classe una forma è un contorno d'inchiostro senza riempimento. */

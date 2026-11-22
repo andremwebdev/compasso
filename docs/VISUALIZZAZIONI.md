@@ -149,3 +149,38 @@ La finestra non è un parametro: è fissa, con le unità uguali sui due assi.
 
 - `V1.M10.L02` «Circonferenza goniometrica, seno e coseno» (quando sarà scritta), con `tangente=no`.
 - Candidata: `V1.M10.L03` «Tangente», con la tangente.
+
+## VIS.coniche-parametri
+
+**Che cosa deve far capire** (specifica 11): come cambiano **forma, assi e fuochi** di circonferenza, parabola, ellisse e iperbole quando cambiano i coefficienti della loro equazione.
+
+**Che cosa si manipola**
+
+- **La conica**: se la lezione ne lascia più di una, si sceglie con i pulsanti sopra il disegno.
+- **I coefficienti**, ognuno con il suo cursore, sempre numeri esatti:
+  - circonferenza $x^2 + y^2 + ax + by + c = 0$: $a$, $b$ interi tra $-6$ e $6$, $c$ intero tra $-12$ e $12$;
+  - parabola $y = ax^2 + bx + c$: $a$ multiplo di $\tfrac12$ tra $-3$ e $3$, mai $0$; $b$, $c$ interi tra $-6$ e $6$;
+  - ellisse $\dfrac{x^2}{a^2} + \dfrac{y^2}{b^2} = 1$: $a$, $b$ multipli di $\tfrac12$ tra $\tfrac12$ e $6$;
+  - iperbole $\dfrac{x^2}{a^2} - \dfrac{y^2}{b^2} = \pm 1$: $a$, $b$ come l'ellisse, più due pulsanti per il secondo membro ($1$: fuochi sull'asse $x$; $-1$: fuochi sull'asse $y$).
+- **I vertici** dell'ellisse e dell'iperbole sugli assi: si trascinano col dito e cambiano $a$ e $b$.
+
+**Che cosa si vede**
+
+- La conica (blu, spessa) nel piano dei grafici statici, con le **unità uguali** sui due assi (una circonferenza è rotonda).
+- I fuochi (arancioni, con il nome), il centro o il vertice, gli assi di simmetria tratteggiati, la direttrice della parabola, gli asintoti dell'iperbole.
+- Sotto il disegno: l'equazione con i numeri, e gli elementi **esatti** dal motore: centro e raggio; vertice, fuoco, direttrice, asse e concavità; vertici, fuochi ($c = \sqrt{a^2 - b^2}$ o $\sqrt{a^2 + b^2}$, con la radice semplificata) ed eccentricità; asintoti. I casi particolari sono detti a parole: circonferenza con $r^2 < 0$ (nessun punto) o $r^2 = 0$ (un punto), ellisse con $a = b$ (è una circonferenza), iperbole equilatera.
+
+**Parametri della lezione** (nel blocco `:::visualizzazione{id=VIS.coniche-parametri …}`)
+
+| Nome | Significato | Predefinito | Valori ammessi |
+| --- | --- | --- | --- |
+| `coniche` | le coniche tra cui scegliere, separate da `;` | `circonferenza; parabola; ellisse; iperbole` | da una a quattro tra `circonferenza`, `parabola`, `ellisse`, `iperbole`, senza ripetizioni |
+| `conica` | la conica iniziale | la prima di `coniche` | una di quelle in `coniche` |
+| `coefficienti` | i coefficienti iniziali della conica iniziale, separati da `;` | circonferenza `-2; 2; -7`, parabola `1/2; -1; -2`, ellisse `4; 2`, iperbole `2; 1; 1` | tre numeri per circonferenza e parabola ($a$; $b$; $c$), due per l'ellisse ($a$; $b$), tre per l'iperbole ($a$; $b$; `1` oppure `-1`), negli intervalli dei cursori |
+
+Le altre coniche partono dai loro valori predefiniti. La finestra non è un parametro: è fissa (x tra $-7$ e $7$), con le unità uguali.
+
+**Lezioni che la usano**
+
+- `V1.M12.L06` «La parabola» (quando sarà scritta), con `coniche=parabola`.
+- `V1.M12.L08` «L'iperbole», con tutte e quattro e `conica=iperbole`.
