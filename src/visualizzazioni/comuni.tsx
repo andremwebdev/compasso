@@ -69,6 +69,14 @@ export function Slider({ label, min, max, step, value, valueText, onInput }: Sli
   );
 }
 
+/** Un fotogramma: requestAnimationFrame dove c'è (sempre nei browser), altrimenti un attimo dopo. */
+const nextFrame = (callback: () => void): number =>
+  typeof requestAnimationFrame === "function" ? requestAnimationFrame(callback) : (setTimeout(callback, 16) as unknown as number);
+const cancelFrame = (handle: number): void => {
+  if (typeof cancelAnimationFrame === "function") cancelAnimationFrame(handle);
+  else clearTimeout(handle);
+};
+
 /** Un punto nelle coordinate del disegno (viewBox GRAPH_WIDTH × GRAPH_HEIGHT). */
 export interface DrawingPoint {
   readonly x: number;
@@ -94,14 +102,14 @@ export function useDragHandle(onDrag: (point: DrawingPoint) => void) {
   const pending = useRef<DrawingPoint | null>(null);
   const frame = useRef(0);
   const active = useRef<number | null>(null);
-  useEffect(() => () => cancelAnimationFrame(frame.current), []);
+  useEffect(() => () => cancelFrame(frame.current), []);
 
   const schedule = (event: PointerEvent): void => {
     const svg = (event.currentTarget as SVGElement).ownerSVGElement;
     if (!svg) return;
     pending.current = toDrawing(event.clientX, event.clientY, svg.getBoundingClientRect());
     if (frame.current) return;
-    frame.current = requestAnimationFrame(() => {
+    frame.current = nextFrame(() => {
       frame.current = 0;
       if (pending.current) latest.current(pending.current);
     });
