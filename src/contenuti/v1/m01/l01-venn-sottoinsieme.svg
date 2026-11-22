@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <title>Diagramma di Eulero-Venn: B = {2, 4, 6} contenuto in A = {1, 2, 3, 4, 5, 6}</title>
+  <!-- A è l'ellisse grande, B quella piccola tutta dentro A. -->
+  <ellipse class="fig-area-1 fig-linea" cx="160" cy="100" rx="145" ry="88"/>
+  <ellipse class="fig-area-2 fig-linea" cx="205" cy="105" rx="70" ry="50"/>
+  <text class="fig-testo-corsivo" x="40" y="72">A</text>
+  <text class="fig-testo-corsivo" x="255" y="72">B</text>
+  <circle class="fig-pieno" cx="70" cy="95" r="3"/>
+  <text class="fig-testo" x="78" y="100">1</text>
+  <circle class="fig-pieno" cx="95" cy="140" r="3"/>
+  <text class="fig-testo" x="103" y="145">3</text>
+  <circle class="fig-pieno" cx="110" cy="55" r="3"/>
+  <text class="fig-testo" x="118" y="60">5</text>
+  <circle class="fig-pieno" cx="175" cy="95" r="3"/>
+  <text class="fig-testo" x="183" y="100">2</text>
+  <circle class="fig-pieno" cx="215" cy="125" r="3"/>
+  <text class="fig-testo" x="223" y="130">4</text>
+  <circle class="fig-pieno" cx="235" cy="90" r="3"/>
+  <text class="fig-testo" x="243" y="95">6</text>
+</svg>

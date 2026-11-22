@@ -3,8 +3,15 @@
 // riga nell'elenco (REGOLE.md, «Per aggiungere una lezione» e «Come replicare un generatore»).
 
 import { defineModule } from "../definizione";
+import l01 from "../../contenuti/v1/m01/l01.md";
+import l01VennSottoinsieme from "../../contenuti/v1/m01/l01-venn-sottoinsieme.svg";
 
 export default defineModule("V1.M01", {
-  lessons: {},
+  lessons: {
+    "V1.M01.L01": l01,
+  },
+  figures: {
+    "v1/m01/l01-venn-sottoinsieme.svg": l01VennSottoinsieme,
+  },
   generators: [],
 });

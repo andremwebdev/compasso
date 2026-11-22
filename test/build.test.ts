@@ -103,7 +103,8 @@ async function expectAppWorks(ui: Ui) {
   await ui.click(".choice-item", "20 min");
   await ui.click("main button", "Inizia la sessione");
   expect((await ui.text(".phase-current"))).toContain("Lezione nuova");
-  expect((await ui.text(".lesson-header h1"))).toBe("Disequazioni fratte");
+  // La lezione del giorno è la prima lezione scritta del binario Fondamenta.
+  expect((await ui.text(".lesson-header h1"))).toBe("Insiemi");
   // Si esce dalla lezione del giorno senza perdere nulla, e si riprende dallo stesso punto.
   await ui.click("main button", "Esci e riprendi dopo");
   expect((await ui.text("main"))).toContain("Sessione in pausa");
@@ -293,9 +294,9 @@ describe("versione telefono (PWA)", () => {
         );
         for (const code of moduleCodes) expect(saved).toContain(`moduli/${code.toLowerCase().replace(".", "/")}.js`);
 
-        // Lo stesso percorso della versione PC: usa solo il modulo V1.M06 (lezione e disequazioni fratte).
+        // Lo stesso percorso della versione PC: usa solo i moduli V1.M01 (lezione del giorno) e V1.M06 (lezione e disequazioni fratte).
         await expectAppWorks(ui);
-        expect(await loadedModuleFiles(page)).toEqual(["moduli/v1/m06.js"]);
+        expect(await loadedModuleFiles(page)).toEqual(["moduli/v1/m01.js", "moduli/v1/m06.js"]);
 
         // Senza rete: il server si spegne, la pagina si riapre dal service worker.
         server.closeAllConnections();
