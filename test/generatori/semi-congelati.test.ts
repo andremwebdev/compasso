@@ -171,6 +171,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A03.g1", 2, 2, "Qual è la scomposizione in fattori primi di $1344$?"],
   ["V1.M02.A03.g1", 3, 1, "Qual è la scomposizione in fattori primi di $1127$?"],
   ["V1.M02.A03.g1", 3, 2, "Qual è la scomposizione in fattori primi di $6669$?"],
+  ["V1.M02.A04.g1", 1, 1, "Calcola $\\mathrm{mcm}(8, 18)$. Rispondi con un numero naturale."],
+  ["V1.M02.A04.g1", 1, 2, "Calcola $\\mathrm{mcm}(24, 32)$. Rispondi con un numero naturale."],
+  ["V1.M02.A04.g1", 2, 1, "Due strisce di stoffa lunghe $48$ cm e $128$ cm vanno tagliate in pezzi tutti uguali, i più lunghi possibile, senza avanzi. Quanto è lungo ogni pezzo, in centimetri? Rispondi con un numero naturale."],
+  ["V1.M02.A04.g1", 2, 2, "Calcola $\\mathrm{MCD}(54, 66)$. Rispondi con un numero naturale."],
+  ["V1.M02.A04.g1", 3, 1, "Calcola $\\mathrm{MCD}(9, 21, 30)$. Rispondi con un numero naturale."],
+  ["V1.M02.A04.g1", 3, 2, "Calcola $\\mathrm{mcm}(18, 45, 81)$. Rispondi con un numero naturale."],
 ];
 
 describe("semi congelati", () => {
