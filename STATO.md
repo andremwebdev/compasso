@@ -39,7 +39,11 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - **Indice leggero** calcolato dalla compilazione (`__CONTENT_INDEX__`, circa 6 KB oggi): codici, titoli, livelli, errori, termini, flashcard. Navigazione, Oggi, Esercizi, diario e «Lo so già» lavorano su questo; lezione, serie di esercizi, mazzo di flashcard, glossario e dimostrazioni caricano prima i loro moduli («Caricamento…»).
   - **Telefono**: moduli ES; `moduli/vN/mNN.js` letto solo quando serve, codice comune in `chunks/`. All'avvio si leggono `app.js` più tre file comuni (circa 640 KB, prima 853 KB), nessun modulo. **PC**: file unico come prima.
   - **Prova in Chrome senza finestra** (schermo 414×896, tocco) dentro `test/build.test.ts`: lo stesso percorso della prova PC, all'avvio nessun file di modulo, poi solo `moduli/v1/m06.js`; poi a server spento si riapre dal service worker, la lezione si legge e un esercizio di V2.M06 (mai aperto) carica il suo modulo dalla copia salvata.
-- **Test**: 1.232 in 51 file, verdi in locale e su GitHub (anche la prova in Chrome).
+- **Involucro, parte 4** (figure e grafici nelle lezioni):
+  - **Motore**: `plotGraph` e `graphToSvg` (`src/motore/display/graph.ts`): da una a tre funzioni di $x$ e una finestra; curve interrotte dove la funzione non è definita (anche ai poli non noti, come la tangente); tacche tonde con numeri all'italiana; punti notevoli **esatti** (zeri e asintoti verticali delle funzioni razionali, buchi con l'ordinata esatta, intersezione con l'asse $y$, punti chiesti, angoli notevoli); SVG con sole classi `graf-…`.
+  - **Lezioni**: blocchi `grafico` (`funzioni`, `finestra`, `punti`, letti con `parseExpression`) e `figura` (file `lNN-nome.svg` accanto alla lezione, elencato in `figures` del modulo, didascalia obbligatoria). La verifica dei contenuti controlla parametri, nome e contenuto del file (niente script, colori scritti, riferimenti esterni; solo le classi `fig-…`); un blocco sbagliato resta nella lezione e il riquadro mostra il messaggio. Sintassi ed esempi in `REGOLE.md`.
+  - **Prova**: lezione di prova `test/contenuti/prova/v1/m01/l99.md` (non entra nell'app) in Chrome senza rete, nei due temi, a 414 e 320 px (`test/app/grafici-chrome.test.ts`): disegni presenti, dentro lo schermo, colori dal tema.
+- **Test**: 1.280 in 54 file, verdi in locale.
 
 ## In corso
 
@@ -65,7 +69,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 *Prima di cominciare* (sessioni tecniche ⚙, in quest'ordine; nessuna dipende dai contenuti):
 
 1. ~~Caricamento dei contenuti per modulo~~: fatto (involucro parte 3). Lezioni e generatori nuovi si aggiungono nel file del loro modulo, `src/moduli/vN/mNN.ts`.
-2. ⚙ **Figure e grafici nelle lezioni**: grafici statici di funzioni dal motore (specifica 6, «Cosa deve mostrare») con un blocco delle lezioni, e figure SVG scritte a mano (diagrammi di Venn in V1.M01, figure di geometria in V1.M11) con un blocco proprio; colori dalle variabili del tema. Sintassi in `REGOLE.md`.
+2. ~~Figure e grafici nelle lezioni~~: fatto (involucro parte 4). Sintassi in `REGOLE.md`, «Grafici e figure».
 3. ⚙ **Impalcatura delle visualizzazioni** con `VIS.disequazioni-grafico`, inserita nella lezione `V1.M06.L04` (punto 8 della fase 4).
 4. ⚙ **Le altre quattro visualizzazioni del Volume 1**: `VIS.trasformazioni-funzioni`, `VIS.esponenziale-logaritmo`, `VIS.circonferenza-goniometrica`, `VIS.coniche-parametri` (scheda in `docs/VISUALIZZAZIONI.md`, poi codice). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08).
 5. ⚙ **Parser e catalogo**: numeri periodici (V1.M02.L05), notazione scientifica (V1.M03.L07), gradi (V1.M10.L01), fattoriale (V1.M13.L01); voce di catalogo «√(x²) = x anche per x negativo» («Decisioni di Andrea», punto 1; le forme nuove di `V2.M04.A01.g1` restano alla fase 6).
@@ -86,7 +90,7 @@ In parallelo, senza bloccare niente: la prova sull'iPhone della versione su Page
 
 1. ⚙ **Prima**: `log` senza base rifiutato negli esercizi del Volume 2 (decisione 5, presa da Andrea).
 2. **Lezioni dei generatori già esistenti**: `V2.M06.L03` (regole di derivazione), `V3.M02.L01` (Gauss), `V3.M03.L01` (determinante).
-3. ⚙ **Motore**: nodi per successioni e somme (prima delle lezioni di V2.M03 e di V2.M11; i generatori di limiti della sessione E1 non ne hanno avuto bisogno), fattoriale e radice n-esima, grafici statici (prima di V2.M07), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
+3. ⚙ **Motore**: nodi per successioni e somme (prima delle lezioni di V2.M03 e di V2.M11; i generatori di limiti della sessione E1 non ne hanno avuto bisogno), fattoriale e radice n-esima, grafici statici nelle **soluzioni** degli esercizi (nelle lezioni ci sono già), campo `complex` nelle risposte `matrix` (prima dei complessi in V3).
 4. **Scaletta, generatori, lezioni con dimostrazioni** (confrontate con un libro di testo; per V2.M05 e V2.M06 cinque sono già in `src/riserva/`: incollarle, cancellare il file di riserva, collegare con `[[…]]` i risultati usati), modulo per modulo, alternando i due binari; le sei visualizzazioni nei loro moduli (V2.M04, M06, M08, M09; V3.M05, M06).
    - Fase finita quando: come il Volume 1, più dimostrazioni interattive per i teoremi principali.
 
@@ -137,6 +141,11 @@ Motore (fatto così di proposito; dettagli in `docs/REVISIONE.md` e in `REGOLE.m
 - Parser: niente fattoriale, gradi, numeri periodici, notazione `1E5`; il parser degli insiemi non completa i testi a metà (l'app prova le chiusure di `SET_ENDINGS`).
 - Risposte `matrix`: caselle senza numeri complessi.
 - Passaggi della scomposizione di un quadrato di binomio: `(x + 1)(x + 1)` prima di `(x + 1)²` (`src/motore/steps/factor.ts`).
+
+Grafici e figure (involucro parte 4):
+
+- Gli zeri esatti si trovano solo per le funzioni razionali con fattori di grado al più 2; per seno, logaritmo, radici vanno scritti in `punti`. Gli asintoti verticali non razionali (tangente) non si disegnano: la curva è solo interrotta. Nessun asintoto orizzontale od obliquo, nessun massimo o minimo segnato.
+- Il testo dentro le figure SVG non passa da KaTeX: solo lettere e numeri semplici (le formule nella didascalia).
 
 Generatori e lezione:
 
@@ -215,6 +224,13 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 95. Versione telefono a moduli ES (`<script type="module">`) invece di un solo script: iOS li supporta da anni; il codice comune lo divide esbuild in `chunks/`.
 96. Il test della versione telefono non gira più in jsdom (che non sa eseguire moduli ES) ma in Chrome senza finestra, guidato con il protocollo DevTools da `test/chrome.ts`, senza dipendenze nuove; su GitHub c'è sempre, in locale senza Chrome si salta con un avviso.
 97. La pagina del glossario, le dimostrazioni e un termine toccato in una lezione caricano i moduli che servono quando si aprono; le flashcard in scadenza e i loro elenchi vengono dall'indice.
+
+*Involucro, parte 4 (I4)*
+
+98. `src/contenuti/formato/graph.ts` importa dal motore (parser e grafici): la verifica dei contenuti deve leggere le funzioni come le legge il motore. Tabella delle cartelle in `REGOLE.md` aggiornata.
+99. Grafico: al più tre funzioni, distinte da colore e tratteggio; finestra in un solo attributo («x min; x max; y min; y max»); disegno 320×240 che si adatta alla larghezza (scale degli assi indipendenti); punti notevoli con lettere in ordine di ascissa e coordinate esatte elencate sotto il disegno, con la legenda delle funzioni.
+100. Figura: file `lNN-nome.svg` nella cartella della lezione, elencato in `figures` del modulo; didascalia obbligatoria; colori solo dalle dieci classi `fig-…` (aree trasparenti, unica opacità ammessa oltre a quote e righello).
+101. Un blocco grafico o figura sbagliato resta nella lezione con il messaggio «Problema: …» nel riquadro (gli altri blocchi sbagliati, come prima, spariscono); la verifica dei contenuti lo boccia comunque.
 
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 
