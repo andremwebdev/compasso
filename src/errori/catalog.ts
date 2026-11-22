@@ -94,6 +94,38 @@ export const errorCatalog = [
     example: tex`$x+5 = 2$: sottraendo $5$ da entrambi i membri si ottiene $x = 2-5 = -3$, non $x = 2+5 = 7$. Prova: $-3+5 = 2$, mentre $7+5 = 12$.`,
     reference: "V1.M05",
   },
+  {
+    code: "CALC.CRITERIO_DIVISIBILITA",
+    name: "Criterio di divisibilità applicato male",
+    category: "CALC",
+    explanation: tex`Ogni criterio guarda una cosa precisa: per $2$, $5$ e $10$ l'ultima cifra; per $4$ il numero formato dalle ultime due cifre; per $3$ e $9$ la somma di tutte le cifre. Usare l'ultima cifra al posto della somma, o una cifra sola al posto di due, dà risposte sbagliate.`,
+    example: tex`$13$ finisce con $3$ ma non è divisibile per $3$ (la somma delle cifre è $4$), mentre $27$ lo è. $314$ finisce con $4$ ma non è divisibile per $4$: $14$ non è multiplo di $4$, e infatti $314 = 4\cdot78+2$.`,
+    reference: "V1.M02",
+  },
+  {
+    code: "CALC.DECIMALE_FRAZIONE",
+    name: "Potenza di 10 sbagliata da decimale a frazione",
+    category: "CALC",
+    explanation: tex`Un numero decimale limitato si scrive come frazione mettendo al numeratore le cifre senza la virgola e al denominatore $1$ seguito da tanti $0$ quante sono le cifre dopo la virgola, contando anche gli zeri subito dopo la virgola.`,
+    example: tex`$0{,}05 = \dfrac{5}{100} = \dfrac{1}{20}$, non $\dfrac{5}{10} = \dfrac12$: dopo la virgola le cifre sono due. Allo stesso modo $0{,}375 = \dfrac{375}{1000} = \dfrac38$.`,
+    reference: "V1.M02",
+  },
+  {
+    code: "CALC.RAZIONALE_IRRAZIONALE",
+    name: "Razionali e irrazionali confusi",
+    category: "CALC",
+    explanation: tex`Un numero è razionale se si può scrivere come frazione di interi: lo sono tutti i decimali limitati e tutti i periodici. È irrazionale se ha infinite cifre decimali senza periodo, come $\pi$ o la radice quadrata di un naturale che non è un quadrato perfetto. Una radice non è irrazionale per forza, e infinite cifre non bastano a fare un irrazionale.`,
+    example: tex`$0{,}\overline{3} = \dfrac13$ è razionale, anche se ha infinite cifre; $\sqrt{49} = 7$ è razionale; $\sqrt8$ è irrazionale. $3{,}14$ e $\dfrac{22}{7}$ sono razionali: sono solo approssimazioni di $\pi$.`,
+    reference: "V1.M02",
+  },
+  {
+    code: "CALC.CAMBIO_BASE",
+    name: "Cambio di base sbagliato",
+    category: "CALC",
+    explanation: tex`Per passare dalla base $10$ a un'altra base $b$ si divide più volte per $b$: il primo resto è la cifra delle unità, quindi le cifre si leggono dall'ultimo resto al primo. In base $b$ le cifre vanno da $0$ a $b-1$.`,
+    example: tex`$11 = 2\cdot5+1$, $5 = 2\cdot2+1$, $2 = 2\cdot1+0$, $1 = 2\cdot0+1$: i resti letti dall'ultimo danno $11 = 1011_2$. Letti dal primo danno $1101_2$, che vale $8+4+1 = 13$.`,
+    reference: "V1.M02",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

@@ -758,6 +758,35 @@ def _():
     assert -3 + 5 == 2 and 7 + 5 == 12 and 2 + 5 == 7
 
 
+@check("CALC.CRITERIO_DIVISIBILITA")
+def _():
+    assert 13 % 10 == 3 and 13 % 3 != 0 and (1 + 3) == 4
+    assert 27 % 3 == 0
+    assert 314 % 10 == 4 and 14 % 4 != 0 and 314 % 4 == 2 and 4 * 78 + 2 == 314
+
+
+@check("CALC.DECIMALE_FRAZIONE")
+def _():
+    assert Rational("0.05") == Rational(5, 100) == Rational(1, 20)
+    assert Rational(5, 10) == Rational(1, 2) != Rational("0.05")
+    assert Rational("0.375") == Rational(375, 1000) == Rational(3, 8)
+
+
+@check("CALC.RAZIONALE_IRRAZIONALE")
+def _():
+    assert Rational(1, 3) * 10**6 // 1 == 333333  # 0,333…
+    assert sqrt(49) == 7
+    assert sqrt(8).is_rational is False and pi.is_rational is False
+    assert Rational("3.14") != pi and Rational(22, 7) != pi
+
+
+@check("CALC.CAMBIO_BASE")
+def _():
+    assert 11 == 2 * 5 + 1 and 5 == 2 * 2 + 1 and 2 == 2 * 1 + 0 and 1 == 2 * 0 + 1
+    assert int("1011", 2) == 11
+    assert int("1101", 2) == 8 + 4 + 1 == 13 != 11
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)

@@ -389,6 +389,10 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | CALC.PERIODICO | Frazione generatrice sbagliata | 0,1(6) = (16−1)/90 = 1/6 | V1.M02 |
 | CALC.RAZIONALIZZAZIONE | Fattore razionalizzante sbagliato | 1/(√a+√b) si moltiplica per (√a−√b)/(√a−√b) | V1.M03 |
 | CALC.SEGNO\_TRASPORTO | Segno non cambiato nel trasporto | Un termine che cambia membro cambia segno: x+5 = 2 dà x = −3 | V1.M05 |
+| CALC.CRITERIO\_DIVISIBILITA | Criterio di divisibilità applicato male | Per 3 e 9 conta la somma delle cifre, per 4 le ultime due cifre: 314 non è divisibile per 4 | V1.M02 |
+| CALC.DECIMALE\_FRAZIONE | Potenza di 10 sbagliata da decimale a frazione | 0,05 = 5/100 = 1/20, non 5/10 | V1.M02 |
+| CALC.RAZIONALE\_IRRAZIONALE | Razionali e irrazionali confusi | 0,(3) = 1/3 e √49 = 7 sono razionali; √8 e π no | V1.M02 |
+| CALC.CAMBIO\_BASE | Cambio di base sbagliato | I resti delle divisioni si leggono dall'ultimo al primo: 11 = 1011₂, non 1101₂ | V1.M02 |
 | ALG.QUADRATO\_BINOMIO | (a+b)² = a²+b² | Manca il doppio prodotto 2ab | V1.M04 |
 | ALG.RADICE\_SOMMA | √(a+b) = √a+√b | La radice non si distribuisce sulla somma | V1.M03 |
 | ALG.RADICE\_DEL\_QUADRATO | √(x²) = x anche per x negativo | √(x²) = \|x\|: con x = −3 vale 3, non −3 | V1.M03 |
