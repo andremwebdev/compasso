@@ -159,6 +159,18 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A01.g1", 2, 2, "Calcola il valore dell'espressione $\\left(-2\\right)^{3} - 20 : \\left(-5\\right) + \\left(-8\\right) \\cdot 8$. Rispondi con un numero intero."],
   ["V1.M02.A01.g1", 3, 1, "Calcola il valore dell'espressione $\\left(7 - 10\\right)^{2} - \\left(-7\\right) \\cdot \\left(-4\\right)$. Rispondi con un numero intero."],
   ["V1.M02.A01.g1", 3, 2, "Calcola il valore dell'espressione $-\\left[-6 - \\left(8 - 9\\right) \\cdot \\left(-4\\right)\\right] + 15 : \\left(-5\\right)$. Rispondi con un numero intero."],
+  ["V1.M02.A02.g1", 1, 1, "Quale di questi numeri è divisibile per $3$?"],
+  ["V1.M02.A02.g1", 1, 2, "Quale di questi numeri è divisibile per $4$?"],
+  ["V1.M02.A02.g1", 2, 1, "Quale di questi numeri è divisibile per $11$?"],
+  ["V1.M02.A02.g1", 2, 2, "Qual è il resto della divisione di $359$ per $24$? Rispondi con un numero naturale."],
+  ["V1.M02.A02.g1", 3, 1, "Quale di questi numeri è divisibile per $18$?"],
+  ["V1.M02.A02.g1", 3, 2, "Quale di questi numeri è divisibile per $12$?"],
+  ["V1.M02.A03.g1", 1, 1, "Qual è la scomposizione in fattori primi di $560$?"],
+  ["V1.M02.A03.g1", 1, 2, "Qual è la scomposizione in fattori primi di $126$?"],
+  ["V1.M02.A03.g1", 2, 1, "Qual è la scomposizione in fattori primi di $3465$?"],
+  ["V1.M02.A03.g1", 2, 2, "Qual è la scomposizione in fattori primi di $1344$?"],
+  ["V1.M02.A03.g1", 3, 1, "Qual è la scomposizione in fattori primi di $1127$?"],
+  ["V1.M02.A03.g1", 3, 2, "Qual è la scomposizione in fattori primi di $6669$?"],
 ];
 
 describe("semi congelati", () => {

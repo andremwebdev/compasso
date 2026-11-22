@@ -134,6 +134,22 @@ export const errorCatalog = [
     example: tex`$(-4)\cdot(-3) = 12$, non $-12$: due segni meno danno più. $(-12)+5 = -7$, non $7$: vince il $-12$, che senza segno è il più grande.`,
     reference: "V1.M02",
   },
+  {
+    code: "CALC.RESTO_DIVISIONE",
+    name: "Resto non minore del divisore",
+    category: "CALC",
+    explanation: tex`Nella divisione con resto $a = q\cdot b+r$ il resto deve stare tra $0$ e $b-1$: se viene $b$ o più, nel dividendo ci sta ancora un $b$ e il quoziente va aumentato. Il resto è quello che avanza, non il quoziente, e non è quanto manca per arrivare al multiplo successivo.`,
+    example: tex`$100$ diviso $7$: $14\cdot7 = 98$, quindi $q = 14$ e $r = 2$. Con $q = 13$ si avrebbe $100 = 13\cdot7+9$, ma $9$ non è un resto perché supera $7$; e $105-100 = 5$ è quanto manca a $105$, non il resto.`,
+    reference: "V1.M02.L02",
+  },
+  {
+    code: "CALC.SCOMPOSIZIONE_PRIMI",
+    name: "Scomposizione in fattori primi sbagliata",
+    category: "CALC",
+    explanation: tex`Nella scomposizione ogni primo compare con l'esponente uguale al numero di volte in cui divide il numero: dividendo più volte per lo stesso primo bisogna contarle tutte. Il prodotto dei fattori deve ridare il numero di partenza: è il controllo da fare sempre.`,
+    example: tex`$84 = 2^2\cdot3\cdot7$: il $2$ divide $84$ due volte ($84\to42\to21$). Scrivere $2\cdot3\cdot7$ perde un fattore: il prodotto è $42$, non $84$.`,
+    reference: "V1.M02.L02",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

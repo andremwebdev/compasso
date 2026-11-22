@@ -793,6 +793,19 @@ def _():
     assert (-12) + 5 == -7 != 7
 
 
+@check("CALC.RESTO_DIVISIONE")
+def _():
+    assert 100 == 14 * 7 + 2 and 2 < 7
+    assert 100 == 13 * 7 + 9 and 9 >= 7
+    assert 105 - 100 == 5 != 100 % 7
+
+
+@check("CALC.SCOMPOSIZIONE_PRIMI")
+def _():
+    assert 84 == 2**2 * 3 * 7
+    assert 2 * 3 * 7 == 42 != 84
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)
