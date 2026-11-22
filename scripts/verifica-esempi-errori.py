@@ -389,6 +389,38 @@ def _():
     assert all((not Q(v)) == (v <= 10) for v in values)  # per gli interi, non(x > 10) è x ≤ 10
 
 
+@check("LOG.APPARTENENZA_INCLUSIONE")
+def _():
+    A_ = frozenset({1, 2, 3})
+    assert 2 in A_ and frozenset({2}) <= A_  # 2 ∈ A e {2} ⊆ A
+    assert frozenset({2}) not in A_  # {2} ∈ A è falsa: gli elementi di A sono numeri
+
+
+@check("LOG.O_ESCLUSIVO")
+def _():
+    A_, B_ = {1, 2, 3}, {3, 4}
+    assert A_ | B_ == {1, 2, 3, 4} and A_ ^ B_ == {1, 2, 4}  # unione giusta, «o esclusivo» sbagliato
+    assert 6 % 2 == 0 and 6 % 3 == 0 and (6 % 2 == 0 or 6 % 3 == 0)
+
+
+@check("LOG.COPPIA_ORDINATA")
+def _():
+    A_, B_ = [1, 2], [5]
+    AB = set(itertools.product(A_, B_))
+    BA = set(itertools.product(B_, A_))
+    assert AB == {(1, 5), (2, 5)} and BA == {(5, 1), (5, 2)} and AB != BA
+    assert (5, 1) not in AB
+
+
+@check("LOG.INCLUSIONE_ESCLUSIONE")
+def _():
+    calcio = set(range(1, 16))  # 15 studenti
+    pallavolo = set(range(12, 22))  # 10 studenti, 4 in comune (12-15)
+    assert len(calcio) == 15 and len(pallavolo) == 10 and len(calcio & pallavolo) == 4
+    assert len(calcio | pallavolo) == 15 + 10 - 4 == 21 != 25
+    assert len(calcio - pallavolo) == 15 - 4 == 11
+
+
 # ───────────────────────────── FUNZ ─────────────────────────────
 
 

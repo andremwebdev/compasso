@@ -418,6 +418,10 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | LOG.NECESSARIA\_SUFFICIENTE | Necessaria e sufficiente scambiate | In "se A allora B", A è sufficiente per B e B è necessaria per A | V1.M01 |
 | LOG.INVERSA | Implicazione invertita | Da "se A allora B" non segue "se B allora A", né "se non A allora non B" | V1.M01 |
 | LOG.DE\_MORGAN | Negazione di "e" e "o" sbagliata | non(A e B) = non A o non B; non(A o B) = non A e non B | V1.M01 |
+| LOG.APPARTENENZA\_INCLUSIONE | Appartenenza e inclusione scambiate | ∈ lega un elemento a un insieme, ⊆ lega due insiemi: {2} ⊆ {1, 2, 3}, non {2} ∈ {1, 2, 3} | V1.M01 |
+| LOG.O\_ESCLUSIVO | "O" inteso come esclusivo | "A o B" è vera anche quando sono vere tutte e due; A ∪ B contiene anche gli elementi comuni | V1.M01 |
+| LOG.COPPIA\_ORDINATA | Ordine nelle coppie ignorato | In A × B il primo elemento sta in A e il secondo in B: (a; b) ≠ (b; a), A × B ≠ B × A | V1.M01 |
+| LOG.INCLUSIONE\_ESCLUSIONE | Elementi comuni contati due volte | \|A ∪ B\| = \|A\| + \|B\| − \|A ∩ B\| | V1.M01 |
 | FUNZ.TRASLAZIONE\_ORIZZONTALE | Traslazione orizzontale al contrario | f(x+a) con a > 0 trasla verso sinistra | V1.M08 |
 | FUNZ.INVERSA\_RECIPROCO | Inversa confusa con il reciproco | f⁻¹ è la funzione inversa, non 1/f | V1.M08 |
 | FUNZ.ORDINE\_COMPOSIZIONE | Ordine della composizione scambiato | (f∘g)(x) = f(g(x)): prima g, poi f | V1.M08 |

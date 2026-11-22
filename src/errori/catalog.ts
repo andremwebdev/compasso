@@ -336,6 +336,38 @@ export const errorCatalog = [
     example: tex`Per un numero intero $x$, la negazione di «$x$ è pari e $x>10$» è «$x$ è dispari oppure $x\le10$». L'errore è scrivere «$x$ è dispari e $x\le10$»: per $x=4$ l'enunciato originale è falso, quindi la sua negazione è vera, ma «dispari e $\le10$» è falsa.`,
     reference: "V1.M01",
   },
+  {
+    code: "LOG.APPARTENENZA_INCLUSIONE",
+    name: "Appartenenza e inclusione scambiate",
+    category: "LOG",
+    explanation: tex`Il simbolo $\in$ lega un elemento a un insieme; il simbolo $\subseteq$ lega due insiemi. $a\in A$ dice che $a$ è uno degli elementi di $A$; $B\subseteq A$ dice che ogni elemento di $B$ è anche elemento di $A$.`,
+    example: tex`Con $A=\{1,2,3\}$ sono vere $2\in A$ e $\{2\}\subseteq A$. È falsa $\{2\}\in A$, perché gli elementi di $A$ sono numeri e non insiemi; $2\subseteq A$ non ha senso, perché $2$ è un elemento e non un insieme.`,
+    reference: "V1.M01",
+  },
+  {
+    code: "LOG.O_ESCLUSIVO",
+    name: '"O" inteso come esclusivo',
+    category: "LOG",
+    explanation: tex`In matematica «o» è inclusivo: $A\vee B$ è vera quando almeno una delle due è vera, anche quando lo sono tutte e due; $A\cup B$ contiene anche gli elementi che stanno in tutti e due gli insiemi.`,
+    example: tex`Con $A=\{1,2,3\}$ e $B=\{3,4\}$ si ha $A\cup B=\{1,2,3,4\}$, non $\{1,2,4\}$. «$6$ è pari o $6$ è multiplo di $3$» è vera, anche se sono vere tutte e due le parti.`,
+    reference: "V1.M01",
+  },
+  {
+    code: "LOG.COPPIA_ORDINATA",
+    name: "Ordine nelle coppie ignorato",
+    category: "LOG",
+    explanation: tex`Nel prodotto cartesiano $A\times B$ il primo elemento di ogni coppia sta in $A$ e il secondo in $B$, e l'ordine conta: $(a;\,b)\neq(b;\,a)$ se $a\neq b$. Per questo, in generale, $A\times B\neq B\times A$.`,
+    example: tex`Con $A=\{1,2\}$ e $B=\{5\}$ si ha $A\times B=\{(1;\,5),(2;\,5)\}$ e $B\times A=\{(5;\,1),(5;\,2)\}$. La coppia $(5;\,1)$ non sta in $A\times B$.`,
+    reference: "V1.M01",
+  },
+  {
+    code: "LOG.INCLUSIONE_ESCLUSIONE",
+    name: "Elementi comuni contati due volte",
+    category: "LOG",
+    explanation: tex`Il numero di elementi di $A\cup B$ è $|A|+|B|-|A\cap B|$: chi sta in tutti e due gli insiemi è contato sia in $|A|$ sia in $|B|$, quindi una volta va tolto. Allo stesso modo, chi sta in $A\cap B$ va tolto da $|A|$ per contare chi sta solo in $A$.`,
+    example: tex`In una classe $15$ studenti giocano a calcio, $10$ a pallavolo e $4$ a tutti e due. Quelli che fanno almeno uno dei due sport sono $15+10-4=21$, non $25$; quelli che giocano solo a calcio sono $15-4=11$.`,
+    reference: "V1.M01",
+  },
 
   // ───────────────────────────── FUNZ: funzioni e grafici ─────────────────────────────
   {
