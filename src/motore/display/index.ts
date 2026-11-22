@@ -9,3 +9,7 @@ export {
   type PointNature, type Trend, type VariationOptions, type VariationPoint, type VariationTable,
 } from "./variation-table";
 export { systemToLatex } from "./system";
+export {
+  GRAPH_HEIGHT, GRAPH_WIDTH, MAX_GRAPH_CURVES, graphPointToLatex, graphToSvg, plotGraph, tickLabel, ticks,
+  type Graph, type GraphAsymptote, type GraphCurve, type GraphOptions, type GraphPoint, type GraphPointKind, type GraphSvgOptions, type GraphWindow,
+} from "./graph";
