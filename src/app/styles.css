@@ -1015,6 +1015,83 @@ p {
   stroke-width: 1.2;
 }
 
+/* VIS.circonferenza-goniometrica: coseno blu, seno verde, tangente arancione, ognuno anche col nome. */
+.vis-circonferenza-linea {
+  fill: none;
+  stroke: var(--inchiostro);
+  stroke-width: 1.6;
+}
+
+.vis-raggio {
+  fill: none;
+  stroke: var(--inchiostro);
+  stroke-width: 1.4;
+}
+
+.vis-arco {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1.4;
+}
+
+.vis-retta-tangente {
+  fill: none;
+  stroke: var(--inchiostro-secondario);
+  stroke-width: 1;
+}
+
+.vis-seg-cos,
+.vis-seg-sin,
+.vis-seg-tan {
+  fill: none;
+  stroke-width: 4.5;
+  stroke-linecap: round;
+}
+
+.vis-seg-cos {
+  stroke: var(--blu);
+}
+
+.vis-seg-sin {
+  stroke: var(--ese);
+}
+
+.vis-seg-tan {
+  stroke: var(--arancio);
+}
+
+.vis-punto-tan {
+  fill: var(--arancio);
+  stroke: var(--carta-alta);
+  stroke-width: 1.5;
+}
+
+.vis-sopra .vis-nome-cos {
+  fill: var(--blu);
+}
+
+.vis-sopra .vis-nome-sin {
+  fill: var(--ese);
+}
+
+.vis-sopra .vis-quadrante {
+  fill: var(--inchiostro-secondario);
+  font-weight: 400;
+}
+
+.vis-sopra .vis-quadrante-attivo {
+  fill: var(--inchiostro);
+  font-weight: 700;
+}
+
+.vis-valori {
+  margin-top: var(--s-2);
+}
+
+.vis-valori .vis-riga {
+  min-height: 2.2em;
+}
+
 /* Figure scritte a mano: senza classe una forma è un contorno d'inchiostro senza riempimento. */
 :where(.figura-disegno) :where(path, line, polyline, polygon, rect, circle, ellipse) {
   fill: none;

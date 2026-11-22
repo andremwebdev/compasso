@@ -118,3 +118,34 @@ La finestra non è un parametro: è fissa (x tra $-4$ e $6$), con le unità ugua
 
 - `V1.M09.L01` «Funzione esponenziale» (quando sarà scritta), con `logaritmo=no`: solo $a^x$, crescenza e decrescenza al variare della base.
 - Candidata: `V1.M09.L03` «Logaritmi» (o la lezione sulla funzione logaritmica), con il logaritmo e la simmetria.
+
+## VIS.circonferenza-goniometrica
+
+**Che cosa deve far capire** (specifica 11): il coseno e il seno di un angolo sono l'**ascissa** e l'**ordinata** del punto $P$ della circonferenza goniometrica (segmenti sugli assi); la tangente è l'ordinata del punto in cui la retta $OP$ incontra la retta $x = 1$; i **segni** dipendono dal quadrante; gradi e radianti sono due misure dello stesso angolo.
+
+**Che cosa si manipola**
+
+- **Il punto $P$** sulla circonferenza: si trascina col dito. Vicino ai multipli di $15^\circ$ (entro $4^\circ$) si aggancia a loro, altrove va a gradi interi.
+- **L'angolo** con il cursore «Angolo», da $0^\circ$ a $360^\circ$ a passi di $1^\circ$.
+
+**Che cosa si vede**
+
+- La circonferenza di raggio $1$ con centro nell'origine, con le unità uguali sui due assi, i numeri dei quadranti (I, II, III, IV).
+- Il raggio $OP$ e l'arco dell'angolo $\alpha$ a partire dal semiasse positivo delle $x$, in verso antiorario.
+- Il **coseno** come segmento sull'asse $x$ (blu) e il **seno** come segmento verticale fino a $P$ (verde), con il nome scritto accanto (non solo il colore); le proiezioni tratteggiate.
+- La **tangente** (se la lezione la mostra): la retta $x = 1$, il punto $T$ in cui la retta $OP$ la incontra e il segmento da $(1; 0)$ a $T$ (arancione). A $90^\circ$ e $270^\circ$ la retta $OP$ è parallela a $x = 1$: la tangente non esiste, e lo dice.
+- Sotto il disegno: $\alpha$ in gradi e in radianti affiancati ($30^\circ = \tfrac{\pi}{6}$), $\cos\alpha$, $\sin\alpha$, $\tan\alpha$ **esatti** per i multipli di $15^\circ$ (dal motore), approssimati con $\approx$ negli altri casi; la tabella dei segni nei quattro quadranti con la colonna del quadrante di $P$ segnata (fondo e ✓), e la frase «$P$ è nel II quadrante: …» oppure «$P$ è sull'asse …».
+
+**Parametri della lezione** (nel blocco `:::visualizzazione{id=VIS.circonferenza-goniometrica …}`)
+
+| Nome | Significato | Predefinito | Valori ammessi |
+| --- | --- | --- | --- |
+| `angolo` | l'angolo iniziale, in gradi | `30` | un numero intero da `0` a `360` |
+| `tangente` | se mostrare la tangente (retta $x = 1$, punto $T$, riga nella tabella) | `sì` | `sì` oppure `no` |
+
+La finestra non è un parametro: è fissa, con le unità uguali sui due assi.
+
+**Lezioni che la usano**
+
+- `V1.M10.L02` «Circonferenza goniometrica, seno e coseno» (quando sarà scritta), con `tangente=no`.
+- Candidata: `V1.M10.L03` «Tangente», con la tangente.

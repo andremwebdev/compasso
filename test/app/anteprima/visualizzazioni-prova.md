@@ -19,3 +19,8 @@ Trascina il punto $P$ e cambia la base: $P'$ resta sempre il simmetrico di $P$ r
 
 :::visualizzazione{id=VIS.esponenziale-logaritmo base=2 punto=1}
 :::
+
+Trascina il punto $P$ sulla circonferenza: guarda come cambiano i segmenti del seno e del coseno, e i segni nei quadranti.
+
+:::visualizzazione{id=VIS.circonferenza-goniometrica angolo=30}
+:::

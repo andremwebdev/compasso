@@ -61,6 +61,7 @@ const themeColor = (name: string) =>
 const VIS = {
   transforms: ".vis:has(.vis-trasformazioni)",
   expLog: ".vis:has(.vis-esplog)",
+  circle: ".vis:has(.vis-circonferenza)",
 } as const;
 
 describe("visualizzazioni in Chrome (lezione di prova)", () => {
@@ -165,6 +166,25 @@ describe("visualizzazioni in Chrome (lezione di prova)", () => {
         await page.evaluate(`(() => { const input = document.querySelector("${vis} .vis-cursore input"); input.value = "3"; input.dispatchEvent(new Event("input", { bubbles: true })); })()`);
         await pause(50);
         expect(await page.evaluate<string>(`document.querySelector("${vis} .vis-passi").textContent`)).toContain("decrescente");
+      }
+
+      // ── VIS.circonferenza-goniometrica: P (a 30°) trascinato col dito fino a circa 120° si aggancia lì.
+      {
+        const vis = VIS.circle;
+        expect(await latex(page, vis, ".vis-valore-sin")).toBe(String.raw`\sin\alpha = \frac{1}{2}`);
+        const colors = await page.evaluate<{ cos: string; blue: string; sin: string; green: string }>(`({
+          cos: getComputedStyle(document.querySelector("${vis} .vis-seg-cos")).stroke, blue: ${themeColor("--blu")},
+          sin: getComputedStyle(document.querySelector("${vis} .vis-seg-sin")).stroke, green: ${themeColor("--ese")},
+        })`);
+        expect(colors.cos).toBe(colors.blue);
+        expect(colors.sin).toBe(colors.green);
+        // Un'unità del piano in pixel; P va da (cos 30°; sin 30°) a (cos 121°; sin 121°).
+        const unit = ((await box(page, vis, ".vis-piano .grafico-disegno svg")).width / 320) * (308 / 3.7);
+        const to = (121 * Math.PI) / 180;
+        const from = Math.PI / 6;
+        await dragHandle(page, vis, ".vis-maniglia-angolo .vis-maniglia-segno", (Math.cos(to) - Math.cos(from)) * unit, -(Math.sin(to) - Math.sin(from)) * unit);
+        expect(await latex(page, vis, ".vis-cursore-valore")).toBe(String.raw`\alpha = 120^\circ = \frac{2\pi}{3}`);
+        expect(await page.evaluate<string>(`document.querySelector("${vis} .vis-quadrante-testo").textContent`)).toContain("II quadrante");
       }
 
       expect(await page.evaluate<number>("document.documentElement.scrollWidth")).toBeLessThanOrEqual(width);
