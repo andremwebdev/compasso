@@ -92,9 +92,19 @@ export class Chrome {
 
   async close(): Promise<void> {
     this.socket.close();
+    // Si aspetta che Chrome sia davvero uscito (al più 5 secondi): finché scrive nel profilo, la
+    // cartella non si cancella (ENOTEMPTY, capitato due volte su GitHub).
+    const exited = new Promise((resolve) => {
+      if (this.process.exitCode !== null || this.process.signalCode !== null) resolve(undefined);
+      else this.process.once("exit", () => resolve(undefined));
+    });
     this.process.kill();
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    rmSync(this.profile, { recursive: true, force: true });
+    await Promise.race([exited, new Promise((resolve) => setTimeout(resolve, 5000))]);
+    try {
+      rmSync(this.profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+    } catch {
+      // Una cartella temporanea rimasta non è un difetto dell'app: il test non fallisce per questo.
+    }
   }
 }
 

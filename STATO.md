@@ -212,7 +212,7 @@ App:
 Altro:
 
 - «Lo so già» di V1.M01 usa i generatori del modulo, ma con 5 esercizi «a turno» (decisione 76) prende sempre `A01`-`A05`: `A06`-`A09` non escono mai. Da decidere (Andrea): ordine mescolato dal seme, o più esercizi per i moduli con più di cinque abilità (tocca `src/app/schermate/checks.ts`).
-- Su GitHub un giro è fallito una volta in `test/app/visualizzazioni-chrome.test.ts` per `ENOTEMPTY` nel cancellare la cartella temporanea di Chrome (il giro dopo è verde): pulizia da rendere tollerante (`rm` con `force`/`maxRetries`) se ricapita.
+- Su GitHub due giri sono falliti per `ENOTEMPTY` nel cancellare il profilo temporaneo di Chrome: `test/chrome.ts` ora aspetta l'uscita di Chrome e riprova la cancellazione (una cartella rimasta non fa più fallire il test). Se ricapita, guardare lì.
 - `README.md` con il solo titolo.
 - GitHub Actions avvisa che `actions/checkout@v4`, `setup-node@v4` e `upload-artifact@v4` usano Node 20, deprecato: passare alle versioni successive quando si tocca il workflow.
 - Alcuni commit passati hanno il controllo rosso (corretti dai successivi): conta solo l'ultimo stato del ramo.
