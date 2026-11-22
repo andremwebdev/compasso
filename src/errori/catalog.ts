@@ -368,6 +368,30 @@ export const errorCatalog = [
     example: tex`In una classe $15$ studenti giocano a calcio, $10$ a pallavolo e $4$ a tutti e due. Quelli che fanno almeno uno dei due sport sono $15+10-4=21$, non $25$; quelli che giocano solo a calcio sono $15-4=11$.`,
     reference: "V1.M01",
   },
+  {
+    code: "LOG.UNIONE_INTERSEZIONE",
+    name: "Unione e intersezione di insiemi scambiate",
+    category: "LOG",
+    explanation: tex`$A\cup B$ contiene gli elementi che stanno in almeno uno dei due insiemi; $A\cap B$ solo quelli che stanno in tutti e due. L'unione è il più grande dei due risultati, l'intersezione il più piccolo: $A\cap B\subseteq A\cup B$.`,
+    example: tex`Con $A=\{1,2,3\}$ e $B=\{2,3,5\}$ si ha $A\cap B=\{2,3\}$ e $A\cup B=\{1,2,3,5\}$. Scrivere $\{1,2,3,5\}$ per $A\cap B$ è scambiare i due simboli.`,
+    reference: "V1.M01",
+  },
+  {
+    code: "LOG.DIFFERENZA_INSIEMI",
+    name: "Differenza tra insiemi calcolata male",
+    category: "LOG",
+    explanation: tex`$A\setminus B$ si ottiene partendo da $A$ e togliendo gli elementi che stanno anche in $B$. L'ordine conta ($B\setminus A$ è un altro insieme) e gli elementi comuni sono proprio quelli da togliere: non si tengono e non si lasciano tutti gli elementi di $A$.`,
+    example: tex`Con $A=\{1,2,3,4\}$ e $B=\{3,4,5\}$ si ha $A\setminus B=\{1,2\}$. Non è $\{5\}$ ($B\setminus A$), non è $\{3,4\}$ ($A\cap B$) e non è $\{1,2,3,4\}$.`,
+    reference: "V1.M01",
+  },
+  {
+    code: "LOG.COMPLEMENTARE",
+    name: "Complementare calcolato male",
+    category: "LOG",
+    explanation: tex`Il complementare $\overline{A}$ contiene gli elementi dell'universo $U$ che non stanno in $A$: si parte da tutto $U$ e si toglie $A$. Il segno di complementare non si dimentica e vale per tutto quello che sta sotto la sua lineetta: $\overline{A\cup B}$ è il complementare dell'unione, non $\overline{A}\cup B$.`,
+    example: tex`Con $U=\{1,2,3,4,5,6\}$, $A=\{1,2\}$ e $B=\{2,3\}$ si ha $\overline{A\cup B}=U\setminus\{1,2,3\}=\{4,5,6\}$, non $\overline{A}\cup B=\{2,3,4,5,6\}$.`,
+    reference: "V1.M01",
+  },
 
   // ───────────────────────────── FUNZ: funzioni e grafici ─────────────────────────────
   {

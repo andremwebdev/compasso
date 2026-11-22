@@ -412,6 +412,27 @@ def _():
     assert (5, 1) not in AB
 
 
+@check("LOG.UNIONE_INTERSEZIONE")
+def _():
+    A_, B_ = {1, 2, 3}, {2, 3, 5}
+    assert A_ & B_ == {2, 3} and A_ | B_ == {1, 2, 3, 5} and (A_ & B_) <= (A_ | B_)
+
+
+@check("LOG.DIFFERENZA_INSIEMI")
+def _():
+    A_, B_ = {1, 2, 3, 4}, {3, 4, 5}
+    assert A_ - B_ == {1, 2}
+    assert B_ - A_ == {5} and A_ & B_ == {3, 4} and A_ != A_ - B_
+
+
+@check("LOG.COMPLEMENTARE")
+def _():
+    U = set(range(1, 7))
+    A_, B_ = {1, 2}, {2, 3}
+    assert U - (A_ | B_) == {4, 5, 6}
+    assert (U - A_) | B_ == {2, 3, 4, 5, 6} != U - (A_ | B_)
+
+
 @check("LOG.INCLUSIONE_ESCLUSIONE")
 def _():
     calcio = set(range(1, 16))  # 15 studenti
