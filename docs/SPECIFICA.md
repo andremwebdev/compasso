@@ -415,6 +415,8 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | DISEQ.VALORE\_ASSOLUTO | Valore assoluto risolto male | Con a > 0: \|x\| < a vale per −a < x < a; \|x\| > a per x < −a o x > a | V1.M06 |
 | DISEQ.ZERO\_DOPPIO | Zero doppio trattato come zero semplice | (x−r)² non cambia segno in r: è positivo per x ≠ r e nullo in r | V1.M06 |
 | LOG.NEGAZIONE\_PER\_OGNI | Negazione di "per ogni" sbagliata | non(per ogni x vale P) = esiste un x per cui P non vale | V1.M01 |
+| LOG.NEGAZIONE\_ESISTE | Negazione di "esiste" sbagliata | non(esiste x per cui vale P) = per ogni x, P non vale | V1.M01 |
+| LOG.NEGAZIONE\_DISUGUAGLIANZA | Negazione di una disuguaglianza sbagliata | non(x > a) è x ≤ a, non x < a | V1.M01 |
 | LOG.NECESSARIA\_SUFFICIENTE | Necessaria e sufficiente scambiate | In "se A allora B", A è sufficiente per B e B è necessaria per A | V1.M01 |
 | LOG.INVERSA | Implicazione invertita | Da "se A allora B" non segue "se B allora A", né "se non A allora non B" | V1.M01 |
 | LOG.DE\_MORGAN | Negazione di "e" e "o" sbagliata | non(A e B) = non A o non B; non(A o B) = non A e non B | V1.M01 |

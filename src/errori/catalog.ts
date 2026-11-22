@@ -313,6 +313,22 @@ export const errorCatalog = [
     reference: "V1.M01",
   },
   {
+    code: "LOG.NEGAZIONE_ESISTE",
+    name: 'Negazione di "esiste" sbagliata',
+    category: "LOG",
+    explanation: tex`La negazione di «esiste un $x$ per cui vale $P$» è «per ogni $x$, $P$ non vale». Cambiano sia il quantificatore sia la proprietà; non è «esiste un $x$ per cui $P$ non vale», che può essere vera insieme alla proposizione di partenza.`,
+    example: tex`La negazione di $\exists n\in\mathbb{N}: n\text{ è pari}$ (vera) è $\forall n\in\mathbb{N},\ n\text{ è dispari}$ (falsa, come deve essere). $\exists n\in\mathbb{N}: n\text{ è dispari}$ non è la negazione: è vera anch'essa.`,
+    reference: "V1.M01",
+  },
+  {
+    code: "LOG.NEGAZIONE_DISUGUAGLIANZA",
+    name: "Negazione di una disuguaglianza sbagliata",
+    category: "LOG",
+    explanation: tex`La negazione di $x>a$ è $x\le a$, non $x<a$: il caso $x=a$ rende falsa $x>a$, quindi sta nella negazione. Allo stesso modo la negazione di $x\ge a$ è $x<a$.`,
+    example: tex`La negazione di $x>3$ è $x\le3$. Con $x=3$ la proposizione $x>3$ è falsa e $x\le3$ è vera, come deve essere; $x<3$ invece è falsa anche lei.`,
+    reference: "V1.M01",
+  },
+  {
     code: "LOG.NECESSARIA_SUFFICIENTE",
     name: "Necessaria e sufficiente scambiate",
     category: "LOG",

@@ -358,6 +358,21 @@ def _():
     assert not all(p % 2 == 0 for p in primes)  # «tutti i primi sono pari» è falsa
 
 
+@check("LOG.NEGAZIONE_ESISTE")
+def _():
+    numbers = range(0, 1001)
+    assert any(m % 2 == 0 for m in numbers)  # «esiste un naturale pari» è vera
+    assert not all(m % 2 == 1 for m in numbers)  # la negazione «ogni naturale è dispari» è falsa
+    assert any(m % 2 == 1 for m in numbers)  # «esiste un naturale dispari» è vera anch'essa
+
+
+@check("LOG.NEGAZIONE_DISUGUAGLIANZA")
+def _():
+    for x in [Rational(k, 4) for k in range(-40, 41)]:
+        assert (not (x > 3)) == (x <= 3)
+    assert not (3 > 3) and 3 <= 3 and not (3 < 3)
+
+
 @check("LOG.NECESSARIA_SUFFICIENTE")
 def _():
     numbers = range(1, 1001)
