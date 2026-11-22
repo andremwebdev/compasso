@@ -1,6 +1,6 @@
 # STATO
 
-Ultimo aggiornamento: involucro parte 3, caricamento dei contenuti per modulo (20 novembre 2026). Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
+Ultimo aggiornamento: visualizzazioni parte 1, impalcatura e `VIS.disequazioni-grafico` (22 novembre 2026). Prima: involucro parte 4, figure e grafici. Prima: involucro parte 3, caricamento dei contenuti per modulo. Prima: involucro parte 2, aspetto definitivo e tastiera. Prima: involucro parte 1, sezioni e navigazione. Prima: decisioni di Andrea sulle domande aperte. Prima: sessione extra E4 (scalette dei 35 moduli in `docs/SCALETTE.md`). Prima: sessione E2 (generatori difficili di Analisi, parte 2). La versione lunga di questo file, con la storia sessione per sessione, è nel commit `abfb3e3`; i dettagli delle revisioni in `docs/REVISIONE.md`.
 
 ## Fatto
 
@@ -43,7 +43,14 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - **Motore**: `plotGraph` e `graphToSvg` (`src/motore/display/graph.ts`): da una a tre funzioni di $x$ e una finestra; curve interrotte dove la funzione non è definita (anche ai poli non noti, come la tangente); tacche tonde con numeri all'italiana; punti notevoli **esatti** (zeri e asintoti verticali delle funzioni razionali, buchi con l'ordinata esatta, intersezione con l'asse $y$, punti chiesti, angoli notevoli); SVG con sole classi `graf-…`.
   - **Lezioni**: blocchi `grafico` (`funzioni`, `finestra`, `punti`, letti con `parseExpression`) e `figura` (file `lNN-nome.svg` accanto alla lezione, elencato in `figures` del modulo, didascalia obbligatoria). La verifica dei contenuti controlla parametri, nome e contenuto del file (niente script, colori scritti, riferimenti esterni; solo le classi `fig-…`); un blocco sbagliato resta nella lezione e il riquadro mostra il messaggio. Sintassi ed esempi in `REGOLE.md`.
   - **Prova**: lezione di prova `test/contenuti/prova/v1/m01/l99.md` (non entra nell'app) in Chrome senza rete, nei due temi, a 414 e 320 px (`test/app/grafici-chrome.test.ts`): disegni presenti, dentro lo schermo, colori dal tema.
-- **Test**: 1.280 in 54 file, verdi in locale.
+- **Visualizzazioni, parte 1** (impalcatura e `VIS.disequazioni-grafico`):
+  - **Scheda** in `docs/VISUALIZZAZIONI.md` (nuovo; tabella delle undici con lo stato).
+  - **Impalcatura** `src/visualizzazioni/`: `index.ts` (elenco codice → componente e controllo dei parametri; da qui `visualizationCodes` e `checkVisualizationParams` alla verifica dei contenuti, che ora controlla anche i parametri, e `VisualizationBlock` a `LessonView`); `comuni.tsx` (riquadro, messaggio, cursore, maniglie col dito con `requestAnimationFrame`). Nel motore: `graphFrame` (la cornice di `graphToSvg`, riusata per disegnare sopra il grafico statico) e le funzioni razionali N/D senza semplificare (`display/rational-function.ts`).
+  - **La visualizzazione**: grafico di $f$ (quello dei grafici statici), retta $y = k$ da trascinare (soglia a passi di ½, esatta), quattro versi, scelta tra più funzioni, sonda; curva ripassata dove vale la disequazione, soluzione sull'asse $x$ con estremi pieni o vuoti, $f(x) - k$ come una frazione, tabella dei segni con le colonne della soluzione (✓) e quella della sonda, soluzione $S$ esatta. Ogni cosa che si trascina ha anche un cursore.
+  - **Nella lezione `V1.M06.L04`**, nuova sezione «La stessa cosa, vista sul grafico» dopo i tre esempi svolti, con le loro tre funzioni (durata 19 → 20).
+  - **Prove**: matematica confrontata con i valori della funzione per ogni soglia del cursore, ogni verso e ogni funzione delle lezioni; componente in jsdom (pulsanti, cursori, trascinamento); Chrome col dito (`test/app/visualizzazioni-chrome.test.ts`, lezione vera) nei due temi, a 414 e 320 px, senza rete: maniglie da 45 px, la pagina non scorre mentre si trascina, nessuno scorrimento orizzontale, colori dal tema. Fotografie guardate a occhio.
+  - `REGOLE.md`, «Come aggiungere una visualizzazione», riscritto con quello che la prima fissa; `docs/ARCHITETTURA.md` aggiornato.
+- **Test**: 1.311 in 58 file, verdi in locale.
 
 ## In corso
 
@@ -60,7 +67,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 4. ~~Tastiera completa~~ e 5. ~~Aspetto definitivo~~: fatti (involucro parte 2). Resta la **modalità lettura** (citata qui in passato, non nella specifica): da decidere se serve.
 6. ~~Flashcard, glossario, diario~~: fatti (involucro parte 1).
 7. ⚙ **Risposta `ordering`** nella schermata di esercizio (le tre modalità delle dimostrazioni e la scheda esistono già, fuori da `ExerciseView`, e non registrano tentativi).
-8. ⚙ **Impalcatura delle visualizzazioni** con la prima, `VIS.disequazioni-grafico`, e la sua scheda in `docs/VISUALIZZAZIONI.md` (`REGOLE.md`, «Come aggiungere una visualizzazione»); poi aggiungerla alla lezione `V1.M06.L04`.
+8. ~~Impalcatura delle visualizzazioni~~: fatta (visualizzazioni parte 1).
 9. ~~Caricamento dei contenuti per modulo~~: fatto (involucro parte 3).
    - Fase finita quando: tutte le sezioni funzionano con i contenuti presenti, e l'app è installata su iPhone e funziona offline.
 
@@ -70,7 +77,7 @@ In ordine. Ogni punto è il compito di una sessione (o di poche); «finita quand
 
 1. ~~Caricamento dei contenuti per modulo~~: fatto (involucro parte 3). Lezioni e generatori nuovi si aggiungono nel file del loro modulo, `src/moduli/vN/mNN.ts`.
 2. ~~Figure e grafici nelle lezioni~~: fatto (involucro parte 4). Sintassi in `REGOLE.md`, «Grafici e figure».
-3. ⚙ **Impalcatura delle visualizzazioni** con `VIS.disequazioni-grafico`, inserita nella lezione `V1.M06.L04` (punto 8 della fase 4).
+3. ~~Impalcatura delle visualizzazioni con `VIS.disequazioni-grafico`~~: fatta (visualizzazioni parte 1). Le altre si copiano da questa (`REGOLE.md`).
 4. ⚙ **Le altre quattro visualizzazioni del Volume 1**: `VIS.trasformazioni-funzioni`, `VIS.esponenziale-logaritmo`, `VIS.circonferenza-goniometrica`, `VIS.coniche-parametri` (scheda in `docs/VISUALIZZAZIONI.md`, poi codice). Le inseriscono le lezioni che le prevedono (V1.M08.L08, V1.M09.L01, V1.M10.L02, V1.M12.L06 e L08).
 5. ⚙ **Parser e catalogo**: numeri periodici (V1.M02.L05), notazione scientifica (V1.M03.L07), gradi (V1.M10.L01), fattoriale (V1.M13.L01); voce di catalogo «√(x²) = x anche per x negativo» («Decisioni di Andrea», punto 1; le forme nuove di `V2.M04.A01.g1` restano alla fase 6).
 6. ⚙ **Risposta `ordering`** nella schermata di esercizio (punto 7 della fase 4): serve a V1.M11.A08 e alle dimostrazioni.
@@ -158,7 +165,8 @@ Generatori e lezione:
 - Equazioni differenziali: niente equazioni lineari del primo ordine con coefficiente non costante oltre `n/x`, niente termine noto trigonometrico nel secondo ordine; la sostituzione numerica scarta i punti fuori dominio (per `c/x` con `x = 0`) (E2).
 - Il controllo delle primitive accetta qualunque funzione con la derivata giusta, anche scritta su un dominio più piccolo, salvo i logaritmi dichiarati dal generatore (`COND.LOGARITMO`) (E2).
 - Derivate: una trentina di esercizi «classici» escono circa il 2% delle volte l'uno (sotto la soglia).
-- La lezione V1.M06.L04 non ha ancora la visualizzazione `VIS.disequazioni-grafico`.
+- `VIS.disequazioni-grafico` accetta solo funzioni razionali con numeratore e denominatore di grado al più 2 (perché gli zeri di $N - kD$ restino esatti per ogni soglia): niente valore assoluto, radici o esponenziali. Gli asintoti orizzontali non si disegnano (come nei grafici statici).
+- Le maniglie delle visualizzazioni non sono ancora provate su un iPhone vero (la prova è in Chrome con il tocco simulato).
 - Le cinque dimostrazioni di riserva seguono le strade classiche dei manuali di Analisi 1 (zeri per bisezione; Weierstrass con una successione che tende all'estremo superiore e Bolzano-Weierstrass; Fermat con il segno del rapporto incrementale; Rolle da Weierstrass e Fermat; Lagrange con la funzione ausiliaria), ma sono state scritte **senza un libro aperto**: il confronto con il libro di testo chiesto da `REGOLE.md` resta da fare quando entrano nelle lezioni.
 - Nelle dimostrazioni di riserva i risultati dei moduli non ancora scritti (successioni monotone, Bolzano-Weierstrass, permanenza del segno, continuità per successioni…) sono citati a parole: diventano rimandi `[[…]]` quando le lezioni esistono (elenco in `src/riserva/LEGGIMI.md`). Il teorema dei valori intermedi (V2.M05) e quello di Cauchy (V2.M06) non sono in riserva.
 - La prova con sympy dal testo mostrato non è nel repository né in CI: va rifatta a mano per ogni generatore nuovo (`REGOLE.md`).
@@ -231,6 +239,14 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 99. Grafico: al più tre funzioni, distinte da colore e tratteggio; finestra in un solo attributo («x min; x max; y min; y max»); disegno 320×240 che si adatta alla larghezza (scale degli assi indipendenti); punti notevoli con lettere in ordine di ascissa e coordinate esatte elencate sotto il disegno, con la legenda delle funzioni.
 100. Figura: file `lNN-nome.svg` nella cartella della lezione, elencato in `figures` del modulo; didascalia obbligatoria; colori solo dalle dieci classi `fig-…` (aree trasparenti, unica opacità ammessa oltre a quote e righello).
 101. Un blocco grafico o figura sbagliato resta nella lezione con il messaggio «Problema: …» nel riquadro (gli altri blocchi sbagliati, come prima, spariscono); la verifica dei contenuti lo boccia comunque.
+
+*Visualizzazioni, parte 1 (V1)*
+
+102. `VIS.disequazioni-grafico`: soglia a passi di ½ (esatta), parametri `funzione` (da 1 a 4, separate da `;`), `soglia`, `verso`, `finestra`; funzioni razionali con gradi al più 2. Sonda in più rispetto alla specifica, per collegare un punto del grafico a una colonna della tabella.
+103. Colori fissati dalla prima visualizzazione: retta e maniglie arancioni, curva ripassata blu più spessa, soluzione sull'asse verde, caselle della soluzione con fondo blu chiaro e ✓.
+104. La tabella della visualizzazione mostra le righe di $N - kD$ e di $D$ ridotti a coefficienti interi (con $k = 0$ e le funzioni della lezione coincidono con le tabelle degli esempi); $D$ costante non ha riga.
+105. Nuova cartella `src/visualizzazioni/` nella tabella di `REGOLE.md`: importa da `motore`, `contenuti/formato` (per `readGraph`) e `app/componenti` (`RichText`); `index.ts` è scritto con `h()` per restare `.ts`.
+106. La verifica dei contenuti riceve anche il controllo dei parametri (`visualizationParams`, facoltativo): un parametro sbagliato è un problema con la riga.
 
 84. Programma generato in `src/contenuti/programma/data.ts` dalle scalette, con un test di allineamento; nuova cartella `src/contenuti/programma/`.
 

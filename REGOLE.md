@@ -19,7 +19,7 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | Generatore nuovo | «Il motore in breve», «Come aggiungere un generatore», «Come replicare un generatore» | specifica 4 («Generatori») e 7; `docs/ARCHITETTURA.md` solo per la parte del motore che usi | il generatore di riferimento della tabella |
 | Lezione nuova | «Come scrivere una lezione» | specifica 3 («Teoria») e 4 | `src/contenuti/v1/m06/l04.md` |
 | Dimostrazione | «Come scrivere una dimostrazione» | specifica 4 («Dimostrazioni interattive»); `src/riserva/LEGGIMI.md` (teoremi già dimostrati) | la lezione che contiene il teorema |
-| Visualizzazione | «Come aggiungere una visualizzazione» | specifica 11 | — |
+| Visualizzazione | «Come aggiungere una visualizzazione» | specifica 11; `docs/VISUALIZZAZIONI.md` | `src/visualizzazioni/disequazioni-grafico.tsx` e `-math.ts` |
 | Errore tipico nuovo | «Catalogo degli errori» | specifica 5 | `src/errori/catalog.ts` |
 | Interfaccia | «L'app in breve», «Dati, padronanza e ripasso», «Note tecniche» | specifica 3, 7 e 10 | il componente da cambiare |
 
@@ -62,6 +62,7 @@ La specifica completa è in `docs/SPECIFICA.md`: è la fonte di verità su cosa 
 | `src/moduli/` | **gli elenchi**: un file per modulo (`v1/m06.ts`) con le sue lezioni e i suoi generatori; `index.ts` registro fisso dei 35 moduli; `indice.ts` indice leggero; `caricamento.ts` moduli caricati (`ensureModules`) | `codici`, `contenuti`, `generatori`, `esercizi` |
 | `src/riserva/` | teoremi con dimostrazione già scritti, in attesa della lezione (`LEGGIMI.md` dice come usarli); non entra nell'app | — |
 | `src/dati/` | progressi, ripasso, registro, backup | `codici`, `errori`, `esercizi` (solo tipi) |
+| `src/visualizzazioni/` | le visualizzazioni interattive: `index.ts` (elenco), `comuni.tsx` (pezzi comuni), una coppia di file per visualizzazione | `motore`, `contenuti/formato` (`readGraph`), `codici`, `app/componenti` (`RichText`) |
 | `src/app/` | interfaccia | tutto |
 
 Il motore non importa mai da `app`, `dati`, `contenuti`, `esercizi`, `errori`.
@@ -560,28 +561,39 @@ La sintassi è in «Come scrivere una lezione» (blocco `dimostrazione`, esempio
 
 ## Come aggiungere una visualizzazione
 
-Le visualizzazioni sono undici, con codici fissi (specifica, sezione 11): non se ne aggiungono altre senza una decisione di Andrea (`STATO.md`, «Domande aperte»). Oggi non ne esiste nessuna: il blocco `visualizzazione` di una lezione mostra un segnaposto (`src/app/schermate/LessonView.tsx`) e la verifica dei contenuti riceve un elenco vuoto (`visualizations: []` in `test/contenuti/lezioni.test.ts`). La **prima** visualizzazione costruisce anche l'impalcatura descritta qui; le successive la copiano, come i generatori.
+Le visualizzazioni sono undici, con codici fissi (specifica, sezione 11): non se ne aggiungono altre senza una decisione di Andrea (`STATO.md`, «Domande aperte»). La prima, `VIS.disequazioni-grafico`, ha costruito l'impalcatura: **le successive la copiano**, come i generatori copiano il generatore di riferimento. File da tenere aperti: `src/visualizzazioni/disequazioni-grafico.tsx` (componente), `src/visualizzazioni/disequazioni-grafico-math.ts` (matematica), i loro test in `test/visualizzazioni/` e `test/app/visualizzazioni-chrome.test.ts`.
 
-**Prima di scrivere codice**: la scheda della visualizzazione in `docs/VISUALIZZAZIONI.md` (una sezione per codice): che cosa si manipola, che cosa si vede, i parametri iniziali che una lezione può passare (nome, significato, valore predefinito, valori ammessi), che cosa deve far capire (dalla tabella della specifica), le lezioni che la usano. La specifica rimanda proprio a questo momento la scheda di ogni visualizzazione (sezione 14).
+**Prima di scrivere codice**: la scheda della visualizzazione in `docs/VISUALIZZAZIONI.md` (una sezione per codice, sul modello di quella di `VIS.disequazioni-grafico`): che cosa si manipola, che cosa si vede, i parametri iniziali che una lezione può passare (nome, significato, valore predefinito, valori ammessi), che cosa deve far capire (dalla tabella della specifica), le lezioni che la usano. Si aggiorna anche la riga «Stato» della tabella in cima.
 
 **Dove**
 
-- `src/visualizzazioni/<nome>.tsx` (il codice senza `VIS.`: `VIS.disequazioni-grafico` → `disequazioni-grafico.tsx`) per il componente; la matematica (campionamento, coordinate, trasformazioni) in un file `.ts` accanto, senza Preact, così si prova da sola.
-- `src/visualizzazioni/index.ts`: l'elenco `codice → componente e parametri` (le visualizzazioni sono poche e restano nel file principale, non nei moduli). Da qui la verifica dei contenuti riceve i codici esistenti (al posto di `visualizations: []`) e `LessonView` sceglie il componente.
-- Test in `test/visualizzazioni/<nome>.test.ts`.
+- `src/visualizzazioni/<nome>.tsx` (il codice senza `VIS.`: `VIS.disequazioni-grafico` → `disequazioni-grafico.tsx`) per il componente; la matematica in `<nome>-math.ts`, senza Preact, così si prova da sola. **Mai due file con lo stesso nome e estensione diversa** (`.ts` e `.tsx`): l'import senza estensione diventa ambiguo.
+- `src/visualizzazioni/index.ts`: l'elenco `VISUALIZATIONS` (codice, componente, `checkParams`). Una riga per visualizzazione; le visualizzazioni sono poche e restano nel file principale, non nei moduli. Da qui arrivano `visualizationCodes` e `checkVisualizationParams` alla verifica dei contenuti, e `VisualizationBlock` a `LessonView`.
+- `src/visualizzazioni/comuni.tsx`: `VisualizationBox` (il riquadro «Visualizzazione · titolo»), `VisualizationProblem` (il messaggio per i parametri sbagliati), `Slider` (cursore con nome e valore in KaTeX), `useDragHandle` (maniglia col dito), `toDrawing`, `pathOf`, `svgNumber`. Si usano questi, non si riscrivono.
+- Test: `test/visualizzazioni/<nome>.test.ts` (matematica), `test/visualizzazioni/<nome>-vista.test.ts` (componente in jsdom), un caso nella prova in Chrome `test/app/visualizzazioni-chrome.test.ts`. `test/visualizzazioni/helpers.ts` ha `lessonParams(codice)`: i parametri di quella visualizzazione in tutte le lezioni vere.
+
+**Come è fatta** (`VIS.disequazioni-grafico`)
+
+- **Il grafico di base è quello dei grafici statici**: `readGraph` (che controlla anche la finestra) e `graphToSvg` disegnano assi, griglia, curva, asintoti e buchi; sopra c'è un secondo `<svg class="vis-sopra">` con lo stesso `viewBox` (`GRAPH_WIDTH × GRAPH_HEIGHT`) per le parti che si muovono. Le coordinate vengono da `graphFrame(finestra)` (`sx`, `sy` e le inverse `px`, `py`), la stessa cornice di `graphToSvg`: i due disegni coincidono (la prova in Chrome lo controlla).
+- **Matematica esatta dove si mostra un risultato.** I numeri che si trascinano e finiscono in un risultato esatto vanno a passi esatti (la soglia a passi di $\tfrac12$, `snapThreshold`), e da lì il motore lavora con `Rational`: zeri, tabella dei segni (`signTable`), soluzione (`solutionFromSigns`, `setToLatex`). I parametri della lezione sono limitati a quello che il motore risolve esatto per **ogni** posizione dei cursori (qui: numeratore e denominatore di grado al più 2), e il test lo prova posizione per posizione. Le grandezze solo da guardare (la sonda) sono in virgola mobile e si scrivono con `≈`.
+- **Funzioni razionali**: `rationalFunction`, `subtractConstant` (f − k come una sola frazione) e gli altri in `src/motore/display/rational-function.ts`. Non semplificano i fattori comuni: dove si annullano la funzione non esiste.
+- **Parametri**: `read…Params(params)` legge il testo con `parseExpression`, non lancia mai, restituisce l'impostazione o l'elenco dei problemi in italiano; un parametro sconosciuto è un problema. `check…Params` dà solo i problemi, per `checkParams` nell'elenco. La verifica dei contenuti li segnala con riga (`Visualizzazione VIS.…: …`); se arrivassero nell'app, il riquadro mostra il messaggio e la lezione continua.
 
 **Regole**
 
 - **Solo 2D, in SVG**, con Preact: nessuna libreria nuova di grafici, nessun file caricato da internet. Tutto offline.
-- **Tocco prima di tutto**: punti trascinabili con un'area di tocco di almeno 44 px, eventi `pointer` (non solo `mouse`), cursori `<input type="range">` per i numeri. Larghezza da 320 px in su senza scorrimento orizzontale.
-- **Fluida su iPhone XR**: al più qualche centinaio di punti per curva, aggiornamento dentro `requestAnimationFrame` durante il trascinamento.
-- **I parametri della lezione sono testo**: si leggono con `parseExpression` (che non lancia mai) e si controllano. Un parametro sbagliato mostra un messaggio in italiano nel riquadro, non rompe la lezione. Il test della visualizzazione legge **tutti** i parametri usati nelle lezioni vere.
-- **Grafici**: i valori si calcolano con `evaluate` (qui la virgola mobile va bene). Dove la funzione non è definita o salta (asintoto verticale, `(x − 1)/(x + 2)` in `x = −2`) la curva si interrompe: mai un segmento verticale che unisce i due rami. Gli zeri e i punti notevoli mostrati vengono dal motore (`realZeros` e `signTable` da `motore/display`), esatti.
-- **Numeri mostrati**: con la virgola decimale e, se approssimati, con `≈`. Le formule con KaTeX, ottenute da `toLatex`.
-- **Temi**: colori solo dalle variabili CSS dell'app, così funzionano il tema chiaro e quello scuro.
-- **Si usa anche senza trascinare**: ogni grandezza che si trascina ha anche un cursore o un valore scritto.
+- **Tocco prima di tutto**: le maniglie hanno un cerchio visibile e un'area di tocco trasparente (`vis-presa`) di raggio **29 unità del disegno** (a 320 px di schermo il disegno è largo circa 250 px: 45 px di diametro); pulsanti e cursori alti almeno `var(--tocco)`. Le maniglie usano `useDragHandle`: eventi `pointer` con cattura del puntatore, aggiornamento al più una volta per fotogramma (`requestAnimationFrame`), e `touchstart` con `preventDefault` (con il solo `touch-action: none` il dito sulla maniglia faceva anche scorrere la pagina). Fuori dalle maniglie il dito scorre la pagina come sempre.
+- **Larghezza da 320 px in su senza scorrimento orizzontale della pagina.** Formule e tabelle larghe stanno in un contenitore che scorre di lato; meglio ancora tenerle corte (la riga di f(x) − k mostra solo il risultato). I pulsanti hanno etichette brevi (il verso è il solo simbolo, con `aria-label` a parole).
+- **Fluida su iPhone XR**: al più qualche centinaio di punti per curva; quello che non cambia mentre si trascina (il grafico di base) si calcola con `useMemo` solo quando cambia la funzione.
+- **I parametri della lezione sono testo**: si leggono con `parseExpression` (che non lancia mai) e si controllano. Il test della visualizzazione legge **tutti** i parametri usati nelle lezioni vere.
+- **Grafici**: dove la funzione non è definita o salta la curva si interrompe (lo fa già `plotGraph`): mai un segmento verticale che unisce i due rami. Zeri e punti notevoli mostrati vengono dal motore, esatti.
+- **Numeri mostrati**: con la virgola decimale e, se approssimati, con `≈`. Dentro una formula la virgola si scrive `{,}` (`approximateLatex`): «−4, 98» con lo spazio è l'errore da non fare. Le formule con KaTeX, ottenute da `toLatex`, `setToLatex`.
+- **Temi**: colori solo dalle variabili CSS dell'app (classi `vis-…` in `styles.css`), così funzionano il tema chiaro e quello scuro. Uso fissato dalla prima: retta e maniglie mobili in `--arancio`, curva ripassata in `--blu` più spessa, soluzione sull'asse in `--ese`, sonda in `--inchiostro`; nella tabella le caselle della soluzione hanno fondo `--def-fondo` **e** il simbolo ✓ (mai solo il colore).
+- **Si usa anche senza trascinare**: ogni grandezza che si trascina ha anche un cursore (`Slider`) con il valore scritto.
 
-**Test**: la parte matematica (coordinate, campionamento, interruzione agli asintoti, valori mostrati) con casi singoli; il componente si disegna in jsdom con i parametri predefiniti e con quelli di ogni lezione che lo usa; la verifica dei contenuti con il codice nell'elenco. Poi una prova a occhio nel telefono simulato, nei due temi.
+**Nella lezione**: il blocco `:::visualizzazione{id=VIS.nome parametro=valore …}` con `:::` subito sotto, dopo gli esempi a cui si collega, con prima un paragrafo che dice che cosa provare («trascina…, guarda…»). La durata della lezione si ricalcola (un minuto in più).
+
+**Test**: la matematica con casi singoli (gli esempi svolti della lezione si ritrovano) e un controllo a tappeto contro i valori della funzione per ogni posizione dei cursori e ogni parametro delle lezioni; il componente in jsdom (`// @vitest-environment jsdom` in cima, `act` da `preact/test-utils`, `getBoundingClientRect` finto per il trascinamento) con i parametri predefiniti, quelli di ogni lezione, pulsanti, cursori, maniglie e un parametro sbagliato; la prova in Chrome (pagina `test/app/anteprima/visualizzazioni.tsx` con la lezione vera) col dito (`page.touch`), nei due temi, a 414 e 320 px, senza rete. Con `COMPASSO_FOTO=cartella` salva le fotografie: guardarle prima di chiudere. Un file di test non si importa da un altro (ne ripeterebbe i test): gli aiuti comuni vanno in `helpers.ts`.
 
 ## Catalogo degli errori
 

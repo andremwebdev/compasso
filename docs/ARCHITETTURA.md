@@ -34,7 +34,7 @@ src/
 │  ├─ complex/          ✅ le tre forme dei numeri complessi, potenze, radici n-esime
 │  ├─ calculus/         ✅ valori di limite, derivata simbolica            🔜 successioni e somme (V2.M03, V2.M11)
 │  ├─ steps/            ✅ passaggi: formula risolutiva, Ruffini, divisione, scomposizione
-│  └─ display/          ✅ tabelle dei segni e di variazione, sistemi con la graffa   🔜 grafici statici (fase 4, con le visualizzazioni)
+│  └─ display/          ✅ tabelle dei segni e di variazione, sistemi con la graffa, grafici statici, funzioni razionali N/D
 ├─ esercizi/            ✅ schema dei generatori, creazione dell'esercizio, valutazione delle risposte, opzioni,
 │                          verifica automatica dei generatori (verify.ts)
 ├─ generatori/          ✅ index.ts (elenco: codice → generatore), comuni/ (strumenti condivisi) e i cinque
@@ -286,8 +286,9 @@ I polinomi delle procedure sono `UPoly` (coefficienti razionali, `algebra/upoly.
 
 - `sign-table.ts`: `signTable(fattori)` costruisce la tabella dei segni di un prodotto o di un quoziente: i punti in ordine, una riga per fattore, la riga del risultato; ogni riga ha 2n + 1 caselle (intervallo, punto, intervallo, …) con valori `+`, `-`, `0`, `undefined` (denominatore nullo o funzione non definita). Gli zeri di un fattore polinomiale li trova il motore (`realZeros`: razionali o di secondo grado); per gli altri fattori li indica il generatore (`zeros`). Il segno su un intervallo si legge in un punto di prova, ed è sicuro perché tutti gli zeri sono punti della tabella: uno zero non dichiarato lancia `EngineError`. `solutionFromSigns(tabella, verso)` dà l'insieme soluzione; `signStudySteps` i passaggi; `signTableToLatex` il disegno.
 - `variation-table.ts`: `variationTable(f, { points })` dà segno della derivata e andamento su ogni intervallo, e per ogni punto valore della funzione, derivata e natura (massimo, minimo, flesso a tangente orizzontale, fuori dal dominio). `extrema` elenca massimi e minimi; `variationTableToLatex` disegna.
+- `graph.ts`: `plotGraph` e `graphToSvg` (grafici statici delle lezioni); `graphFrame(finestra)` dà la cornice del disegno (bordi, `sx`/`sy` e le inverse `px`/`py`), la stessa che usa `graphToSvg`: le visualizzazioni la usano per disegnare sopra il grafico di base e per leggere dove sta il dito.
+- `rational-function.ts`: `rationalFunction(f)` legge una frazione di polinomi in $x$ come N/D **senza semplificare** (un fattore comune resta: lì la funzione non esiste), a coefficienti interi con il coefficiente direttore di D positivo; `subtractConstant(f, k)` dà f − k come una sola frazione; `isConstantFunction`, `rationalDegrees`, `rationalParts`. Usate da `VIS.disequazioni-grafico`.
 - `system.ts`: `systemToLatex` mette equazioni e disequazioni a sistema con la graffa.
-- 🔜 `plot.ts` (fase 3-4, insieme all'interfaccia che lo mostra): grafico statico di una funzione come SVG (campionamento con `evaluate`, interruzione nei punti non definiti), riusabile da lezioni e soluzioni.
 
 Tutto ciò che il motore mostra passa da LaTeX (KaTeX, caratteri incorporati) o da SVG generato in locale.
 
