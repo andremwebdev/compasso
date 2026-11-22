@@ -4,10 +4,12 @@
 
 import { defineModule } from "../definizione";
 import l01 from "../../contenuti/v1/m02/l01.md";
+import l02 from "../../contenuti/v1/m02/l02.md";
 
 export default defineModule("V1.M02", {
   lessons: {
     "V1.M02.L01": l01,
+    "V1.M02.L02": l02,
   },
   generators: [],
 });
