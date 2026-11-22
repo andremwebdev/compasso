@@ -4,6 +4,7 @@
 // visualizzazioni che puntano a qualcosa che esiste, ogni termine del glossario definito una volta sola.
 
 import { isErrorCode } from "../../errori";
+import { checkFigure } from "./figure";
 import type { Lesson } from "./lesson";
 import { lessonReferences, parseLesson } from "./parse";
 
@@ -19,6 +20,8 @@ export interface ContentCatalog {
   readonly generators: Readonly<Record<string, readonly number[]>>;
   /** I codici delle visualizzazioni esistenti. */
   readonly visualizations: readonly string[];
+  /** Le figure SVG accanto alle lezioni: percorso relativo a src/contenuti (v1/m01/l02-venn.svg) → testo. */
+  readonly figures: Readonly<Record<string, string>>;
 }
 
 export interface ContentProblem {
@@ -167,6 +170,11 @@ export function verifyContents(files: readonly ContentFile[], catalog: ContentCa
     for (const error of references.errors) {
       if (!isErrorCode(error)) problems.push({ path, line: 0, message: `Il codice di errore ${error} non esiste nel catalogo.` });
     }
+    for (const figure of references.figures) {
+      const svg = catalog.figures[figure];
+      if (svg === undefined) problems.push({ path, line: 0, message: `La figura ${figure} non esiste (o non è nell'elenco del modulo, «figures»).` });
+      else for (const message of checkFigure(svg, figure.split("/").pop() ?? figure)) problems.push({ path, line: 0, message: `Figura ${figure}: ${message}` });
+    }
     for (const visualization of references.visualizations) {
       if (!visualizations.has(visualization)) problems.push({ path, line: 0, message: `La visualizzazione ${visualization} non esiste.` });
     }
@@ -178,6 +186,12 @@ export function verifyContents(files: readonly ContentFile[], catalog: ContentCa
         problems.push({ path, line: block.line, message: `Il generatore ${block.source.generator} non ha il livello ${block.source.level} (ha: ${levels.join(", ")}).` });
       }
     }
+  }
+
+  // Figure che nessuna lezione usa: file dimenticati.
+  const used = new Set(entries.flatMap(({ lesson }) => lessonReferences(lesson).figures));
+  for (const figure of Object.keys(catalog.figures)) {
+    if (!used.has(figure)) warnings.push({ path: figure, line: 0, message: `La figura ${figure} non è usata da nessuna lezione.` });
   }
 
   glossary.sort((a, b) => a.term.localeCompare(b.term, "it"));

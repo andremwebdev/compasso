@@ -181,6 +181,7 @@ describe("lettura di una lezione", () => {
       errors: ["AN.HOPITAL_IPOTESI", "AN.PUNTO_CRITICO"],
       generators: ["V2.M06.A04.g1"],
       visualizations: ["VIS.secante-tangente"],
+      figures: [],
     });
   });
 
@@ -201,7 +202,7 @@ describe("controllo di una lezione", () => {
     ["prerequisito malformato", changed("[V2.M06.L03, V2.M05.L02]", "[V2.M06.A03]"), "«V2.M06.A03» non è un codice di lezione."],
     ["elenco senza quadre", changed("abilita: [V2.M06.A04]", "abilita: V2.M06.A04"), "«abilita» deve essere un elenco tra parentesi quadre, anche vuoto: []."],
     ["abilità di un altro modulo", changed("abilita: [V2.M06.A04]", "abilita: [V2.M05.A04]"), "L'abilità V2.M05.A04 non è del modulo della lezione."],
-    ["blocco sconosciuto", changed(":::esempio{titolo=\"Una parabola\"}", ":::esempi"), "Blocco sconosciuto: «esempi». Blocchi disponibili: definizione, teorema, dimostrazione, esempio, attenzione, domanda, visualizzazione, flashcard, glossario, riepilogo."],
+    ["blocco sconosciuto", changed(":::esempio{titolo=\"Una parabola\"}", ":::esempi"), "Blocco sconosciuto: «esempi». Blocchi disponibili: definizione, teorema, dimostrazione, esempio, attenzione, domanda, visualizzazione, grafico, figura, flashcard, glossario, riepilogo."],
     ["blocco non chiuso", changed("senza derivabilità il teorema non vale.\n:::", "senza derivabilità il teorema non vale."), "Il blocco «attenzione» aperto alla riga 58 non è chiuso: i blocchi non si annidano."],
     ["chiusura in più", changed(":::riepilogo", ":::\n\n:::riepilogo"), "C'è una chiusura «:::» senza un blocco aperto."],
     ["attributo sconosciuto", changed("{id=V2.M06.T03 nome=\"Teorema di Lagrange\"}", "{id=V2.M06.T03 nome=\"Teorema di Lagrange\" autore=Lagrange}"), "Il blocco «teorema» non ha l'attributo «autore»."],

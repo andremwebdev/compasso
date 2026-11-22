@@ -7,3 +7,5 @@ export {
   formatContentReport, lessonPath, verifyContents,
   type ContentCatalog, type ContentFile, type ContentProblem, type ContentReport, type GlossaryEntry,
 } from "./verify";
+export { readGraph, graphSvg, type GraphParams, type GraphReading } from "./graph";
+export { FIGURE_CLASSES, checkFigure, figureFileProblem, figurePath, type FigureClass } from "./figure";

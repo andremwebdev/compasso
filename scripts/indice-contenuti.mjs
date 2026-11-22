@@ -27,7 +27,7 @@ export async function computeContentIndex() {
     logLevel: "warning",
     // Le librerie restano fuori: il file temporaneo sta dentro node_modules e le trova da lì.
     packages: "external",
-    loader: { ".md": "text" },
+    loader: { ".md": "text", ".svg": "text" },
     define: { __TARGET__: '"pc"', __CONTENT_INDEX__: "[]" },
   });
   const dir = path.join(root, "node_modules", ".cache", "compasso");

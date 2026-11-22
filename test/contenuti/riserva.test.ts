@@ -88,7 +88,7 @@ describe("dimostrazioni di riserva", () => {
 
   it("superano la verifica dei contenuti insieme alle lezioni vere, senza problemi e senza avvisi", () => {
     // Insieme alle lezioni vere: un teorema già entrato in una lezione non può restare anche in riserva.
-    const report = verifyContents([...lessons, ...reserves.map((reserve) => reserve.wrapped)], { generators: generatorLevels(), visualizations: [] });
+    const report = verifyContents([...lessons, ...reserves.map((reserve) => reserve.wrapped)], { generators: generatorLevels(), visualizations: [], figures: {} });
     expect(report.problems, formatContentReport(report)).toEqual([]);
     expect(report.warnings, formatContentReport(report)).toEqual([]);
     expect(report.lessons).toBe(lessons.length + reserves.length);

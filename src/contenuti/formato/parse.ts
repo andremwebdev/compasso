@@ -10,6 +10,8 @@ import {
   isVisualizationCode, moduleOf, type LessonCode,
 } from "../../codici";
 import { isErrorCode, type ErrorCode } from "../../errori";
+import { figureFileProblem, figurePath } from "./figure";
+import { readGraph } from "./graph";
 import { splitInline, unbalancedMath } from "./inline";
 import {
   blockNames, type Lesson, type LessonBlock, type LessonMeta, type LessonProblem, type ProofStep, type QuestionOption, type RichText,
@@ -347,6 +349,37 @@ function buildBlock(raw: RawBlock, meta: LessonMeta, report: (line: number, mess
       noSections();
       return finish(() => ({ kind, line, id: id as NonNullable<typeof id>, params }));
     }
+    case "graph": {
+      // Il blocco resta anche se un parametro è sbagliato: la lezione mostra il messaggio nel riquadro.
+      const text = (key: string): string => {
+        used.add(key);
+        const value = attrs.get(key);
+        if (value === true) problem(`Nel blocco «grafico» manca il valore dell'attributo «${key}».`);
+        return typeof value === "string" ? value : "";
+      };
+      const params = { functions: text("funzioni"), window: text("finestra"), points: text("punti") };
+      noSections();
+      for (const key of attrs.keys()) {
+        if (!used.has(key)) problem(`Il blocco «grafico» non ha l'attributo «${key}» (attributi: funzioni, finestra, punti).`);
+      }
+      const reading = readGraph(params);
+      if (!reading.ok) for (const message of reading.problems) report(line, `Grafico: ${message}`);
+      return { kind, line, ...params, caption: body };
+    }
+    case "figure": {
+      used.add("file");
+      const value = attrs.get("file");
+      const file = typeof value === "string" ? value : "";
+      if (file === "") report(line, "Nel blocco «figura» manca il file: per esempio {file=l02-venn-unione.svg}.");
+      else {
+        const wrong = figureFileProblem(file, meta.code);
+        if (wrong) report(line, wrong);
+      }
+      for (const key of attrs.keys()) if (key !== "file") report(line, `Il blocco «figura» non ha l'attributo «${key}».`);
+      for (const section of raw.sections.slice(1)) report(section.line, `Il blocco «figura» non ha la sezione «::${section.name}».`);
+      if (body === "") report(line, "La figura non ha la didascalia: scrivila dentro il blocco (dice che cosa mostra, anche a chi non la vede).");
+      return { kind, line, file, caption: body };
+    }
     case "flashcard": {
       const id = inModule(code("id", isFlashcardCode, "un codice di flashcard (esempio: V2.M06.F05)"));
       const back = raw.sections.find((section) => section.name === "retro");
@@ -434,6 +467,9 @@ export function blockTexts(block: LessonBlock): RichText[] {
         : [];
     case "flashcard":
       return [block.front, block.back];
+    case "graph":
+    case "figure":
+      return [block.caption];
     case "visualization":
       return [];
   }
@@ -499,14 +535,17 @@ export interface LessonReferences {
   readonly errors: readonly string[];
   readonly generators: readonly string[];
   readonly visualizations: readonly string[];
+  /** Le figure, come percorsi relativi a src/contenuti (v1/m01/l02-venn.svg). */
+  readonly figures: readonly string[];
 }
 
 export function lessonReferences(lesson: Lesson): LessonReferences {
-  const sets = { terms: new Set<string>(), lessons: new Set<string>(), definitions: new Set<string>(), theorems: new Set<string>(), errors: new Set<string>(), generators: new Set<string>(), visualizations: new Set<string>() };
+  const sets = { terms: new Set<string>(), lessons: new Set<string>(), definitions: new Set<string>(), theorems: new Set<string>(), errors: new Set<string>(), generators: new Set<string>(), visualizations: new Set<string>(), figures: new Set<string>() };
   for (const code of lesson.meta.prerequisites) sets.lessons.add(code);
   for (const block of lesson.blocks) {
     if (block.kind === "warning") sets.errors.add(block.error);
     if (block.kind === "visualization") sets.visualizations.add(block.id);
+    if (block.kind === "figure" && block.file !== "") sets.figures.add(figurePath(lesson.meta.code, block.file));
     if (block.kind === "proof") sets.theorems.add(block.of);
     if (block.kind === "question") {
       if (block.source.type === "generator") sets.generators.add(block.source.generator);
@@ -527,5 +566,6 @@ export function lessonReferences(lesson: Lesson): LessonReferences {
   return {
     terms: sorted(sets.terms), lessons: sorted(sets.lessons), definitions: sorted(sets.definitions), theorems: sorted(sets.theorems),
     errors: sorted(sets.errors), generators: sorted(sets.generators), visualizations: sorted(sets.visualizations),
+    figures: sorted(sets.figures),
   };
 }

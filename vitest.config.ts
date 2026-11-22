@@ -1,13 +1,22 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "vitest/config";
 import { contentIndexDefine } from "./scripts/indice-contenuti.mjs";
 
 export default defineConfig({
-  // Le lezioni (.md) si importano come testo, come fa esbuild nella compilazione vera.
+  // Le lezioni (.md) e le loro figure (.svg) si importano come testo, come fa esbuild nella compilazione vera.
   plugins: [
     {
       name: "markdown-come-testo",
       transform(code: string, id: string) {
         return id.endsWith(".md") ? { code: `export default ${JSON.stringify(code)};`, map: null } : null;
+      },
+    },
+    {
+      // Le figure .svg si leggono dal file prima che Vite le tratti come immagini (che darebbero un indirizzo).
+      name: "svg-come-testo",
+      enforce: "pre" as const,
+      load(id: string) {
+        return id.endsWith(".svg") ? `export default ${JSON.stringify(readFileSync(id, "utf8"))};` : null;
       },
     },
   ],

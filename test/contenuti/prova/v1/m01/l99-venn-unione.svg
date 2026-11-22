@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <title>Diagramma di Venn: l'unione di A e B</title>
+  <!-- Il rettangolo è l'insieme universo. -->
+  <rect class="fig-linea" x="8" y="8" width="304" height="184" rx="6"/>
+  <circle class="fig-area-1 fig-linea" cx="125" cy="100" r="62"/>
+  <circle class="fig-area-1 fig-linea" cx="195" cy="100" r="62"/>
+  <path class="fig-tratteggio" d="M160 49V151"/>
+  <text class="fig-testo-corsivo" x="88" y="104">A</text>
+  <text class="fig-testo-corsivo" x="222" y="104">B</text>
+  <text class="fig-testo" x="20" y="28">U</text>
+</svg>

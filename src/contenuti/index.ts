@@ -7,7 +7,7 @@
 import { moduleOf, type LessonCode } from "../codici";
 import { loadedModule } from "../moduli/caricamento";
 import { contentIndex, type LessonInfo } from "../moduli/indice";
-import { parseLesson, type Lesson } from "./formato";
+import { figurePath, parseLesson, type Lesson } from "./formato";
 
 const infos = new Map<string, LessonInfo>(contentIndex.flatMap((module) => module.lessons.map((lesson) => [lesson.code, lesson] as const)));
 
@@ -38,4 +38,13 @@ export function loadLesson(code: string): Lesson | null {
   const lesson = parseLesson(source).lesson;
   parsed.set(code, lesson);
   return lesson;
+}
+
+/**
+ * Il testo SVG di una figura (blocco «figura») di una lezione; undefined se il file non è
+ * nell'elenco del modulo o se il modulo non è ancora caricato.
+ */
+export function figureSource(lessonCode: string, file: string): string | undefined {
+  const module = loadedModule(moduleOf(lessonCode as LessonCode));
+  return module?.figures[figurePath(lessonCode, file)];
 }

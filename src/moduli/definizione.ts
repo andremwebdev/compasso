@@ -12,9 +12,14 @@ export interface ModuleContent {
   readonly lessons: Readonly<Record<LessonCode, string>>;
   /** I generatori delle abilità del modulo, in ordine di abilità. */
   readonly generators: readonly GeneratorDefinition[];
+  /** Le figure SVG delle lezioni (blocco «figura»): percorso relativo a src/contenuti → testo SVG. */
+  readonly figures: Readonly<Record<string, string>>;
 }
 
-/** Dichiara il contenuto di un modulo (serve solo a dare il tipo giusto al file del modulo). */
-export function defineModule(code: ModuleCode, content: Omit<ModuleContent, "code">): ModuleContent {
-  return { code, ...content };
+/** Dichiara il contenuto di un modulo (serve solo a dare il tipo giusto al file del modulo). Le figure sono facoltative. */
+export function defineModule(
+  code: ModuleCode,
+  content: Omit<ModuleContent, "code" | "figures"> & { readonly figures?: ModuleContent["figures"] },
+): ModuleContent {
+  return { code, ...content, figures: content.figures ?? {} };
 }

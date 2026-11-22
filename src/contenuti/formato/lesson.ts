@@ -62,6 +62,13 @@ export type LessonBlock =
   | (BlockBase & { readonly kind: "warning"; readonly error: ErrorCode; readonly body: RichText })
   | (BlockBase & { readonly kind: "question"; readonly source: QuestionSource })
   | (BlockBase & { readonly kind: "visualization"; readonly id: VisualizationCode; readonly params: Readonly<Record<string, string>> })
+  /**
+   * Grafico statico di funzioni, disegnato dal motore. I parametri restano il testo scritto nel file:
+   * li legge readGraph (graph.ts), che dice che cosa non va senza mai interrompere la lezione.
+   */
+  | (BlockBase & { readonly kind: "graph"; readonly functions: string; readonly window: string; readonly points: string; readonly caption: RichText })
+  /** Figura SVG scritta a mano, in un file accanto alla lezione (lNN-nome.svg); il corpo è la didascalia. */
+  | (BlockBase & { readonly kind: "figure"; readonly file: string; readonly caption: RichText })
   | (BlockBase & { readonly kind: "flashcard"; readonly id: FlashcardCode; readonly front: RichText; readonly back: RichText })
   /** Termine del glossario spiegato senza un riquadro di definizione: il corpo è la definizione breve. */
   | (BlockBase & { readonly kind: "glossary"; readonly term: GlossaryTerm; readonly name: string; readonly body: RichText })
@@ -87,6 +94,8 @@ export const blockNames = {
   attenzione: "warning",
   domanda: "question",
   visualizzazione: "visualization",
+  grafico: "graph",
+  figura: "figure",
   flashcard: "flashcard",
   glossario: "glossary",
   riepilogo: "summary",

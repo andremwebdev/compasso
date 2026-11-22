@@ -83,8 +83,8 @@ async function appOptions(target) {
     write: false,
     legalComments: "none",
     logLevel: "warning",
-    // Le lezioni sono file Markdown: entrano nel codice come testo.
-    loader: { ".md": "text" },
+    // Le lezioni sono file Markdown, le loro figure file SVG: entrano nel codice come testo.
+    loader: { ".md": "text", ".svg": "text" },
     define: {
       __TARGET__: JSON.stringify(target),
       __CONTENT_INDEX__: await contentIndexOnce(),

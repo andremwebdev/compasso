@@ -32,6 +32,7 @@ const catalog: ContentCatalog = {
   // Il catalogo dei generatori si ricava dalle loro definizioni: qui c'è il generatore minimo di prova.
   generators: { [sample.code]: sample.levels },
   visualizations: ["VIS.disequazioni-grafico"],
+  figures: {},
 };
 
 const first = lesson({ code: "V1.M06.L01", skills: ["V1.M06.A01"], terms: ["disequazione", "verso"] });
@@ -167,7 +168,7 @@ describe("verifica dei contenuti", () => {
   });
 
   it("generatori e visualizzazioni devono esistere, con il livello richiesto", () => {
-    expect(messages(valid, { generators: {}, visualizations: [] })).toEqual([
+    expect(messages(valid, { generators: {}, visualizations: [], figures: {} })).toEqual([
       "La visualizzazione VIS.disequazioni-grafico non esiste.",
       `Il generatore ${sample.code} non esiste.`,
     ]);

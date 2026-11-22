@@ -15,19 +15,23 @@ import { findGenerator, generatorLevels } from "../../src/generatori";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const folder = path.join(root, "src", "contenuti");
 
-function markdownFiles(dir = folder): string[] {
+function filesEndingWith(extension: string, dir = folder): string[] {
   return readdirSync(dir).flatMap((name) => {
     const full = path.join(dir, name);
-    if (statSync(full).isDirectory()) return name === "formato" ? [] : markdownFiles(full);
-    return name.endsWith(".md") ? [full] : [];
+    if (statSync(full).isDirectory()) return name === "formato" ? [] : filesEndingWith(extension, full);
+    return name.endsWith(extension) ? [full] : [];
   });
 }
 
-const files: ContentFile[] = markdownFiles().map((file) => ({ path: path.relative(root, file).split(path.sep).join("/"), text: readFileSync(file, "utf8") }));
+const files: ContentFile[] = filesEndingWith(".md").map((file) => ({ path: path.relative(root, file).split(path.sep).join("/"), text: readFileSync(file, "utf8") }));
+/** Le figure accanto alle lezioni: percorso relativo a src/contenuti → testo. */
+const figures: Record<string, string> = Object.fromEntries(
+  filesEndingWith(".svg").map((file) => [path.relative(folder, file).split(path.sep).join("/"), readFileSync(file, "utf8")]),
+);
 
 describe("lezioni dell'app", () => {
   it("superano la verifica dei contenuti, senza problemi e senza avvisi", () => {
-    const report = verifyContents(files, { generators: generatorLevels(), visualizations: [] });
+    const report = verifyContents(files, { generators: generatorLevels(), visualizations: [], figures });
     expect(report.problems, formatContentReport(report)).toEqual([]);
     expect(report.warnings, formatContentReport(report)).toEqual([]);
     expect(report.lessons).toBe(files.length);
@@ -45,6 +49,15 @@ describe("lezioni dell'app", () => {
       expect(loadLesson(code)?.meta.code).toBe(code);
     }
     expect(loadLesson("V9.M99.L99")).toBeNull();
+  });
+
+  it("ogni figura è nell'elenco del suo modulo («figures»), con lo stesso testo", () => {
+    const listed: Record<string, string> = Object.assign({}, ...loadedModules().map((module) => module.figures));
+    expect(Object.keys(listed).sort()).toEqual(Object.keys(figures).sort());
+    for (const [file, text] of Object.entries(figures)) expect(listed[file], file).toBe(text);
+    for (const module of loadedModules()) {
+      for (const file of Object.keys(module.figures)) expect(file.startsWith(`${module.code.toLowerCase().replace(".", "/")}/`), `${file} nell'elenco di ${module.code}`).toBe(true);
+    }
   });
 
   it("ogni formula si disegna con KaTeX in modalità rigorosa", () => {
