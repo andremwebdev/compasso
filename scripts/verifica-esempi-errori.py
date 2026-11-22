@@ -412,6 +412,13 @@ def _():
     assert (5, 1) not in AB
 
 
+@check("LOG.PORTATA_NEGAZIONE")
+def _():
+    A_, B_ = False, False
+    assert ((not A_) and B_) is False
+    assert (not (A_ and B_)) is True
+
+
 @check("LOG.UNIONE_INTERSEZIONE")
 def _():
     A_, B_ = {1, 2, 3}, {2, 3, 5}

@@ -369,6 +369,14 @@ export const errorCatalog = [
     reference: "V1.M01",
   },
   {
+    code: "LOG.PORTATA_NEGAZIONE",
+    name: "Negazione estesa a tutta la proposizione",
+    category: "LOG",
+    explanation: tex`Il simbolo $\neg$ si applica solo a quello che lo segue subito: $\neg A\wedge B$ vuol dire $(\neg A)\wedge B$. Per negare tutta la proposizione servono le parentesi, $\neg(A\wedge B)$, e le due scritture hanno valori diversi.`,
+    example: tex`Con $A$ falsa e $B$ falsa, $\neg A\wedge B$ è falsa ($\neg A$ è vera, $B$ è falsa), mentre $\neg(A\wedge B)$ è vera.`,
+    reference: "V1.M01",
+  },
+  {
     code: "LOG.UNIONE_INTERSEZIONE",
     name: "Unione e intersezione di insiemi scambiate",
     category: "LOG",
