@@ -119,7 +119,7 @@ export const checks = signal<readonly KnownCheck[]>([]);
 export const settings = signal<Settings>(defaultSettings());
 export const backupInfo = signal<BackupInfo>(emptyBackup());
 export const todaySession = signal<TodaySession | null>(null);
-/** Vero quando il service worker ha scaricato una versione nuova (si userà dalla riapertura). */
+/** Vero quando il service worker ha scaricato una versione nuova, che si attiva con «Aggiorna». */
 export const updateReady = signal(false);
 /** Vero quando i dati salvati sono stati letti (prima, Oggi non sa ancora se c'è una sessione in corso). */
 export const dataLoaded = signal(false);

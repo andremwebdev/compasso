@@ -2098,11 +2098,20 @@ button.list-row {
 }
 
 .update-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2) var(--s-4);
   margin: 0 0 var(--s-4);
   padding: var(--s-2) var(--s-4);
   border: 1px solid var(--blu);
   border-radius: var(--raggio);
   background: var(--def-fondo);
+}
+
+.update-banner p {
+  margin: 0;
 }
 
 .skill-row {

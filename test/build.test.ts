@@ -7,9 +7,10 @@
 // dei contenuti siano file separati, letti solo quando servono.
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
@@ -318,6 +319,155 @@ describe("versione telefono (PWA)", () => {
         expect(await ui.count(".exercise-prompt .katex")).toBeGreaterThan(0);
         expect(await ui.count(".katex-error")).toBe(0);
         expect(await loadedModuleFiles(page)).toEqual(["moduli/v1/m06.js", "moduli/v2/m06.js"]);
+      },
+      120_000,
+    );
+
+    maybe(
+      "dopo una nuova pubblicazione l'app avvisa, si aggiorna con «Aggiorna» e i dati salvati restano",
+      async () => {
+        // Due pubblicazioni: A è la compilazione vera, B la stessa con una lezione cambiata
+        // (titolo nuovo) e quindi un sw.js con una versione nuova.
+        const work = mkdtempSync(path.join(tmpdir(), "compasso-pubblicazioni-"));
+        const dirA = path.join(work, "a");
+        const dirB = path.join(work, "b");
+        cpSync(telefonoDir, dirA, { recursive: true });
+        cpSync(telefonoDir, dirB, { recursive: true });
+        const oldTitle = "Disequazioni fratte";
+        const newTitle = "Disequazioni fratte, edizione nuova";
+        // Il titolo sta nell'indice (app.js), nel programma (codice comune) e nel file del modulo.
+        const changed = readdirSync(dirB, { recursive: true, encoding: "utf8" }).filter((file) => {
+          if (!file.endsWith(".js") || file === "sw.js") return false;
+          const text = readFileSync(path.join(dirB, file), "utf8");
+          if (!text.includes(oldTitle)) return false;
+          writeFileSync(path.join(dirB, file), text.replaceAll(oldTitle, newTitle));
+          return true;
+        });
+        expect(changed).toContain("app.js");
+        expect(changed).toContain(path.join("moduli", "v1", "m06.js"));
+        const swA = readFileSync(path.join(dirA, "sw.js"), "utf8");
+        const versionA = [...new Set([...swA.matchAll(/"([0-9a-f]{12})"/g)].map((match) => match[1]))];
+        expect(versionA).toHaveLength(1);
+        writeFileSync(path.join(dirB, "sw.js"), swA.replaceAll(`"${versionA[0]}"`, '"b00000000000"'));
+        writeFileSync(
+          path.join(dirB, "index.html"),
+          readFileSync(path.join(dirB, "index.html"), "utf8").replace("<head>", '<head>\n<meta name="pubblicazione" content="B">'),
+        );
+
+        // Il sito: risponde dalla pubblicazione corrente, con la cache HTTP di GitHub Pages (10 minuti).
+        let current = dirA;
+        const site = createServer((request, response) => {
+          const url = new URL(request.url ?? "/", "http://localhost");
+          const file = path.join(current, url.pathname === "/" ? "index.html" : decodeURIComponent(url.pathname));
+          if (!file.startsWith(current) || !existsSync(file)) {
+            response.writeHead(404).end();
+            return;
+          }
+          const types: Record<string, string> = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webmanifest": "application/manifest+json", ".png": "image/png", ".woff2": "font/woff2" };
+          response.writeHead(200, { "content-type": types[path.extname(file)] ?? "application/octet-stream", "cache-control": "max-age=600" }).end(readFileSync(file));
+        });
+        await new Promise<void>((resolve) => site.listen(0, "127.0.0.1", () => resolve()));
+        const siteBase = `http://127.0.0.1:${(site.address() as AddressInfo).port}/`;
+
+        /** Aspetta che un'espressione nella pagina diventi vera (anche attraverso una ricarica). */
+        const waitFor = async (page: ChromePage, expression: string, what: string) => {
+          const start = Date.now();
+          while (Date.now() - start < 20_000) {
+            try {
+              if (await page.evaluate<boolean>(expression)) return;
+            } catch {
+              // pagina in ricarica: si riprova
+            }
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          }
+          throw new Error(`non arriva: ${what}`);
+        };
+        /** Tutto quello che c'è in IndexedDB (i dati di Andrea), magazzino per magazzino. */
+        const savedData = (page: ChromePage) =>
+          page.evaluate<Record<string, unknown[]>>(`new Promise((resolve, reject) => {
+            const request = indexedDB.open("compasso");
+            request.onerror = () => reject(request.error);
+            request.onsuccess = async () => {
+              const db = request.result;
+              const out = {};
+              for (const name of [...db.objectStoreNames]) {
+                out[name] = await new Promise((done) => { const r = db.transaction(name).objectStore(name).getAll(); r.onsuccess = () => done(r.result); });
+              }
+              db.close();
+              resolve(out);
+            };
+          })`);
+        const cacheNames = (page: ChromePage) => page.evaluate<string[]>("caches.keys()");
+        const banner = '[...document.querySelectorAll(".update-banner")].some((element) => element.textContent.includes("Versione nuova disponibile"))';
+
+        try {
+          const page = await chrome!.newPage();
+          const ui = chromeUi(page);
+          await page.goto(siteBase);
+          await ui.settle();
+          await waitFor(page, "navigator.serviceWorker.controller !== null", "il service worker della pubblicazione A");
+          expect(await cacheNames(page)).toEqual([`compasso-${versionA[0]}`]);
+          expect(await page.evaluate(banner)).toBe(false);
+
+          // Andrea studia: una lezione cominciata, un esercizio nel registro.
+          await ui.click("nav.tab-bar button", "Teoria");
+          await ui.click(".card-link", "Fondamenta");
+          await ui.click(".card-link", "V1.M06");
+          await ui.click(".card-link", oldTitle);
+          await ui.click(".box-question .option", "stesso segno");
+          await ui.click(".box-question button", "Conferma");
+          await ui.click(".lesson-footer button", "Continua");
+          await ui.click("nav.tab-bar button", "Esercizi");
+          await ui.click(".list-row", oldTitle);
+          await ui.click(".exercise-actions button", "Non lo so");
+          await ui.click("nav.tab-bar button", "Tu");
+          expect(await ui.text("main")).toContain("Tentativi nel registro: 2");
+          const before = await savedData(page);
+          expect(before.attempts).toHaveLength(2);
+          expect(before.lessons?.length).toBeGreaterThan(0);
+
+          // Nuova pubblicazione. L'app torna in primo piano: controlla, scarica B e avvisa.
+          current = dirB;
+          await page.evaluate('document.dispatchEvent(new Event("visibilitychange")), true');
+          await waitFor(page, banner, "l'avviso dopo il ritorno in primo piano");
+          // Finché Andrea non tocca «Aggiorna», resta la versione A, intera.
+          expect(await page.evaluate("document.querySelector('meta[name=pubblicazione]') === null")).toBe(true);
+          expect((await cacheNames(page)).sort()).toEqual(["compasso-b00000000000", `compasso-${versionA[0]}`].sort());
+
+          // Riaprendo l'app (senza aver aggiornato) l'avviso c'è di nuovo, subito.
+          await page.reload();
+          await ui.settle();
+          await waitFor(page, banner, "l'avviso alla riapertura");
+          expect(await page.evaluate("document.querySelector('meta[name=pubblicazione]') === null")).toBe(true);
+
+          // «Aggiorna»: la versione B prende il comando e la pagina si ricarica da sola.
+          await page.evaluate('[...document.querySelectorAll(".update-banner button")].find((b) => b.textContent.includes("Aggiorna")).click(), true');
+          await waitFor(page, "document.readyState === 'complete' && document.querySelector('meta[name=pubblicazione]') !== null", "la pagina della pubblicazione B");
+          await ui.settle();
+          expect(await page.evaluate(banner)).toBe(false);
+          // La copia vecchia è cancellata solo ora, dopo che la nuova è pronta e attiva.
+          expect(await cacheNames(page)).toEqual(["compasso-b00000000000"]);
+
+          // La lezione nuova c'è, e si apre dal file del modulo nuovo.
+          await ui.click("nav.tab-bar button", "Teoria");
+          await ui.click(".card-link", "Fondamenta");
+          await ui.click(".card-link", "V1.M06");
+          await ui.click(".card-link", newTitle);
+          expect(await ui.text(".lesson-header h1")).toBe(newTitle);
+
+          // I dati salvati sono gli stessi di prima, uno per uno.
+          await ui.click("nav.tab-bar button", "Tu");
+          expect(await ui.text("main")).toContain("Tentativi nel registro: 2");
+          const after = await savedData(page);
+          expect(after.attempts).toEqual(before.attempts);
+          expect(after.lessons).toEqual(before.lessons);
+          expect(after.checks).toEqual(before.checks);
+          expect(after.reviews).toEqual(before.reviews);
+        } finally {
+          site.closeAllConnections();
+          await new Promise((resolve) => site.close(resolve));
+          rmSync(work, { recursive: true, force: true });
+        }
       },
       120_000,
     );

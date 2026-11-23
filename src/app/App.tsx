@@ -1,4 +1,5 @@
 import { TabBar } from "./componenti/TabBar";
+import { applyUpdate } from "./register-sw";
 import { LessonView } from "./schermate/LessonView";
 import { Practice } from "./schermate/Practice";
 import { Esercizi } from "./schermate/Esercizi";
@@ -56,9 +57,14 @@ export function App() {
     <>
       <main class="page">
         {updateReady.value && (
-          <p class="update-banner" role="status">
-            Versione nuova disponibile: la userai dalla prossima apertura dell'app. I progressi restano.
-          </p>
+          <div class="update-banner" role="status">
+            <p>
+              <strong>Versione nuova disponibile.</strong> I progressi restano.
+            </p>
+            <button type="button" class="button button-primary" onClick={applyUpdate}>
+              Aggiorna
+            </button>
+          </div>
         )}
         {dataProblem.value && (
           <p class="answer-problem" role="alert">
