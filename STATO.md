@@ -82,7 +82,8 @@ Fasi 1, 2 e 3 della specifica (sezione 13) complete e riviste.
   - scelta multipla scritta a mano: `A02` criteri di divisibilità, `A03` fattori primi, `A07` razionali e irrazionali, `A08` confronto tra reali, `A09` verso una base b (la risposta è una scrittura in base b, non un numero del motore).
   - Comune nuovo `src/generatori/comuni/primes.ts` (primi, scomposizione, MCD, mcm).
   - Le otto lezioni dichiarano le loro abilità e hanno le domande lampo dei livelli 1 e 2; casi del livello 3 aggiunti dove mancavano (decisioni 144-150).
-- **Test**: 1.516, verdi in locale e su GitHub. Il test che disegna passaggi e indizi di tutti i generatori (`test/app/moduli.test.ts`) ha ora un tempo massimo di 30 secondi: con i generatori di V1.M01 superava i 5 su GitHub.
+- **Aggiornamento automatico dell'app installata** (correzione, 23 novembre 2026): sull'iPhone le lezioni nuove non arrivavano senza cancellare i dati del sito. Ora: cache `compasso-<versione>` con nome nuovo a ogni pubblicazione, file scaricati saltando cache HTTP e CDN (`reload`, `?v=`); `sw.js` registrato con `updateViaCache: "none"` (mai dalla cache del browser, come `index.html` che sta nella copia); controllo all'apertura e al ritorno in primo piano; avviso «Versione nuova disponibile» con «Aggiorna» (anche per una versione già in attesa da un'apertura precedente: prima l'avviso compariva solo nel momento dello scaricamento), che attiva la versione e ricarica; cache vecchie cancellate solo all'attivazione; IndexedDB mai toccato. Prova in Chrome in `test/build.test.ts`: pubblicazione A, studio (lezione e esercizio), pubblicazione B con un titolo di lezione cambiato e cache HTTP di 10 minuti come GitHub Pages; avviso al ritorno in primo piano e alla riapertura, «Aggiorna», lezione nuova presente, una sola cache, registro e progressi identici. Dettagli in `REGOLE.md`, «Note tecniche».
+- **Test**: 1.517, verdi in locale e su GitHub. Il test che disegna passaggi e indizi di tutti i generatori (`test/app/moduli.test.ts`) ha ora un tempo massimo di 30 secondi: con i generatori di V1.M01 superava i 5 su GitHub.
 
 ## In corso
 
@@ -208,7 +209,7 @@ Generatori e lezione:
 
 App:
 
-- Non provata su un iPhone vero.
+- Non provata su un iPhone vero. Anche l'aggiornamento automatico è provato solo in Chrome: va confermato sull'iPhone alla prossima pubblicazione (avviso alla riapertura, «Aggiorna», lezioni nuove, progressi intatti).
 - Su telefono la riga finale dei passaggi delle disequazioni fratte va fatta scorrere di lato; le opzioni di scelta multipla di un insieme mostrano solo gli intervalli.
 - Nella lezione le dimostrazioni restano statiche; le modalità interattive sono nella scheda Dimostrazioni (oggi nessuna lezione scritta ne ha). Il riordino non è ancora provato su un iPhone vero.
 - Riordino: un solo codice di errore per esercizio (campo `error`), qualunque sia lo scambio fatto; un ordine sbagliato non distingue quale passo è fuori posto oltre ai ✓/✗.
@@ -450,3 +451,8 @@ Prese seguendo la sezione 0 della specifica, dove il testo non decide. Il numero
 148. Contenuti aggiunti per il livello 3: L01 (sezione «Espressioni con più operazioni»: ordine delle operazioni, quadre, potenza di una parentesi, meno davanti a una quadra; riquadri `CALC.PRECEDENZA` e `CALC.REGOLA_SEGNI`), L02 (divisori composti con due criteri coprimi, controllo che il quoziente rimasto è primo, riquadri `CALC.RESTO_DIVISIONE` e `CALC.SCOMPOSIZIONE_PRIMI`), L03 (MCD e mcm di tre numeri, problemi «maggior numero di gruppi uguali»), L04 (decimali negativi), L05 (periodo $9$ con antiperiodo), L06 (radice di una frazione e di un decimale, razionale più irrazionale, cifre con una regola ma senza periodo), L07 (riquadro `CALC.CONFRONTO_NUMERI`), L08 (da base 16 o 8 a base 2, con gli zeri a sinistra).
 149. Durate dopo le domande dei generatori: L01 19, L02 20, L03 20, L04 19, L05 19, L06 20, L07 20, L08 19. Per restare nei 20 minuti sono state tolte domande scritte a mano: L02 «100 diviso 7» (diventata un riquadro), «divide 2358» e «scomposizione di 84» (riquadro); L03 «MCD(36, 48)» e «due luci»; L05 «1,2(3)»; L06 «quale è irrazionale». L02 ha due abilità e quattro domande dei generatori: è al limite dei 20 minuti, da guardare con Andrea (come L05 di V1.M01, decisione 133).
 150. Numeri: `A04` sceglie prima il MCD e cofattori coprimi a due a due; `A05` decimali con denominatore $2^a 5^b$; `A06` periodici in forma minima (periodo più corto, antiperiodo che non finisce come il periodo), al più tre cifre tra antiperiodo e periodo al livello 3; `A03` sceglie il numero con la stessa probabilità tra tutti quelli ammessi (per la varietà).
+
+*Aggiornamento automatico (23 novembre 2026)*
+
+151. «Aggiorna» attiva subito la versione nuova e ricarica la pagina (prima: solo dalla riapertura successiva). Chiesto da Andrea; la frase della sezione 12 di `docs/SPECIFICA.md` è aggiornata. **Da fare per Andrea**: la stessa frase nella copia della specifica nel Progetto di Claude («Quando esce una versione nuova…»). Se Andrea tocca «Aggiorna» a metà di un esercizio, la risposta non confermata si perde (i tentativi confermati e la sessione di Oggi sono già salvati).
+152. «Indice dei contenuti» inteso come `index.html` (la pagina che apre l'app): l'indice leggero dei contenuti è dentro `app.js` e segue la stessa copia. Il controllo in primo piano non è diradato: costa una richiesta di `sw.js` (circa 1 KB) e non parte senza rete.

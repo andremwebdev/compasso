@@ -756,7 +756,7 @@ Lo stack è lo stesso delle altre app di Andrea, più TypeScript, test automatic
 - **PC**: un **file unico** compasso.html, con tutto incorporato, che si apre con doppio clic.
 - Le formule di una lezione si disegnano man mano che si scorre, non tutte all'apertura.
 
-Quando esce una versione nuova, l'app da telefono la scarica in background e la usa dalla riapertura successiva, mostrando un avviso "versione nuova disponibile". I progressi non si toccano.
+Quando esce una versione nuova, l'app da telefono la scarica in background (controlla all'apertura e quando torna in primo piano) e mostra l'avviso "Versione nuova disponibile" con il pulsante "Aggiorna", che la attiva e ricarica la pagina. I progressi non si toccano.
 
 **Da verificare nella sessione 0**: alcuni browser limitano IndexedDB nei file aperti con doppio clic. Se nella versione PC non funziona in modo affidabile, la versione PC usa localStorage come ripiego, con lo stesso formato dei dati e lo stesso backup.
 
