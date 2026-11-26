@@ -237,6 +237,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A05.g1", 2, 2, "Calcola $2\\sqrt{8} + 2\\sqrt{32} - \\sqrt{50}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
   ["V1.M03.A05.g1", 3, 1, "Calcola $\\sqrt[3]{-16} - \\sqrt[3]{-128} + 2\\sqrt[3]{54}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
   ["V1.M03.A05.g1", 3, 2, "Calcola $\\sqrt[3]{81} - \\sqrt[3]{-24} + 2\\sqrt[3]{192}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
+  ["V1.M03.A06.g1", 1, 1, "Razionalizza il denominatore di $\\dfrac{8}{\\sqrt[3]{9}}$ e semplifica il risultato."],
+  ["V1.M03.A06.g1", 1, 2, "Razionalizza il denominatore di $\\dfrac{11}{\\sqrt[3]{25}}$ e semplifica il risultato."],
+  ["V1.M03.A06.g1", 2, 1, "Razionalizza il denominatore di $\\dfrac{6}{\\sqrt{6} + \\sqrt{3}}$ e semplifica il risultato."],
+  ["V1.M03.A06.g1", 2, 2, "Razionalizza il denominatore di $\\dfrac{2}{\\sqrt{7} + \\sqrt{3}}$ e semplifica il risultato."],
+  ["V1.M03.A06.g1", 3, 1, "Razionalizza il denominatore di $\\dfrac{10}{3\\sqrt{2} - \\sqrt{6}}$ e semplifica il risultato."],
+  ["V1.M03.A06.g1", 3, 2, "Razionalizza il denominatore di $\\dfrac{10}{2\\sqrt{2} - 3\\sqrt{5}}$ e semplifica il risultato."],
 ];
 
 describe("semi congelati", () => {

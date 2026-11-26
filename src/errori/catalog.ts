@@ -174,6 +174,14 @@ export const errorCatalog = [
     example: tex`$\sqrt{48} = \sqrt{4^2 \cdot 3} = 4\sqrt{3}$, non $16\sqrt{3}$: si controlla elevando al quadrato, $\left(4\sqrt{3}\right)^2 = 48$, mentre $\left(16\sqrt{3}\right)^2 = 768$.`,
     reference: "V1.M03.L05",
   },
+  {
+    code: "CALC.SOLO_NUMERATORE",
+    name: "Frazione moltiplicata solo al numeratore",
+    category: "CALC",
+    explanation: tex`Una frazione resta uguale solo se numeratore e denominatore si moltiplicano per lo stesso numero diverso da $0$. Quando si razionalizza, il fattore va scritto sopra **e** sotto: moltiplicando solo il numeratore il valore cambia.`,
+    example: tex`$\dfrac{10}{\sqrt{5}} = \dfrac{10\sqrt{5}}{\sqrt{5} \cdot \sqrt{5}} = \dfrac{10\sqrt{5}}{5} = 2\sqrt{5}$, non $10\sqrt{5}$, che è $5$ volte più grande.`,
+    reference: "V1.M03.L06",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

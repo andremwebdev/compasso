@@ -399,6 +399,7 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | CALC.CONFRONTO\_NUMERI | Confronto tra numeri scritti in modi diversi | Si confrontano le cifre, in croce, i quadrati: 0,7 > 0,65; 13/20 < 7/10; √10 < 3,2 | V1.M02.L07 |
 | CALC.DIVISIONE\_FRAZIONI | Divisione tra frazioni senza il reciproco del divisore | Si capovolge solo il divisore: 5/6 : 10/9 = 5/6 · 9/10 = 3/4, non 25/27 né 4/3 | V1.M03.L03 |
 | CALC.PORTARE\_FUORI | Fattore portato fuori dalla radice senza estrarne la radice | √(cⁿ·d) = c·ⁿ√d: √48 = √(4²·3) = 4√3, non 16√3 | V1.M03.L05 |
+| CALC.SOLO\_NUMERATORE | Frazione moltiplicata solo al numeratore | Il fattore va sopra e sotto: 10/√5 = 10√5/5 = 2√5, non 10√5 | V1.M03.L06 |
 | ALG.QUADRATO\_BINOMIO | (a+b)² = a²+b² | Manca il doppio prodotto 2ab | V1.M04 |
 | ALG.RADICE\_SOMMA | √(a+b) = √a+√b | La radice non si distribuisce sulla somma | V1.M03 |
 | ALG.RADICE\_DEL\_QUADRATO | √(x²) = x anche per x negativo | √(x²) = \|x\|: con x = −3 vale 3, non −3 | V1.M03 |
