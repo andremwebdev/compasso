@@ -856,6 +856,12 @@ def _():
     assert Decimal("0.04567").quantize(Decimal("0.001"), rounding=ROUND_HALF_UP) == Decimal("0.046")
 
 
+@check("CALC.PERCENTUALE")
+def _():
+    assert Rational(40 - 50, 50) == Rational(-20, 100) and Rational(-10, 40) == Rational(-25, 100)
+    assert 80 * Rational(85, 100) == 68 and 80 - 15 == 65 and 80 * Rational(15, 100) == 12
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)

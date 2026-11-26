@@ -403,6 +403,7 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | CALC.ESPONENTE\_FRAZIONARIO | Potenza a esponente frazionario sbagliata | a^(m/n) = ⁿ√(aᵐ): 8^(2/3) = 4, non 8·2/3, non √(8³), non 8² | V1.M03.L06 |
 | CALC.POTENZA\_DI\_DIECI | Esponente di 10 sbagliato in notazione scientifica | Si contano i posti, non gli zeri: 345 000 = 3,45·10⁵; 15·10¹ = 1,5·10²; ordine di 7,3·10⁴ è 10⁵ | V1.M03.L07 |
 | CALC.ARROTONDAMENTO | Arrotondamento sbagliato | Si guarda la prima cifra tolta; le cifre significative partono dalla prima diversa da 0: 2,4651 → 2,5; 0,04567 → 0,046 | V1.M03.L07 |
+| CALC.PERCENTUALE | Percentuale applicata male | Il p% è p/100 della quantità giusta: da 50 a 40 è −20% (non −25%, non −10%); 80 scontato del 15% è 68 (non 65, non 12) | V1.M03.L08 |
 | ALG.QUADRATO\_BINOMIO | (a+b)² = a²+b² | Manca il doppio prodotto 2ab | V1.M04 |
 | ALG.RADICE\_SOMMA | √(a+b) = √a+√b | La radice non si distribuisce sulla somma | V1.M03 |
 | ALG.RADICE\_DEL\_QUADRATO | √(x²) = x anche per x negativo | √(x²) = \|x\|: con x = −3 vale 3, non −3 | V1.M03 |

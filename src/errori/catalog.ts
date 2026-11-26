@@ -206,6 +206,14 @@ export const errorCatalog = [
     example: tex`$2{,}4651$ a due cifre significative è $2{,}5$, non $2{,}4$. $0{,}04567$ a due cifre significative è $0{,}046$, non $0{,}05$ (gli zeri dopo la virgola non sono cifre significative).`,
     reference: "V1.M03.L07",
   },
+  {
+    code: "CALC.PERCENTUALE",
+    name: "Percentuale applicata male",
+    category: "CALC",
+    explanation: tex`Il $p\%$ di una quantità è $\dfrac{p}{100}$ di quella quantità, e va riferito alla quantità giusta: la variazione percentuale si divide per il valore iniziale; uno sconto del $p\%$ toglie $\dfrac{p}{100}$ del prezzo, non $p$ euro; il prezzo scontato è quello che resta, non lo sconto; per tornare indietro si divide per il fattore.`,
+    example: tex`Da $50$ a $40$ euro la variazione è $\dfrac{40-50}{50} = -20\%$, non $\dfrac{-10}{40} = -25\%$ né $-10\%$. Un prezzo di $80$ euro scontato del $15\%$ diventa $80 \cdot 0{,}85 = 68$ euro, non $80 - 15 = 65$ euro né $12$ euro.`,
+    reference: "V1.M03.L08",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

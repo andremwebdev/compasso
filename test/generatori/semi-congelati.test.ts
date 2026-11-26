@@ -261,6 +261,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A09.g1", 2, 2, "Senza calcolatrice: quale di questi numeri è più vicino a $96\\,600 \\cdot 0{,}003\\,22$?"],
   ["V1.M03.A09.g1", 3, 1, "Senza calcolatrice: quale di questi numeri è più vicino a $\\dfrac{741\\,000 \\cdot 0{,}009\\,42}{1{,}56}$?"],
   ["V1.M03.A09.g1", 3, 2, "Arrotonda $0{,}016\\,712$ a tre cifre significative."],
+  ["V1.M03.A10.g1", 1, 1, "Un prezzo di $130$ euro viene scontato del $10\\%$. Quanti euro costa dopo? Scrivi solo il numero."],
+  ["V1.M03.A10.g1", 1, 2, "Un prezzo di $285$ euro viene scontato del $20\\%$. Quanti euro costa dopo? Scrivi solo il numero."],
+  ["V1.M03.A10.g1", 2, 1, "Un prezzo diminuisce del $35\\%$ e poi diminuisce del $12\\%$. Qual è la variazione percentuale complessiva? Scrivi la percentuale come numero con il segno, senza il simbolo $\\%$ (per esempio $-12{,}5$)."],
+  ["V1.M03.A10.g1", 2, 2, "Un prezzo diminuisce del $20\\%$ e poi aumenta del $15\\%$. Qual è la variazione percentuale complessiva? Scrivi la percentuale come numero con il segno, senza il simbolo $\\%$ (per esempio $-12{,}5$)."],
+  ["V1.M03.A10.g1", 3, 1, "Un titolo vale $240$ euro. Prima sale del $25\\%$, poi scende del $12\\%$, infine scende del $5\\%$. Quanti euro vale alla fine? Scrivi solo il numero."],
+  ["V1.M03.A10.g1", 3, 2, "Un titolo vale $80$ euro. Prima sale del $5\\%$, poi scende del $50\\%$, infine scende del $10\\%$. Quanti euro vale alla fine? Scrivi solo il numero."],
 ];
 
 describe("semi congelati", () => {
