@@ -243,6 +243,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A06.g1", 2, 2, "Razionalizza il denominatore di $\\dfrac{2}{\\sqrt{7} + \\sqrt{3}}$ e semplifica il risultato."],
   ["V1.M03.A06.g1", 3, 1, "Razionalizza il denominatore di $\\dfrac{10}{3\\sqrt{2} - \\sqrt{6}}$ e semplifica il risultato."],
   ["V1.M03.A06.g1", 3, 2, "Razionalizza il denominatore di $\\dfrac{10}{2\\sqrt{2} - 3\\sqrt{5}}$ e semplifica il risultato."],
+  ["V1.M03.A07.g1", 1, 1, "Calcola il valore di $16^{\\frac{3}{2}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A07.g1", 1, 2, "Calcola il valore di $243^{-\\frac{1}{5}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A07.g1", 2, 1, "Calcola il valore di $8^{-\\frac{2}{3}} \\cdot 16^{\\frac{3}{4}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A07.g1", 2, 2, "Calcola il valore di $4^{\\frac{1}{2}} \\cdot 16^{-\\frac{1}{2}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A07.g1", 3, 1, "Calcola il valore di $4^{-0{,}5} \\cdot \\sqrt[3]{64} \\cdot 16^{-\\frac{3}{2}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A07.g1", 3, 2, "Calcola il valore di $16^{0{,}75} \\cdot \\sqrt{4} \\cdot 64^{-\\frac{3}{2}}$. Scrivi il risultato come numero intero o frazione."],
 ];
 
 describe("semi congelati", () => {

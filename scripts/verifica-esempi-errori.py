@@ -835,6 +835,13 @@ def _():
     assert 10 * _sqrt(5) == 5 * (2 * _sqrt(5))
 
 
+@check("CALC.ESPONENTE_FRAZIONARIO")
+def _():
+    from sympy import sqrt as _sqrt, cbrt as _cbrt
+    assert Integer(8) ** Rational(2, 3) == _cbrt(8**2) == _cbrt(8)**2 == 4
+    assert 8 * Rational(2, 3) == Rational(16, 3) and _sqrt(8**3) == 16 * _sqrt(2) and 8**2 == 64
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)

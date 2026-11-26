@@ -182,6 +182,14 @@ export const errorCatalog = [
     example: tex`$\dfrac{10}{\sqrt{5}} = \dfrac{10\sqrt{5}}{\sqrt{5} \cdot \sqrt{5}} = \dfrac{10\sqrt{5}}{5} = 2\sqrt{5}$, non $10\sqrt{5}$, che è $5$ volte più grande.`,
     reference: "V1.M03.L06",
   },
+  {
+    code: "CALC.ESPONENTE_FRAZIONARIO",
+    name: "Potenza a esponente frazionario sbagliata",
+    category: "CALC",
+    explanation: tex`Con $a > 0$, $a^{\frac{m}{n}} = \sqrt[n]{a^m}$: il denominatore dell'esponente è l'indice della radice, il numeratore è l'esponente del radicando. La base non si moltiplica per l'esponente, indice ed esponente non si scambiano, e la radice non si dimentica.`,
+    example: tex`$8^{\frac{2}{3}} = \sqrt[3]{8^2} = \left(\sqrt[3]{8}\right)^2 = 4$. Non è $8 \cdot \dfrac{2}{3} = \dfrac{16}{3}$, né $\sqrt{8^3} = 16\sqrt{2}$, né $8^2 = 64$.`,
+    reference: "V1.M03.L06",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {
