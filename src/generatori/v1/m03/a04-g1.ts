@@ -31,8 +31,8 @@ import { distinctWrongExpressions } from "../../comuni/wrong";
 
 type Rng_ = GeneratorContext["rng"];
 
-const PROPERTIES = "CALC.PROPRIETA_POTENZE";
-const NEGATIVE = "CALC.ESPONENTE_NEGATIVO";
+const PROPERTIES: ErrorCode = "CALC.PROPRIETA_POTENZE";
+const NEGATIVE: ErrorCode = "CALC.ESPONENTE_NEGATIVO";
 
 /** Un pezzo: (c^m)^n con c = base^k; `den` se sta al denominatore. n = 1 vuol dire «nessuna potenza esterna». */
 interface Piece {
