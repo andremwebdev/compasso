@@ -225,6 +225,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A03.g1", 2, 2, "Calcola il valore dell'espressione $\\dfrac{3}{5} - \\dfrac{1}{4} : \\dfrac{1}{3}$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
   ["V1.M03.A03.g1", 3, 1, "Calcola il valore dell'espressione $3 - \\dfrac{1}{6} : \\left(\\dfrac{1}{5} - \\dfrac{2}{7}\\right)$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
   ["V1.M03.A03.g1", 3, 2, "Calcola il valore dell'espressione $1 - \\dfrac{1}{2} : \\left(\\dfrac{5}{4} - \\dfrac{2}{7}\\right)$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
+  ["V1.M03.A04.g1", 1, 1, "Usa le proprietà delle potenze per calcolare il valore di $\\left(3^{-3}\\right)^{2} \\cdot 3^{5}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A04.g1", 1, 2, "Usa le proprietà delle potenze per calcolare il valore di $\\left(2^{4}\\right)^{-1} \\cdot 2^{3}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A04.g1", 2, 1, "Usa le proprietà delle potenze per calcolare il valore di $\\dfrac{8^{-1} \\cdot 2^{3}}{4^{-1}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A04.g1", 2, 2, "Usa le proprietà delle potenze per calcolare il valore di $\\dfrac{4^{-3} \\cdot 4^{2}}{4^{3}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A04.g1", 3, 1, "Usa le proprietà delle potenze per calcolare il valore di $\\left(\\dfrac{4}{3}\\right)^{-3} \\cdot \\left(\\dfrac{3}{4}\\right)^{-3} : \\left(\\left(\\dfrac{4}{3}\\right)^{-3}\\right)^{-1}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A04.g1", 3, 2, "Usa le proprietà delle potenze per calcolare il valore di $\\left(\\dfrac{1}{3}\\right)^{-1} \\cdot 3^{-2} : \\left(\\left(\\dfrac{1}{3}\\right)^{-2}\\right)^{-1}$. Scrivi il risultato come numero intero o frazione."],
 ];
 
 describe("semi congelati", () => {
