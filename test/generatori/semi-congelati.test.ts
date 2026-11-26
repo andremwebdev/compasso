@@ -267,6 +267,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A10.g1", 2, 2, "Un prezzo diminuisce del $20\\%$ e poi aumenta del $15\\%$. Qual è la variazione percentuale complessiva? Scrivi la percentuale come numero con il segno, senza il simbolo $\\%$ (per esempio $-12{,}5$)."],
   ["V1.M03.A10.g1", 3, 1, "Un titolo vale $240$ euro. Prima sale del $25\\%$, poi scende del $12\\%$, infine scende del $5\\%$. Quanti euro vale alla fine? Scrivi solo il numero."],
   ["V1.M03.A10.g1", 3, 2, "Un titolo vale $80$ euro. Prima sale del $5\\%$, poi scende del $50\\%$, infine scende del $10\\%$. Quanti euro vale alla fine? Scrivi solo il numero."],
+  ["V1.M03.A11.g1", 1, 1, "Senza calcolatrice: quale di questi numeri è il maggiore? $\\sqrt{11}$, $3\\sqrt{2}$, $2\\sqrt{6}$ e $\\sqrt{13}$."],
+  ["V1.M03.A11.g1", 1, 2, "Senza calcolatrice: quale di questi numeri è il maggiore? $3\\sqrt{5}$, $3\\sqrt{3}$, $4\\sqrt{2}$ e $\\sqrt{7}$."],
+  ["V1.M03.A11.g1", 2, 1, "Senza calcolatrice: quale di questi numeri è il maggiore? $\\sqrt[3]{28}$, $\\sqrt[4]{61}$, $\\sqrt[4]{47}$ e $\\sqrt[4]{62}$."],
+  ["V1.M03.A11.g1", 2, 2, "Senza calcolatrice: quale di questi numeri è il maggiore? $\\sqrt[4]{20}$, $\\sqrt[4]{60}$, $\\sqrt[4]{48}$ e $\\sqrt{12}$."],
+  ["V1.M03.A11.g1", 3, 1, "Senza calcolatrice: quale di questi numeri è il maggiore? $5^{30}$, $3^{40}$, $11^{10}$ e $10^{20}$."],
+  ["V1.M03.A11.g1", 3, 2, "Senza calcolatrice: quale di questi numeri è il maggiore? $3^{40}$, $2^{60}$, $5^{40}$ e $10^{20}$."],
 ];
 
 describe("semi congelati", () => {
