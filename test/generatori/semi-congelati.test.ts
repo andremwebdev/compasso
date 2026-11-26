@@ -213,6 +213,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A01.g1", 2, 2, "Calcola il valore dell'espressione $\\left[-7 - \\left(3 - 2\\right) \\cdot 3\\right] : 2 - \\left(-9\\right)$. Rispondi con un numero intero."],
   ["V1.M03.A01.g1", 3, 1, "Calcola il valore dell'espressione $\\dfrac{-5 + 15}{5 - 7} - \\left\\{-7 - \\left[\\left(5 - 7\\right)^{2} - 10\\right]\\right\\}$. Rispondi con un numero intero."],
   ["V1.M03.A01.g1", 3, 2, "Calcola il valore dell'espressione $-\\left\\{10 - \\left[9 - \\left(12 - 7\\right) \\cdot 2\\right]\\right\\} + \\left(-12\\right) : 2 \\cdot 2$. Rispondi con un numero intero."],
+  ["V1.M03.A02.g1", 1, 1, "Qual è il minimo comune denominatore delle frazioni $\\dfrac{7}{10}$ e $\\dfrac{1}{8}$?"],
+  ["V1.M03.A02.g1", 1, 2, "Quale di queste frazioni è la maggiore? $\\dfrac{5}{6}$, $\\dfrac{1}{4}$, $\\dfrac{7}{10}$ e $\\dfrac{2}{3}$."],
+  ["V1.M03.A02.g1", 2, 1, "Quale di queste frazioni è la maggiore? $\\dfrac{1}{3}$, $\\dfrac{5}{9}$, $\\dfrac{6}{30}$ e $\\dfrac{8}{15}$."],
+  ["V1.M03.A02.g1", 2, 2, "Quale di queste frazioni è la maggiore? $\\dfrac{1}{3}$, $\\dfrac{4}{9}$, $\\dfrac{5}{45}$ e $\\dfrac{5}{18}$."],
+  ["V1.M03.A02.g1", 3, 1, "Quale di queste frazioni è la minore? $-\\dfrac{13}{20}$, $-\\dfrac{1}{15}$, $-\\dfrac{7}{10}$ e $\\dfrac{15}{-50}$."],
+  ["V1.M03.A02.g1", 3, 2, "Quale di queste frazioni è la minore? $\\dfrac{20}{-35}$, $-\\dfrac{2}{3}$, $-\\dfrac{7}{15}$ e $-\\dfrac{8}{15}$."],
 ];
 
 describe("semi congelati", () => {
