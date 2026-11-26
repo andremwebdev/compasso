@@ -54,7 +54,11 @@ describe("indice leggero", () => {
       return value;
     });
     expect(strings.filter((text) => text.length > 120)).toEqual([]);
-    expect(JSON.stringify(contentIndex).length).toBeLessThan(20_000);
+    // Il limite totale cresce con i contenuti: oggi circa 300 caratteri per lezione o generatore, quindi
+    // a programma completo (230 lezioni, 237 generatori) circa 140.000. Il controllo che conta è quello
+    // sopra (nessun testo lungo); questo ferma solo una crescita fuori scala (prima era 20.000, superato
+    // con i generatori di V1.M03).
+    expect(JSON.stringify(contentIndex).length).toBeLessThan(200_000);
   });
 });
 
