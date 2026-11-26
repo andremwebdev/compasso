@@ -849,6 +849,13 @@ def _():
     assert Rational("7.3") >= 5  # ordine di grandezza 10^(4+1)
 
 
+@check("CALC.ARROTONDAMENTO")
+def _():
+    from decimal import Decimal, ROUND_HALF_UP
+    assert Decimal("2.4651").quantize(Decimal("0.1"), rounding=ROUND_HALF_UP) == Decimal("2.5")
+    assert Decimal("0.04567").quantize(Decimal("0.001"), rounding=ROUND_HALF_UP) == Decimal("0.046")
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)

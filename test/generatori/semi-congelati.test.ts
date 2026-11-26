@@ -255,6 +255,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A08.g1", 2, 2, "Calcola $\\dfrac{\\left(9 \\cdot 10^{-2}\\right) \\cdot \\left(7 \\cdot 10^{-5}\\right)}{5 \\cdot 10^{-5}}$ e scrivi il risultato in notazione scientifica."],
   ["V1.M03.A08.g1", 3, 1, "Qual è l'ordine di grandezza di $8\\,000 \\cdot 0{,}006\\,79$? Rispondi con una potenza di $10$."],
   ["V1.M03.A08.g1", 3, 2, "Calcola $8 \\cdot 10^{2} + 4 \\cdot 10^{1}$ e scrivi il risultato in notazione scientifica."],
+  ["V1.M03.A09.g1", 1, 1, "Arrotonda $89{,}17$ ai decimi."],
+  ["V1.M03.A09.g1", 1, 2, "Arrotonda $20{,}309\\,6$ ai millesimi."],
+  ["V1.M03.A09.g1", 2, 1, "Arrotonda $0{,}007\\,433\\,6$ a tre cifre significative."],
+  ["V1.M03.A09.g1", 2, 2, "Senza calcolatrice: quale di questi numeri è più vicino a $96\\,600 \\cdot 0{,}003\\,22$?"],
+  ["V1.M03.A09.g1", 3, 1, "Senza calcolatrice: quale di questi numeri è più vicino a $\\dfrac{741\\,000 \\cdot 0{,}009\\,42}{1{,}56}$?"],
+  ["V1.M03.A09.g1", 3, 2, "Arrotonda $0{,}016\\,712$ a tre cifre significative."],
 ];
 
 describe("semi congelati", () => {

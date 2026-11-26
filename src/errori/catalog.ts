@@ -198,6 +198,14 @@ export const errorCatalog = [
     example: tex`$345\,000 = 3{,}45 \cdot 10^5$ (la virgola si sposta di $5$ posti), non $3{,}45 \cdot 10^3$. $15 \cdot 10^1 = 1{,}5 \cdot 10^2$, non $1{,}5 \cdot 10^0$. $7{,}3 \cdot 10^4$ ha ordine di grandezza $10^5$.`,
     reference: "V1.M03.L07",
   },
+  {
+    code: "CALC.ARROTONDAMENTO",
+    name: "Arrotondamento sbagliato",
+    category: "CALC",
+    explanation: tex`Per arrotondare si guarda la prima cifra tolta: da $5$ a $9$ l'ultima cifra tenuta aumenta di $1$, da $0$ a $4$ resta com'è. Togliere le cifre senza guardarle è troncare, non arrotondare. Le cifre significative si contano dalla prima cifra diversa da $0$: gli zeri iniziali non contano.`,
+    example: tex`$2{,}4651$ a due cifre significative è $2{,}5$, non $2{,}4$. $0{,}04567$ a due cifre significative è $0{,}046$, non $0{,}05$ (gli zeri dopo la virgola non sono cifre significative).`,
+    reference: "V1.M03.L07",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {
