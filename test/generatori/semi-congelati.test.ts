@@ -231,6 +231,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A04.g1", 2, 2, "Usa le proprietà delle potenze per calcolare il valore di $\\dfrac{4^{-3} \\cdot 4^{2}}{4^{3}}$. Scrivi il risultato come numero intero o frazione."],
   ["V1.M03.A04.g1", 3, 1, "Usa le proprietà delle potenze per calcolare il valore di $\\left(\\dfrac{4}{3}\\right)^{-3} \\cdot \\left(\\dfrac{3}{4}\\right)^{-3} : \\left(\\left(\\dfrac{4}{3}\\right)^{-3}\\right)^{-1}$. Scrivi il risultato come numero intero o frazione."],
   ["V1.M03.A04.g1", 3, 2, "Usa le proprietà delle potenze per calcolare il valore di $\\left(\\dfrac{1}{3}\\right)^{-1} \\cdot 3^{-2} : \\left(\\left(\\dfrac{1}{3}\\right)^{-2}\\right)^{-1}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A05.g1", 1, 1, "Calcola $\\sqrt{54} + \\sqrt{24}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
+  ["V1.M03.A05.g1", 1, 2, "Calcola $\\sqrt{28} + \\sqrt{63}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
+  ["V1.M03.A05.g1", 2, 1, "Calcola $\\sqrt{32} + \\sqrt{18} - \\sqrt{8}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
+  ["V1.M03.A05.g1", 2, 2, "Calcola $2\\sqrt{8} + 2\\sqrt{32} - \\sqrt{50}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
+  ["V1.M03.A05.g1", 3, 1, "Calcola $\\sqrt[3]{-16} - \\sqrt[3]{-128} + 2\\sqrt[3]{54}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
+  ["V1.M03.A05.g1", 3, 2, "Calcola $\\sqrt[3]{81} - \\sqrt[3]{-24} + 2\\sqrt[3]{192}$. Scrivi il risultato con tutto il possibile portato fuori dalla radice."],
 ];
 
 describe("semi congelati", () => {

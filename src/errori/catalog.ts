@@ -166,6 +166,14 @@ export const errorCatalog = [
     example: tex`$\dfrac{5}{6} : \dfrac{10}{9} = \dfrac{5}{6} \cdot \dfrac{9}{10} = \dfrac{3}{4}$. Senza capovolgere si ottiene $\dfrac{5}{6} \cdot \dfrac{10}{9} = \dfrac{25}{27}$; capovolgendo la prima, $\dfrac{6}{5} \cdot \dfrac{10}{9} = \dfrac{4}{3}$.`,
     reference: "V1.M03.L03",
   },
+  {
+    code: "CALC.PORTARE_FUORI",
+    name: "Fattore portato fuori dalla radice senza estrarne la radice",
+    category: "CALC",
+    explanation: tex`Per portare fuori dalla radice $\sqrt[n]{c^n \cdot d}$ si scrive fuori $c$, cioè $\sqrt[n]{c^n}$, non la potenza $c^n$: $\sqrt[n]{c^n \cdot d} = c\sqrt[n]{d}$ (con $c \ge 0$ se $n$ è pari).`,
+    example: tex`$\sqrt{48} = \sqrt{4^2 \cdot 3} = 4\sqrt{3}$, non $16\sqrt{3}$: si controlla elevando al quadrato, $\left(4\sqrt{3}\right)^2 = 48$, mentre $\left(16\sqrt{3}\right)^2 = 768$.`,
+    reference: "V1.M03.L05",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

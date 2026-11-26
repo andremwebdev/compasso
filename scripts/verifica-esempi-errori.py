@@ -821,6 +821,13 @@ def _():
     assert Rational(6, 5) * Rational(10, 9) == Rational(4, 3)
 
 
+@check("CALC.PORTARE_FUORI")
+def _():
+    from sympy import sqrt as _sqrt
+    assert _sqrt(48) == 4 * _sqrt(3) and (4 * _sqrt(3))**2 == 48
+    assert (16 * _sqrt(3))**2 == 768 and 16 * _sqrt(3) != _sqrt(48)
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)
