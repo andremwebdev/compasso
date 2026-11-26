@@ -11,6 +11,7 @@ import l05 from "../../contenuti/v1/m03/l05.md";
 import l06 from "../../contenuti/v1/m03/l06.md";
 import l07 from "../../contenuti/v1/m03/l07.md";
 import l08 from "../../contenuti/v1/m03/l08.md";
+import l09 from "../../contenuti/v1/m03/l09.md";
 
 export default defineModule("V1.M03", {
   lessons: {
@@ -22,6 +23,7 @@ export default defineModule("V1.M03", {
     "V1.M03.L06": l06,
     "V1.M03.L07": l07,
     "V1.M03.L08": l08,
+    "V1.M03.L09": l09,
   },
   generators: [],
 });
