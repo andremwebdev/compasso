@@ -207,6 +207,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M02.A09.g1", 2, 2, "Quanto vale $374_{8}$ in base $10$? Rispondi con un numero naturale."],
   ["V1.M02.A09.g1", 3, 1, "Come si scrive $10101110_{2}$ in base $16$?"],
   ["V1.M02.A09.g1", 3, 2, "Come si scrive $232_{4}$ in base $8$?"],
+  ["V1.M03.A01.g1", 1, 1, "Calcola il valore dell'espressione $-16 - 24 : 2 \\cdot 4$. Rispondi con un numero intero."],
+  ["V1.M03.A01.g1", 1, 2, "Calcola il valore dell'espressione $\\dfrac{-32 + 12}{6 - 2}$. Rispondi con un numero intero."],
+  ["V1.M03.A01.g1", 2, 1, "Calcola il valore dell'espressione $\\left[-13 - \\left(4 - 5\\right) \\cdot 5\\right] : 4 - \\left(-4\\right)$. Rispondi con un numero intero."],
+  ["V1.M03.A01.g1", 2, 2, "Calcola il valore dell'espressione $\\left[-7 - \\left(3 - 2\\right) \\cdot 3\\right] : 2 - \\left(-9\\right)$. Rispondi con un numero intero."],
+  ["V1.M03.A01.g1", 3, 1, "Calcola il valore dell'espressione $\\dfrac{-5 + 15}{5 - 7} - \\left\\{-7 - \\left[\\left(5 - 7\\right)^{2} - 10\\right]\\right\\}$. Rispondi con un numero intero."],
+  ["V1.M03.A01.g1", 3, 2, "Calcola il valore dell'espressione $-\\left\\{10 - \\left[9 - \\left(12 - 7\\right) \\cdot 2\\right]\\right\\} + \\left(-12\\right) : 2 \\cdot 2$. Rispondi con un numero intero."],
 ];
 
 describe("semi congelati", () => {
