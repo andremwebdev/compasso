@@ -397,6 +397,7 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | CALC.RESTO\_DIVISIONE | Resto non minore del divisore | Il resto è minore del divisore: 100 = 14·7 + 2, non 13·7 + 9 | V1.M02.L02 |
 | CALC.SCOMPOSIZIONE\_PRIMI | Scomposizione in fattori primi sbagliata | Ogni primo con tutte le volte che divide: 84 = 2²·3·7, non 2·3·7 = 42 | V1.M02.L02 |
 | CALC.CONFRONTO\_NUMERI | Confronto tra numeri scritti in modi diversi | Si confrontano le cifre, in croce, i quadrati: 0,7 > 0,65; 13/20 < 7/10; √10 < 3,2 | V1.M02.L07 |
+| CALC.DIVISIONE\_FRAZIONI | Divisione tra frazioni senza il reciproco del divisore | Si capovolge solo il divisore: 5/6 : 10/9 = 5/6 · 9/10 = 3/4, non 25/27 né 4/3 | V1.M03.L03 |
 | ALG.QUADRATO\_BINOMIO | (a+b)² = a²+b² | Manca il doppio prodotto 2ab | V1.M04 |
 | ALG.RADICE\_SOMMA | √(a+b) = √a+√b | La radice non si distribuisce sulla somma | V1.M03 |
 | ALG.RADICE\_DEL\_QUADRATO | √(x²) = x anche per x negativo | √(x²) = \|x\|: con x = −3 vale 3, non −3 | V1.M03 |

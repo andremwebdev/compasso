@@ -814,6 +814,13 @@ def _():
     assert _sqrt(10) < Rational(32, 10) and Rational(32, 10)**2 == Rational(1024, 100)
 
 
+@check("CALC.DIVISIONE_FRAZIONI")
+def _():
+    assert Rational(5, 6) / Rational(10, 9) == Rational(5, 6) * Rational(9, 10) == Rational(3, 4)
+    assert Rational(5, 6) * Rational(10, 9) == Rational(25, 27)
+    assert Rational(6, 5) * Rational(10, 9) == Rational(4, 3)
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)

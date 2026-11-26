@@ -219,6 +219,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A02.g1", 2, 2, "Quale di queste frazioni è la maggiore? $\\dfrac{1}{3}$, $\\dfrac{4}{9}$, $\\dfrac{5}{45}$ e $\\dfrac{5}{18}$."],
   ["V1.M03.A02.g1", 3, 1, "Quale di queste frazioni è la minore? $-\\dfrac{13}{20}$, $-\\dfrac{1}{15}$, $-\\dfrac{7}{10}$ e $\\dfrac{15}{-50}$."],
   ["V1.M03.A02.g1", 3, 2, "Quale di queste frazioni è la minore? $\\dfrac{20}{-35}$, $-\\dfrac{2}{3}$, $-\\dfrac{7}{15}$ e $-\\dfrac{8}{15}$."],
+  ["V1.M03.A03.g1", 1, 1, "Calcola il valore dell'espressione $-\\dfrac{6}{5} : \\dfrac{1}{8}$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
+  ["V1.M03.A03.g1", 1, 2, "Calcola il valore dell'espressione $\\dfrac{5}{9} : \\dfrac{1}{3}$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
+  ["V1.M03.A03.g1", 2, 1, "Calcola il valore dell'espressione $\\left(\\dfrac{3}{5} - \\dfrac{2}{9}\\right) : \\dfrac{2}{9}$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
+  ["V1.M03.A03.g1", 2, 2, "Calcola il valore dell'espressione $\\dfrac{3}{5} - \\dfrac{1}{4} : \\dfrac{1}{3}$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
+  ["V1.M03.A03.g1", 3, 1, "Calcola il valore dell'espressione $3 - \\dfrac{1}{6} : \\left(\\dfrac{1}{5} - \\dfrac{2}{7}\\right)$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
+  ["V1.M03.A03.g1", 3, 2, "Calcola il valore dell'espressione $1 - \\dfrac{1}{2} : \\left(\\dfrac{5}{4} - \\dfrac{2}{7}\\right)$ e scrivi il risultato come frazione ridotta ai minimi termini (o come numero intero)."],
 ];
 
 describe("semi congelati", () => {

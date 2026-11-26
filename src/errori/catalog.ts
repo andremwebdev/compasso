@@ -158,6 +158,14 @@ export const errorCatalog = [
     example: tex`$0{,}7 > 0{,}65$, anche se $65$ ha più cifre: $0{,}70$ contro $0{,}65$. $\dfrac{13}{20} = 0{,}65$ è minore di $\dfrac{7}{10}$, anche se $13 > 7$. $\sqrt{10} < 3{,}2$, perché $3{,}2^2 = 10{,}24 > 10$.`,
     reference: "V1.M02.L07",
   },
+  {
+    code: "CALC.DIVISIONE_FRAZIONI",
+    name: "Divisione tra frazioni senza il reciproco del divisore",
+    category: "CALC",
+    explanation: tex`Dividere per una frazione vuol dire moltiplicare per il suo reciproco: si capovolge solo la seconda frazione, il divisore, $\dfrac{a}{b} : \dfrac{c}{d} = \dfrac{a}{b} \cdot \dfrac{d}{c}$. Moltiplicare senza capovolgere, o capovolgere la prima, dà un altro numero.`,
+    example: tex`$\dfrac{5}{6} : \dfrac{10}{9} = \dfrac{5}{6} \cdot \dfrac{9}{10} = \dfrac{3}{4}$. Senza capovolgere si ottiene $\dfrac{5}{6} \cdot \dfrac{10}{9} = \dfrac{25}{27}$; capovolgendo la prima, $\dfrac{6}{5} \cdot \dfrac{10}{9} = \dfrac{4}{3}$.`,
+    reference: "V1.M03.L03",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {
