@@ -190,6 +190,14 @@ export const errorCatalog = [
     example: tex`$8^{\frac{2}{3}} = \sqrt[3]{8^2} = \left(\sqrt[3]{8}\right)^2 = 4$. Non è $8 \cdot \dfrac{2}{3} = \dfrac{16}{3}$, né $\sqrt{8^3} = 16\sqrt{2}$, né $8^2 = 64$.`,
     reference: "V1.M03.L06",
   },
+  {
+    code: "CALC.POTENZA_DI_DIECI",
+    name: "Esponente di 10 sbagliato in notazione scientifica",
+    category: "CALC",
+    explanation: tex`In $a \cdot 10^n$ l'esponente è il numero di posti di cui si sposta la virgola, non il numero di zeri. Se $a$ esce dall'intervallo da $1$ a $10$, spostare la virgola di un posto verso sinistra aumenta l'esponente di $1$. Per l'ordine di grandezza si arrotonda $a$: con $a \ge 5$ si passa a $10^{n+1}$.`,
+    example: tex`$345\,000 = 3{,}45 \cdot 10^5$ (la virgola si sposta di $5$ posti), non $3{,}45 \cdot 10^3$. $15 \cdot 10^1 = 1{,}5 \cdot 10^2$, non $1{,}5 \cdot 10^0$. $7{,}3 \cdot 10^4$ ha ordine di grandezza $10^5$.`,
+    reference: "V1.M03.L07",
+  },
 
   // ───────────────────────────── ALG: algebra ─────────────────────────────
   {

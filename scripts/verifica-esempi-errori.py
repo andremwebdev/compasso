@@ -842,6 +842,13 @@ def _():
     assert 8 * Rational(2, 3) == Rational(16, 3) and _sqrt(8**3) == 16 * _sqrt(2) and 8**2 == 64
 
 
+@check("CALC.POTENZA_DI_DIECI")
+def _():
+    assert Rational("3.45") * 10**5 == 345000 and Rational("3.45") * 10**3 != 345000
+    assert 15 * 10 == Rational("1.5") * 10**2 and Rational("1.5") * 10**0 != 150
+    assert Rational("7.3") >= 5  # ordine di grandezza 10^(4+1)
+
+
 @check("ALG.RACCOGLIMENTO")
 def _():
     assert eq(3 * x * (2 * x + 3), 6 * x**2 + 9 * x)

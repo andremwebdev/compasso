@@ -249,6 +249,12 @@ const frozen: readonly (readonly [code: string, level: Level, seed: number, prom
   ["V1.M03.A07.g1", 2, 2, "Calcola il valore di $4^{\\frac{1}{2}} \\cdot 16^{-\\frac{1}{2}}$. Scrivi il risultato come numero intero o frazione."],
   ["V1.M03.A07.g1", 3, 1, "Calcola il valore di $4^{-0{,}5} \\cdot \\sqrt[3]{64} \\cdot 16^{-\\frac{3}{2}}$. Scrivi il risultato come numero intero o frazione."],
   ["V1.M03.A07.g1", 3, 2, "Calcola il valore di $16^{0{,}75} \\cdot \\sqrt{4} \\cdot 64^{-\\frac{3}{2}}$. Scrivi il risultato come numero intero o frazione."],
+  ["V1.M03.A08.g1", 1, 1, "Scrivi $6\\,600\\,000$ in notazione scientifica."],
+  ["V1.M03.A08.g1", 1, 2, "Scrivi $5{,}8 \\cdot 10^{2}$ come numero per esteso, senza potenze di $10$."],
+  ["V1.M03.A08.g1", 2, 1, "Calcola $\\dfrac{\\left(2 \\cdot 10^{1}\\right) \\cdot \\left(2 \\cdot 10^{5}\\right)}{8 \\cdot 10^{-4}}$ e scrivi il risultato in notazione scientifica."],
+  ["V1.M03.A08.g1", 2, 2, "Calcola $\\dfrac{\\left(9 \\cdot 10^{-2}\\right) \\cdot \\left(7 \\cdot 10^{-5}\\right)}{5 \\cdot 10^{-5}}$ e scrivi il risultato in notazione scientifica."],
+  ["V1.M03.A08.g1", 3, 1, "Qual è l'ordine di grandezza di $8\\,000 \\cdot 0{,}006\\,79$? Rispondi con una potenza di $10$."],
+  ["V1.M03.A08.g1", 3, 2, "Calcola $8 \\cdot 10^{2} + 4 \\cdot 10^{1}$ e scrivi il risultato in notazione scientifica."],
 ];
 
 describe("semi congelati", () => {
