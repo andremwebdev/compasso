@@ -363,6 +363,37 @@ describe("mentre Andrea scrive, l'anteprima non dà per sbagliato un pezzo di ri
     expect(texts).toBeGreaterThan(300);
   }, 30_000);
 
+  it("le soluzioni delle equazioni (V1.M05), un carattere alla volta: «x = a ∨ x = b», elenchi tra graffe, valori di k", () => {
+    /** Un insieme di punti, o di valori di k, come lo scrive Andrea: radici con √, frazioni con la barra. */
+    const typedPoints = (latex: string): string =>
+      typed(latex.replace(/\\frac\{([^{}]*\\sqrt\{\d+\}[^{}]*)\}\{(\d+)\}/g, "($1)/$2")).replace(/\\sqrt\{(\d+)\}/g, "√$1");
+    let texts = 0;
+    for (const generator of generators.filter((item) => item.code.startsWith("V1.M05."))) {
+      for (const level of generator.levels) {
+        for (let seed = 0; seed < 30; seed++) {
+          const { answer } = generateExercise(generator, level, seed);
+          if (answer.kind !== "set") continue;
+          const field = { kind: "set", variable: answer.variable } as const;
+          for (const value of [answer.correct, ...answer.wrong.map((wrong) => wrong.value)]) {
+            const list = typedPoints(setToLatex(value));
+            const forms = [list];
+            // Punti isolati: anche «x = a ∨ x = b».
+            if (list.startsWith("{")) forms.push(list.slice(1, -1).split("; ").map((point) => `${answer.variable} = ${point}`).join(" ∨ "));
+            else forms.push(typedPoints(setToInequalityLatex(value, { variable: answer.variable })));
+            for (const text of forms.filter((item) => !/[∀∄\\]/.test(item))) {
+              texts += 1;
+              expect(previewText(field, text), text).toMatchObject({ kind: "ok", complete: true });
+              for (let length = 1; length < text.length; length++) {
+                expect(previewText(field, text.slice(0, length)).kind, `«${text.slice(0, length)}», scrivendo «${text}»`).not.toBe("error");
+              }
+            }
+          }
+        }
+      }
+    }
+    expect(texts).toBeGreaterThan(800);
+  }, 30_000);
+
   it("i motivi del parser contengono formule, e l'app le disegna", () => {
     const preview = previewText({ kind: "set", variable: "x" }, "x < 1; x > 2");
     if (preview.kind !== "error") throw new Error("mi aspettavo un motivo");

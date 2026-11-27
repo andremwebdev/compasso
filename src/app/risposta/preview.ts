@@ -68,7 +68,8 @@ export function previewText(field: FieldKind, text: string): Preview {
       if (parsed.ok) return { kind: "ok", latex: setToLatex(parsed.value, { variable: field.variable, asWritten: true }), complete: parsed.complete };
       // Il parser degli insiemi non completa da solo i pezzi mancanti: se basta una chiusura plausibile
       // perché il testo si legga, Andrea sta ancora scrivendo e non è un errore.
-      const unfinished = SET_ENDINGS.some((ending) => parseSolutionSet(text + ending, { variable: field.variable }).ok);
+      // Le chiusure sono scritte con la x: per un'altra incognita (il parametro k di V1.M05.A08) si usa la sua lettera.
+      const unfinished = SET_ENDINGS.some((ending) => parseSolutionSet(text + ending.replace(/x/g, field.variable), { variable: field.variable }).ok);
       return unfinished ? { kind: "typing" } : { kind: "error", message: parsed.error.message };
     }
     case "limit": {

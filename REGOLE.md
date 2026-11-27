@@ -349,6 +349,13 @@ Per i riordini non c'è ancora un riferimento (per la scelta multipla scritta a 
 - Una risposta già nella forma del testo è equivalente alla giusta: negli esercizi «calcola», «sviluppa», «semplifica» serve il vincolo (`expanded`, `factored`, `reducedFraction`), e il test controlla che il testo copiato dia `FORMA.NON_RICHIESTA`.
 - Le condizioni di esistenza come insieme: sul telefono non c'è un tasto per «e» (∧), quindi negli indizi si suggerisce l'unione di intervalli; `x ≠ ±3` si legge come «oppure» e vale ℝ.
 
+**Trappole emerse con i generatori di V1.M05.**
+
+- Equazioni: la risposta è un insieme di punti (`points`, oppure `emptySet`, `allReals`); per costruirla, per i conti esatti con le radici e per la verifica «dai candidati» c'è `src/generatori/comuni/equations.ts`. Nei test `solutionsText` (`test/generatori/scrivi.ts`) scrive «x = 2 ∨ x = −3».
+- `sympy.solveset` sui reali accetta $\sqrt{-7} = \sqrt{-7}$ (lavora nei complessi): nel ricalcolo dal testo delle irrazionali si scartano a mano le soluzioni con un radicando negativo. `parse_latex` legge `x\left(…\right)` come una funzione: si scrive `x \cdot (…)`; il valore assoluto va scritto con le barre semplici.
+- Una retta più ripida di quella dentro le barre incontra sempre il grafico di $|A|$: «tutte e due le candidate da scartare» in $|px + q| = mx + n$ richiede $|m| < |p|$ (altrimenti l'estrazione non finisce mai).
+- Una forma che si accetta sempre accanto a forme che si scartano spesso finisce per pesare molto più del previsto: contare gli esercizi per forma, non solo quelli diversi.
+
 **Trappole emerse nella sessione E2.**
 
 - `rng.intExcept(min, max, lista)` esclude **solo** la lista: lo zero va messo nella lista se non deve uscire.
@@ -622,7 +629,7 @@ Le visualizzazioni sono undici, con codici fissi (specifica, sezione 11): non se
 
 ## Catalogo degli errori
 
-Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie, dalla specifica, sezione 5, più quelle aggiunte con i generatori (7 nella sessione 3, 5 nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali, 2 su decisione di Andrea, 4 di logica e insiemi con le lezioni di V1.M01, 6 con i loro generatori, 4 di calcolo con le lezioni di V1.M02, 4 di calcolo con i loro generatori, 7 di calcolo con i generatori di V1.M03, 1 di algebra con i generatori di V1.M04: oggi sono 123).
+Il catalogo è in `src/errori/` (`catalog.ts`): 65 voci iniziali in 12 categorie, dalla specifica, sezione 5, più quelle aggiunte con i generatori (7 nella sessione 3, 5 nella sessione E1 per limiti e Taylor, 18 nella sessione E2 per integrali, convergenza ed equazioni differenziali, 2 su decisione di Andrea, 4 di logica e insiemi con le lezioni di V1.M01, 6 con i loro generatori, 4 di calcolo con le lezioni di V1.M02, 4 di calcolo con i loro generatori, 7 di calcolo con i generatori di V1.M03, 1 di algebra con i generatori di V1.M04, 9 di algebra con i generatori di V1.M05: oggi sono 132).
 
 - **Prima di aggiungere un errore, controllare che non esista già**: cercare per nome e per descrizione, non solo per codice. Due voci per lo stesso errore spezzano i dati di Andrea.
 - Un codice ha la forma `CATEGORIA.NOME` (maiuscole, cifre e trattino basso). La categoria deve essere una delle dodici di `errorCategories`.
