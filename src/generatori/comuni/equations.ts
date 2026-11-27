@@ -149,7 +149,12 @@ export function isClean(value: Rational, maxInteger = 40, maxDenominator = 12): 
 
 /** Vero se tutti i numeri dell'insieme (parte razionale e coefficienti delle radici) sono puliti. */
 export function cleanSurds(values: readonly Surd[], maxInteger = 40, maxDenominator = 12): boolean {
-  return values.every((value) => value.toString().length < 40 && Math.abs(value.toNumber()) <= maxInteger && surdDenominator(value) <= maxDenominator);
+  return values.every(
+    (value) =>
+      Math.abs(value.toNumber()) <= maxInteger &&
+      surdDenominator(value) <= maxDenominator &&
+      value.terms.every(([radicand, coefficient]) => radicand <= BigInt(maxInteger) && isClean(coefficient, maxInteger, maxDenominator)),
+  );
 }
 
 /** Il denominatore comune dei coefficienti di un numero con radici. */
