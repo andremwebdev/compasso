@@ -12,6 +12,7 @@ import l06 from "../../contenuti/v1/m04/l06.md";
 import l07 from "../../contenuti/v1/m04/l07.md";
 import l08 from "../../contenuti/v1/m04/l08.md";
 import l09 from "../../contenuti/v1/m04/l09.md";
+import l10 from "../../contenuti/v1/m04/l10.md";
 import a07g1 from "../../generatori/v1/m04/a07-g1";
 
 export default defineModule("V1.M04", {
@@ -25,6 +26,7 @@ export default defineModule("V1.M04", {
     "V1.M04.L07": l07,
     "V1.M04.L08": l08,
     "V1.M04.L09": l09,
+    "V1.M04.L10": l10,
   },
   generators: [
     a07g1,
