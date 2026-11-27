@@ -337,6 +337,32 @@ describe("mentre Andrea scrive, l'anteprima non dà per sbagliato un pezzo di ri
     expect(texts).toBeGreaterThan(1500);
   }, 30_000);
 
+  it("le condizioni di esistenza delle frazioni algebriche (V1.M04.A09, A10), un carattere alla volta", () => {
+    const set = { kind: "set", variable: "x" } as const;
+    let texts = 0;
+    for (const code of ["V1.M04.A09.g1", "V1.M04.A10.g1"]) {
+      const generator = generators.find((item) => item.code === code);
+      if (!generator) throw new Error(`manca il generatore ${code}`);
+      for (const level of generator.levels) {
+        for (let seed = 0; seed < 60; seed++) {
+          const { answer } = generateExercise(generator, level, seed);
+          if (answer.kind !== "set") continue;
+          for (const value of [answer.correct, ...answer.wrong.map((wrong) => wrong.value)]) {
+            const interval = typed(setToLatex(value));
+            for (const text of [interval, interval.replace(/; /g, ";").replace(/ ∪ /g, "∪"), typed(setToInequalityLatex(value))]) {
+              texts += 1;
+              expect(previewText(set, text), text).toMatchObject({ kind: "ok", complete: true });
+              for (let length = 1; length < text.length; length++) {
+                expect(previewText(set, text.slice(0, length)).kind, `«${text.slice(0, length)}», scrivendo «${text}»`).not.toBe("error");
+              }
+            }
+          }
+        }
+      }
+    }
+    expect(texts).toBeGreaterThan(300);
+  }, 30_000);
+
   it("i motivi del parser contengono formule, e l'app le disegna", () => {
     const preview = previewText({ kind: "set", variable: "x" }, "x < 1; x > 2");
     if (preview.kind !== "error") throw new Error("mi aspettavo un motivo");
