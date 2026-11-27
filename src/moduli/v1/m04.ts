@@ -5,12 +5,14 @@
 import { defineModule } from "../definizione";
 import l01 from "../../contenuti/v1/m04/l01.md";
 import l02 from "../../contenuti/v1/m04/l02.md";
+import l03 from "../../contenuti/v1/m04/l03.md";
 import a07g1 from "../../generatori/v1/m04/a07-g1";
 
 export default defineModule("V1.M04", {
   lessons: {
     "V1.M04.L01": l01,
     "V1.M04.L02": l02,
+    "V1.M04.L03": l03,
   },
   generators: [
     a07g1,
