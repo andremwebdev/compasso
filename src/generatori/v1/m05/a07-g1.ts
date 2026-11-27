@@ -152,12 +152,6 @@ function outside(rng: Rng_, p: number, none: boolean): Model {
   }
 }
 
-/** Vero se il polinomio di secondo grado ha due zeri interi distinti. */
-function integerZeros(p: UPoly): boolean {
-  const zeros = zerosOf(p);
-  return zeros.length === 2 && zeros.every((z) => z.isRational() && z.toRational().isInteger());
-}
-
 function acceptable(model: Model, minimumWrong: number): boolean {
   const all = [...model.A, ...(model.right.kind === "number" ? [Rational.of(model.right.k)] : model.right.B)];
   if (all.some((value) => value.abs().cmp(30) > 0)) return false;

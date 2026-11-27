@@ -18,7 +18,7 @@
 //   ALG.ZERO_PER_X                  da 0·x = b si scrive x = b.
 
 import { defineGenerator, type ExerciseDraft, type GeneratorContext, type SolutionStep } from "../../../esercizi";
-import { add, div, mul, neg, num, sym, toLatex, type Expr } from "../../../motore/expr";
+import { add, div, mul, neg, num, toLatex, type Expr } from "../../../motore/expr";
 import { Rational } from "../../../motore/numbers/rational";
 import { Rng } from "../../../motore/random/rng";
 import { Surd } from "../../../motore/numbers/surd";
@@ -29,7 +29,6 @@ import type { ExpectedWrong } from "../../../esercizi";
 
 const CODE = "V1.M05.A01.g1";
 type Rng_ = GeneratorContext["rng"];
-const x = sym("x");
 
 /** Un termine c·(px + q)/d. Con `paren` falso il termine è un monomio solo (p = 0 oppure q = 0). */
 interface Term {
