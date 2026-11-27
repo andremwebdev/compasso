@@ -926,6 +926,13 @@ def _():
     assert (x**4 - 5 * x**2 + 4).subs(x, 4) == 180
 
 
+@check("ALG.RADICE_DISPARI")
+def _():
+    assert solveset(Eq(x**3, 8), x, S.Reals) == {2}
+    assert solveset(Eq(x**3, -8), x, S.Reals) == {-2}
+    assert (-2) ** 3 == -8
+
+
 @check("ALG.VALORE_ASSOLUTO_CASO")
 def _():
     assert solveset(Eq(Abs(x - 1), 3), x, S.Reals) == {-2, 4}

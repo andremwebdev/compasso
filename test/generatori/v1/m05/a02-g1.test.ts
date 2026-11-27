@@ -11,7 +11,7 @@ describe("V1.M05.A02.g1 — equazioni di secondo grado", () => {
   it("supera la verifica automatica (2.000 semi per livello, zero problemi e zero avvisi)", () => {
     const report = verifyGenerator(generator);
     expect(report.problems, formatReport(report)).toEqual([]);
-    expect(report.warnings).toEqual([]);
+    expect(report.warnings, formatReport(report)).toEqual([]);
   }, 120_000);
 
   it("la risposta scritta è accettata, le sbagliate previste sono riconosciute (almeno due, tre dal livello 2)", () => {

@@ -330,7 +330,7 @@ export const errorCatalog = [
     example: tex`$x^3-7x+6$ diviso $x-1$: con i coefficienti completi $1,\ 0,\ -7,\ 6$ il quoziente è $x^2+x-6$ e il resto $0$. Dimenticando lo zero si usano $1,\ -7,\ 6$, e si ottiene il quoziente $x-6$ con resto $0$: sbagliato, perché $(x-6)(x-1) = x^2-7x+6$.`,
     reference: "V1.M04.L05",
   },
-  // Le otto voci che seguono sono state aggiunte con i generatori di V1.M05 (decisione 179):
+  // Le nove voci che seguono sono state aggiunte con i generatori di V1.M05 (decisione 179):
   // nessuna voce del catalogo parlava di questi errori.
   {
     code: "ALG.TERMINE_SENZA_DENOMINATORE",
@@ -370,6 +370,14 @@ export const errorCatalog = [
     category: "ALG",
     explanation: tex`Con la sostituzione $t = x^2$ (o $t = x^n$) si trovano i valori di $t$: poi si torna alla $x$ risolvendo $x^2 = t$ per ogni valore trovato. I valori di $t$ non sono le soluzioni dell'equazione.`,
     example: tex`$x^4-5x^2+4 = 0$ con $t = x^2$ diventa $t^2-5t+4 = 0$, cioè $t = 1$ oppure $t = 4$. Le soluzioni sono $x = \pm1$ e $x = \pm2$, non $1$ e $4$: $4^4-5\cdot4^2+4 = 180\neq0$.`,
+    reference: "V1.M05.L04",
+  },
+  {
+    code: "ALG.RADICE_DISPARI",
+    name: "Potenza dispari trattata come pari",
+    category: "ALG",
+    explanation: tex`Con esponente dispari $x^n = k$ ha sempre una sola soluzione, $x = \sqrt[n]{k}$, anche quando $k$ è negativo: una potenza dispari ha lo stesso segno della base. Il $\pm$ e la condizione $k\ge0$ valgono solo per gli esponenti pari.`,
+    example: tex`$x^3 = 8$ ha la sola soluzione $x = 2$, perché $(-2)^3 = -8$. E $x^3 = -8$ non è impossibile: $x = -2$.`,
     reference: "V1.M05.L04",
   },
   {
