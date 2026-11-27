@@ -5,11 +5,13 @@
 import { defineModule } from "../definizione";
 import l01 from "../../contenuti/v1/m05/l01.md";
 import l02 from "../../contenuti/v1/m05/l02.md";
+import l03 from "../../contenuti/v1/m05/l03.md";
 
 export default defineModule("V1.M05", {
   lessons: {
     "V1.M05.L01": l01,
     "V1.M05.L02": l02,
+    "V1.M05.L03": l03,
   },
   generators: [],
 });
