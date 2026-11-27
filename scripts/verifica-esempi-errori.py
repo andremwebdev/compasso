@@ -889,6 +889,63 @@ def _():
     assert ne((x - 6) * (x - 1), p)
 
 
+@check("ALG.TERMINE_SENZA_DENOMINATORE")
+def _():
+    left = (x - 1) / 2 - (x + 1) / 3
+    assert solve(Eq(left, 1), x) == [11]
+    assert solve(Eq(3 * (x - 1) - 2 * (x + 1), 1), x) == [6]
+    assert ne(left.subs(x, 6), 1)
+
+
+@check("ALG.COEFFICIENTE_INVERTITO")
+def _():
+    assert solve(Eq(4 * x, 6), x) == [Rational(3, 2)]
+    assert ne(4 * Rational(2, 3), 6) and eq(4 * Rational(2, 3), Rational(8, 3))
+
+
+@check("ALG.ZERO_PER_X")
+def _():
+    assert expand(4 * (x - 1) - 2 * (2 * x - 2)) == 0
+    assert solveset(Eq(4 * (x - 1), 2 * (2 * x - 2)), x, S.Reals) == S.Reals
+    assert expand(2 * (x + 3) - (2 * x + 5)) == 1
+    assert solveset(Eq(2 * (x + 3), 2 * x + 5), x, S.Reals) == S.EmptySet
+
+
+@check("ALG.SOMMA_PRODOTTO")
+def _():
+    p = 2 * x**2 - 6 * x + 4
+    roots = solve(p, x)
+    assert sorted(roots) == [1, 2]
+    assert sum(roots) == 3 == Rational(6, 2) and roots[0] * roots[1] == 2 == Rational(4, 2)
+
+
+@check("ALG.INCOGNITA_AUSILIARIA")
+def _():
+    assert sorted(solve(t**2 - 5 * t + 4, t)) == [1, 4]
+    assert sorted(solve(x**4 - 5 * x**2 + 4, x)) == [-2, -1, 1, 2]
+    assert (x**4 - 5 * x**2 + 4).subs(x, 4) == 180
+
+
+@check("ALG.VALORE_ASSOLUTO_CASO")
+def _():
+    assert solveset(Eq(Abs(x - 1), 3), x, S.Reals) == {-2, 4}
+
+
+@check("ALG.VALORE_ASSOLUTO_NEGATIVO")
+def _():
+    assert solveset(Eq(Abs(x - 1), -3), x, S.Reals) == S.EmptySet
+    assert Abs(4 - 1) == 3
+
+
+@check("ALG.PARAMETRO_COEFFICIENTE")
+def _():
+    k = symbols("k", real=True)
+    delta = expand(2**2 - 4 * (k - 1) * 1)
+    assert delta == 8 - 4 * k
+    assert solve(Eq(2 * x + 1, 0), x) == [Rational(-1, 2)]
+    assert ineq(8 - 4 * x > 0) == Interval.open(-oo, 2)
+
+
 @check("AN.DERIVATA_QUOZIENTE")
 def _():
     f, g = x, x + 1

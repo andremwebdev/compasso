@@ -330,6 +330,72 @@ export const errorCatalog = [
     example: tex`$x^3-7x+6$ diviso $x-1$: con i coefficienti completi $1,\ 0,\ -7,\ 6$ il quoziente è $x^2+x-6$ e il resto $0$. Dimenticando lo zero si usano $1,\ -7,\ 6$, e si ottiene il quoziente $x-6$ con resto $0$: sbagliato, perché $(x-6)(x-1) = x^2-7x+6$.`,
     reference: "V1.M04.L05",
   },
+  // Le otto voci che seguono sono state aggiunte con i generatori di V1.M05 (decisione 179):
+  // nessuna voce del catalogo parlava di questi errori.
+  {
+    code: "ALG.TERMINE_SENZA_DENOMINATORE",
+    name: "Termine senza denominatore non moltiplicato",
+    category: "ALG",
+    explanation: tex`Per togliere i denominatori si moltiplicano i due membri per il minimo comune denominatore: **ogni** termine va moltiplicato, anche quelli che non hanno un denominatore scritto.`,
+    example: tex`$\dfrac{x-1}{2}-\dfrac{x+1}{3} = 1$: moltiplicando per $6$ si ottiene $3(x-1)-2(x+1) = 6$, quindi $x = 11$. Lasciando l'$1$ com'è si scrive $3(x-1)-2(x+1) = 1$ e si trova $x = 6$, che non è una soluzione.`,
+    reference: "V1.M05.L01",
+  },
+  {
+    code: "ALG.COEFFICIENTE_INVERTITO",
+    name: "Divisione per il coefficiente rovesciata",
+    category: "ALG",
+    explanation: tex`Da $ax = b$, con $a\neq0$, si dividono i due membri per $a$: $x = \dfrac{b}{a}$. Il coefficiente dell'incognita va al denominatore, non al numeratore.`,
+    example: tex`$4x = 6$ dà $x = \dfrac{6}{4} = \dfrac{3}{2}$. Scrivere $x = \dfrac{4}{6} = \dfrac{2}{3}$ è sbagliato: $4\cdot\dfrac{2}{3} = \dfrac{8}{3}\neq6$.`,
+    reference: "V1.M05.L01",
+  },
+  {
+    code: "ALG.ZERO_PER_X",
+    name: "0·x = b letto come x = b",
+    category: "ALG",
+    explanation: tex`Quando i termini con l'incognita si cancellano resta $0\cdot x = b$: non si può dividere per $0$. Se $b\neq0$ nessun numero va bene ($S = \emptyset$), se $b = 0$ va bene ogni numero ($S = \mathbb{R}$). Togliere lo $0$ e scrivere $x = b$ è sbagliato.`,
+    example: tex`$4(x-1) = 2(2x-2)$ diventa $0\cdot x = 0$: è indeterminata, $S = \mathbb{R}$, non $S = \{0\}$. E $2(x+3) = 2x+5$ diventa $0\cdot x = -1$: è impossibile, non $x = -1$.`,
+    reference: "V1.M05.L01",
+  },
+  {
+    code: "ALG.SOMMA_PRODOTTO",
+    name: "Somma e prodotto delle soluzioni sbagliati",
+    category: "ALG",
+    explanation: tex`Per $ax^2+bx+c = 0$ con $\Delta\ge0$ la somma delle soluzioni è $-\dfrac{b}{a}$ e il prodotto è $\dfrac{c}{a}$: la somma ha il segno opposto a $b$, e tutti e due si dividono per $a$.`,
+    example: tex`$2x^2-6x+4 = 0$ ha soluzioni $1$ e $2$: somma $3 = -\dfrac{-6}{2}$, prodotto $2 = \dfrac{4}{2}$. Scrivere somma $-3$ (segno dimenticato) o $6$ (senza dividere per $a$) è sbagliato.`,
+    reference: "V1.M05.L03",
+  },
+  {
+    code: "ALG.INCOGNITA_AUSILIARIA",
+    name: "Soluzioni dell'incognita ausiliaria prese per soluzioni",
+    category: "ALG",
+    explanation: tex`Con la sostituzione $t = x^2$ (o $t = x^n$) si trovano i valori di $t$: poi si torna alla $x$ risolvendo $x^2 = t$ per ogni valore trovato. I valori di $t$ non sono le soluzioni dell'equazione.`,
+    example: tex`$x^4-5x^2+4 = 0$ con $t = x^2$ diventa $t^2-5t+4 = 0$, cioè $t = 1$ oppure $t = 4$. Le soluzioni sono $x = \pm1$ e $x = \pm2$, non $1$ e $4$: $4^4-5\cdot4^2+4 = 180\neq0$.`,
+    reference: "V1.M05.L04",
+  },
+  {
+    code: "ALG.VALORE_ASSOLUTO_CASO",
+    name: "Un caso del valore assoluto dimenticato",
+    category: "ALG",
+    explanation: tex`$|A| = k$ con $k>0$ vale se $A = k$ **oppure** $A = -k$; $|A| = |B|$ vale se $A = B$ **oppure** $A = -B$. Considerare un caso solo fa perdere soluzioni.`,
+    example: tex`$|x-1| = 3$: da $x-1 = 3$ viene $x = 4$, da $x-1 = -3$ viene $x = -2$. Anche $-2$ è una soluzione: $|-2-1| = 3$.`,
+    reference: "V1.M05.L07",
+  },
+  {
+    code: "ALG.VALORE_ASSOLUTO_NEGATIVO",
+    name: "Valore assoluto uguale a un numero negativo",
+    category: "ALG",
+    explanation: tex`Un valore assoluto non è mai negativo: $|A| = k$ con $k<0$ non ha soluzioni. Risolvere $A = k$ e $A = -k$ come se $k$ fosse positivo dà numeri che non sono soluzioni.`,
+    example: tex`$|x-1| = -3$ è impossibile, $S = \emptyset$. Da $x-1 = \pm3$ si troverebbero $4$ e $-2$, ma $|4-1| = 3\neq-3$.`,
+    reference: "V1.M05.L07",
+  },
+  {
+    code: "ALG.PARAMETRO_COEFFICIENTE",
+    name: "Caso del coefficiente nullo dimenticato",
+    category: "ALG",
+    explanation: tex`In un'equazione parametrica il coefficiente di grado massimo può annullarsi per qualche valore del parametro: per quel valore l'equazione cambia grado (o diventa impossibile o indeterminata) e va studiata a parte, prima di usare $\Delta$ o di dividere.`,
+    example: tex`$(k-1)x^2+2x+1 = 0$ ha due soluzioni distinte se $k\neq1$ e $\Delta = 4-4(k-1) = 8-4k>0$, cioè per $k<2$ e $k\neq1$. Per $k = 1$ l'equazione è $2x+1 = 0$, con una soluzione sola: rispondere $k<2$ dimentica questo caso.`,
+    reference: "V1.M05.L08",
+  },
 
   // ───────────────────── COND: condizioni e domini ─────────────────────
   {

@@ -4,6 +4,7 @@
 
 import type { LimitValue } from "../../src/motore/calculus/limit";
 import type { Expr } from "../../src/motore/expr";
+import type { SolutionSet } from "../../src/motore/sets";
 
 /** Un'espressione costante in testo semplice: -1/6, e^(-2), sqrt(2)/2, 3pi/4. */
 export function plainText(expr: Expr): string {
@@ -50,4 +51,21 @@ export function limitText(value: LimitValue): string {
     case "none":
       return "non esiste";
   }
+}
+
+/**
+ * Le soluzioni di un'equazione come le scrive Andrea: «x = 2 ∨ x = -3», «∅», «ℝ».
+ * Solo per insiemi fatti di punti isolati (oppure vuoti, oppure tutto ℝ).
+ */
+export function solutionsText(set: SolutionSet, variable = "x"): string {
+  if (set.kind !== "realset") throw new Error("solutionsText: insieme periodico.");
+  if (set.pieces.length === 0) return "∅";
+  const [first] = set.pieces;
+  if (set.pieces.length === 1 && first && first.lower === "-inf" && first.upper === "+inf") return "ℝ";
+  return set.pieces
+    .map((piece) => {
+      if (typeof piece.lower === "string" || piece.lower !== piece.upper) throw new Error("solutionsText: non è un punto.");
+      return `${variable} = ${plainText(piece.lower)}`;
+    })
+    .join(" ∨ ");
 }

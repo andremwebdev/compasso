@@ -418,6 +418,14 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | ALG.RACCOGLIMENTO | Raccoglimento con un termine non diviso | Ogni termine va diviso per il fattore raccolto: 6x²+9x = 3x(2x+3) | V1.M04 |
 | ALG.SEGNI\_FATTORI | Segni sbagliati nei fattori | Radice r, fattore (x−r): x²−5x+6 = (x−2)(x−3) | V1.M04 |
 | ALG.GRADO\_MANCANTE | Grado mancante senza lo zero | In Ruffini il dividendo va completo: x³−7x+6 ha coefficienti 1, 0, −7, 6 | V1.M04.L05 |
+| ALG.TERMINE\_SENZA\_DENOMINATORE | Termine senza denominatore non moltiplicato | (x−1)/2 − (x+1)/3 = 1 per 6 dà 3(x−1) − 2(x+1) = 6, non = 1 | V1.M05.L01 |
+| ALG.COEFFICIENTE\_INVERTITO | Divisione per il coefficiente rovesciata | 4x = 6 dà x = 6/4 = 3/2, non 4/6 | V1.M05.L01 |
+| ALG.ZERO\_PER\_X | 0·x = b letto come x = b | 4(x−1) = 2(2x−2) dà 0·x = 0: S = ℝ, non {0} | V1.M05.L01 |
+| ALG.SOMMA\_PRODOTTO | Somma e prodotto delle soluzioni sbagliati | 2x²−6x+4 = 0: somma −b/a = 3, prodotto c/a = 2 (non −3 o 6) | V1.M05.L03 |
+| ALG.INCOGNITA\_AUSILIARIA | Soluzioni dell'incognita ausiliaria prese per soluzioni | x⁴−5x²+4 = 0: t = 1, 4 dà x = ±1, ±2, non 1 e 4 | V1.M05.L04 |
+| ALG.VALORE\_ASSOLUTO\_CASO | Un caso del valore assoluto dimenticato | \|x−1\| = 3 dà x = 4 oppure x = −2 | V1.M05.L07 |
+| ALG.VALORE\_ASSOLUTO\_NEGATIVO | Valore assoluto uguale a un numero negativo | \|x−1\| = −3 è impossibile | V1.M05.L07 |
+| ALG.PARAMETRO\_COEFFICIENTE | Caso del coefficiente nullo dimenticato | (k−1)x²+2x+1 = 0: per k = 1 è di primo grado | V1.M05.L08 |
 | COND.DENOMINATORE | Denominatore nullo non escluso | Le soluzioni che annullano un denominatore vanno scartate | V1.M05 |
 | COND.RADICE\_PARI | Condizione sul radicando dimenticata | Radice di indice pari: radicando ≥ 0 | V1.M05 |
 | COND.SOLUZIONI\_ESTRANEE | Soluzioni estranee non controllate | Elevare al quadrato può aggiungere soluzioni: vanno verificate | V1.M05 |
