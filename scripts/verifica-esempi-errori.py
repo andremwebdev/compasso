@@ -879,6 +879,16 @@ def _():
     assert expand((x + m) * (x + k) - (x**2 + (m + k) * x + m * k)) == 0
 
 
+@check("ALG.GRADO_MANCANTE")
+def _():
+    p = x**3 - 7 * x + 6
+    assert ruffini([1, 0, -7, 6], 1) == ([1, 1, -6], 0)
+    assert div(p, x - 1, x) == (x**2 + x - 6, 0)
+    # Senza lo zero: 1, −7, 6 diviso per x − 1 dà x − 6 con resto 0, ma (x − 6)(x − 1) non è p.
+    assert ruffini([1, -7, 6], 1) == ([1, -6], 0)
+    assert ne((x - 6) * (x - 1), p)
+
+
 @check("AN.DERIVATA_QUOZIENTE")
 def _():
     f, g = x, x + 1

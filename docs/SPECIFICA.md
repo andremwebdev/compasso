@@ -417,6 +417,7 @@ Chi crea un generatore può aggiungere errori nuovi, ma prima controlla che l'er
 | ALG.ESPONENZIALE\_SOMMA | aˣ⁺ʸ = aˣ + aʸ | aˣ⁺ʸ = aˣ · aʸ | V1.M09 |
 | ALG.RACCOGLIMENTO | Raccoglimento con un termine non diviso | Ogni termine va diviso per il fattore raccolto: 6x²+9x = 3x(2x+3) | V1.M04 |
 | ALG.SEGNI\_FATTORI | Segni sbagliati nei fattori | Radice r, fattore (x−r): x²−5x+6 = (x−2)(x−3) | V1.M04 |
+| ALG.GRADO\_MANCANTE | Grado mancante senza lo zero | In Ruffini il dividendo va completo: x³−7x+6 ha coefficienti 1, 0, −7, 6 | V1.M04.L05 |
 | COND.DENOMINATORE | Denominatore nullo non escluso | Le soluzioni che annullano un denominatore vanno scartate | V1.M05 |
 | COND.RADICE\_PARI | Condizione sul radicando dimenticata | Radice di indice pari: radicando ≥ 0 | V1.M05 |
 | COND.SOLUZIONI\_ESTRANEE | Soluzioni estranee non controllate | Elevare al quadrato può aggiungere soluzioni: vanno verificate | V1.M05 |

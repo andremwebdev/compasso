@@ -321,6 +321,15 @@ export const errorCatalog = [
     example: tex`$x^2-5x+6 = (x-2)(x-3)$, non $(x+2)(x+3)$, che vale $x^2+5x+6$. Allo stesso modo $x^2-6x+9 = (x-3)^2$, non $(x+3)^2$.`,
     reference: "V1.M04",
   },
+  {
+    // Aggiunto con i generatori di V1.M04 (decisione 169): nessuna voce parlava dello zero dimenticato.
+    code: "ALG.GRADO_MANCANTE",
+    name: "Grado mancante senza lo zero",
+    category: "ALG",
+    explanation: tex`Nella regola di Ruffini (e nella divisione in colonna) il dividendo va scritto completo: per ogni grado che manca si mette il coefficiente $0$. Senza lo zero, ogni coefficiente finisce nella colonna di un altro grado e quoziente e resto vengono sbagliati.`,
+    example: tex`$x^3-7x+6$ diviso $x-1$: con i coefficienti completi $1,\ 0,\ -7,\ 6$ il quoziente è $x^2+x-6$ e il resto $0$. Dimenticando lo zero si usano $1,\ -7,\ 6$, e si ottiene il quoziente $x-6$ con resto $0$: sbagliato, perché $(x-6)(x-1) = x^2-7x+6$.`,
+    reference: "V1.M04.L05",
+  },
 
   // ───────────────────── COND: condizioni e domini ─────────────────────
   {
