@@ -120,7 +120,7 @@ function wrongQuotients(model: Model & { kind: "quotient" }): WrongCandidate<UPo
   const coefficients = fromTop(model.p);
   const right = ruffiniRow(coefficients, a);
   // Il primo prodotto con un fattore negativo (a negativo, oppure il numero sotto la riga negativo).
-  const flip = right.findIndex((v, j) => j > 0 && !(right[j - 1] as Rational).isZero() && (a.sign() < 0 || (right[j - 1] as Rational).sign() < 0));
+  const flip = right.findIndex((_, j) => j > 0 && !(right[j - 1] as Rational).isZero() && (a.sign() < 0 || (right[j - 1] as Rational).sign() < 0));
   return [
     { error: SIGN_ROOT, value: quotientOf(ruffiniRow(coefficients, a.neg())) },
     { error: MISSING, value: quotientOf(ruffiniRow(coefficients.filter((c) => !c.isZero()), a)) },

@@ -109,7 +109,6 @@ function wrongResults(model: Model): WrongCandidate<Result>[] {
 // ───────────────────────────── scrittura ─────────────────────────────
 
 const L = (p: UPoly): string => toLatex(upolyToExpr(p));
-const isX = (p: UPoly): boolean => p.length === 2 && p[0]?.isZero() === true;
 
 /** a − x per il fattore x − a (solo primo grado). */
 const opposite = (p: UPoly): UPoly => upScale(p, -1);

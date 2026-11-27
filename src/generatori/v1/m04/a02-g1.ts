@@ -201,8 +201,6 @@ const promptExpr = (model: Model): Expr =>
     }),
   );
 
-const p$ = (p: Poly): string => `$${toLatex(polyExpr(p))}$`;
-
 /** I prodotti parziali scritti uno dopo l'altro, con i loro segni. */
 const partialsLatex = (parts: Poly): string => parts.map((m, k) => (k === 0 || m.c.sign() < 0 ? toLatex(monoExpr(m)) : `+ ${toLatex(monoExpr(m))}`)).join(" ");
 
