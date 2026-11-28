@@ -116,9 +116,11 @@ async function expectAppWorks(ui: Ui) {
   // Teoria → volume → modulo → la lezione, letta dal file Markdown: titolo, riquadri, formule.
   await ui.click("nav.tab-bar button", "Teoria");
   await ui.click(".card-link", "Fondamenta");
-  await ui.click(".card-link", "V1.M06");
-  // Le lezioni non ancora scritte ci sono, come «in arrivo».
+  // Le lezioni non ancora scritte ci sono, come «in arrivo» (V1.M07: V1.M06 ora è completo).
+  await ui.click(".card-link", "V1.M07");
   expect((await ui.text(".card-coming"))).toContain("In arrivo");
+  await ui.click("main button.back", "Volume 1");
+  await ui.click(".card-link", "V1.M06");
   await ui.click(".card-link", "Disequazioni fratte");
   // I prerequisiti mancanti sono segnalati, ma la lezione si apre.
   expect((await ui.text(".notice"))).toContain("Prerequisiti non ancora fatti");
