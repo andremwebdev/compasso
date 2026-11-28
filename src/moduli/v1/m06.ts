@@ -3,11 +3,13 @@
 // riga nell'elenco (REGOLE.md, «Per aggiungere una lezione» e «Come replicare un generatore»).
 
 import { defineModule } from "../definizione";
+import l01 from "../../contenuti/v1/m06/l01.md";
 import l04 from "../../contenuti/v1/m06/l04.md";
 import a04g1 from "../../generatori/v1/m06/a04-g1";
 
 export default defineModule("V1.M06", {
   lessons: {
+    "V1.M06.L01": l01,
     "V1.M06.L04": l04,
   },
   generators: [
